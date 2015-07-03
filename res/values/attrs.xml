@@ -1,0 +1,16 @@
+<resources>
+
+    <string-array name="remind_type">
+        <item>已接受的提醒</item>
+        <item>新的提醒</item>
+        <item>我发起的提醒</item>
+        <item>已拒绝的提醒</item>
+    </string-array>
+
+    <declare-styleable name="roundedimageview">
+        <attr name="border_thickness" format="dimension" />
+        <attr name="border_inside_color" format="color" />
+        <attr name="border_outside_color" format="color"></attr>
+    </declare-styleable>
+
+</resources>

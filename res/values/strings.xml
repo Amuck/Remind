@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">互助提醒</string>
+    <string name="action_settings">Settings</string>
+    <string name="hello_world">Hello world!</string>
+
+    <string name="add">添加</string>
+    <string name="remind">我的提醒</string>
+    <string name="peopel">联系人</string>
+    <string name="setting">设置</string>
+    <string name="peopel_empty">您还没有联系人，快来添加一个试试吧！</string>
+    
+    <string name="name">名称</string>
+    <string name="nick">备注</string>
+    <string name="num">号码</string>
+    <string name="img">头像</string>
+    <string name="explor">浏览</string>
+    <string name="validate">等待验证</string>
+    <string name="accept">接受</string>
+    <string name="refuse">拒绝</string>
+    <string name="friend">已添加</string>
+    <string name="search">搜索</string>
+    
+    <string name="ok">确定</string>
+    <string name="cancel">取消</string>
+    <string name="select_peopel">选择联系人</string>
+    <string name="select_date">选择日期</string>
+    <string name="select_time">选择时间</string>
+    <string name="set_content">请填写提醒内容</string>
+    <string name="set_title">请填写标题内容</string>
+    <string name="date">日期  </string>
+    <string name="time">时间  </string>
+    <string name="content">提醒  </string>
+    <string name="title">标题  </string>
+    <string name="select">选择</string>
+    
+    <string name="remind_wait">等待对方接受</string>
+    <string name="remind_refuse">对方已拒绝</string>
+    <string name="remind_accept">对方已接受</string>
+    
+    <string name="send_msg">发消息</string>
+    <string name="info">信息</string>
+    <string name="add_remind">添加提醒</string>
+    <string name="send">发送</string>
+</resources>
