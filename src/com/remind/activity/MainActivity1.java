@@ -64,7 +64,7 @@ public class MainActivity1 extends AbActivity {
 		pagerItemList.add(new ContentFragment());
 		pagerItemList.add(new PeopelFragment());
 		pagerItemList.add(new DiscoeryFragment());
-		pagerItemList.add(new UserFragment());
+//		pagerItemList.add(new UserFragment());
 		pagerItemList.add(new SettingFragment());
 
 		FragmentManager mFragmentManager = this.getSupportFragmentManager();
@@ -79,17 +79,17 @@ public class MainActivity1 extends AbActivity {
 		mTab2 = (ImageView) findViewById(R.id.img_2);
 		mTab3 = (ImageView) findViewById(R.id.img_3);
 		mTab4 = (ImageView) findViewById(R.id.img_4);
-		mTab5 = (ImageView) findViewById(R.id.img_5);
+//		mTab5 = (ImageView) findViewById(R.id.img_5);
 		mTab1.setOnClickListener(new MyOnClickListener(0));
 		mTab2.setOnClickListener(new MyOnClickListener(1));
 		mTab3.setOnClickListener(new MyOnClickListener(2));
 		mTab4.setOnClickListener(new MyOnClickListener(3));
-		mTab5.setOnClickListener(new MyOnClickListener(4));
+//		mTab5.setOnClickListener(new MyOnClickListener(4));
 
 		// 获取屏幕的分辨率，以计算偏移量
 		Display display = getWindowManager().getDefaultDisplay();
 		int width = display.getWidth();
-		int s = width / 5;
+		int s = width / 4;
 		one = s;
 		two = one * 2;
 		three = one * 3;
@@ -115,70 +115,70 @@ public class MainActivity1 extends AbActivity {
 			switch (arg0) {
 			case 0:
 				obtainFragmentTransaction(0, currIndex);
-				mTab1.setImageDrawable(getResources().getDrawable(R.drawable.down_f));
+				mTab1.setImageDrawable(getResources().getDrawable(R.drawable.tab_weixin_pressed));
 				if (currIndex == 1) {
 					anim = new TranslateAnimation(one, 0, 0, 0);
-					mTab2.setImageDrawable(getResources().getDrawable(R.drawable.up_n));
+					mTab2.setImageDrawable(getResources().getDrawable(R.drawable.tab_find_frd_normal));
 				} else if (currIndex == 2) {
 					anim = new TranslateAnimation(two, 0, 0, 0);
-					mTab3.setImageDrawable(getResources().getDrawable(R.drawable.measure_n));
+					mTab3.setImageDrawable(getResources().getDrawable(R.drawable.tab_address_normal));
 				} else if (currIndex == 3) {
 					anim = new TranslateAnimation(three, 0, 0, 0);
-					mTab4.setImageDrawable(getResources().getDrawable(R.drawable.look_n));
+					mTab4.setImageDrawable(getResources().getDrawable(R.drawable.tab_settings_normal));
 				} else if (currIndex == 4) {
-					anim = new TranslateAnimation(four, 0, 0, 0);
-					mTab5.setImageDrawable(getResources().getDrawable(R.drawable.more_n));
+//					anim = new TranslateAnimation(four, 0, 0, 0);
+//					mTab5.setImageDrawable(getResources().getDrawable(R.drawable.more_n));
 				}
 				break;
 			case 1:
 				obtainFragmentTransaction(1, currIndex);
-				mTab2.setImageDrawable(getResources().getDrawable(R.drawable.up_f));
+				mTab2.setImageDrawable(getResources().getDrawable(R.drawable.tab_find_frd_pressed));
 				if (currIndex == 0) {
 					anim = new TranslateAnimation(zero, one, 0, 0);
-					mTab1.setImageDrawable(getResources().getDrawable(R.drawable.down_n));
+					mTab1.setImageDrawable(getResources().getDrawable(R.drawable.tab_weixin_normal));
 				} else if (currIndex == 2) {
 					anim = new TranslateAnimation(two, one, 0, 0);
-					mTab3.setImageDrawable(getResources().getDrawable(R.drawable.measure_n));
+					mTab3.setImageDrawable(getResources().getDrawable(R.drawable.tab_address_normal));
 				} else if (currIndex == 3) {
 					anim = new TranslateAnimation(three, one, 0, 0);
-					mTab4.setImageDrawable(getResources().getDrawable(R.drawable.look_n));
+					mTab4.setImageDrawable(getResources().getDrawable(R.drawable.tab_settings_normal));
 				} else if (currIndex == 4) {
-					anim = new TranslateAnimation(four, one, 0, 0);
-					mTab5.setImageDrawable(getResources().getDrawable(R.drawable.more_n));
+//					anim = new TranslateAnimation(four, one, 0, 0);
+//					mTab5.setImageDrawable(getResources().getDrawable(R.drawable.more_n));
 				}
 				break;
 			case 2:
 				obtainFragmentTransaction(2, currIndex);
-				mTab3.setImageDrawable(getResources().getDrawable(R.drawable.measure_f));
+				mTab3.setImageDrawable(getResources().getDrawable(R.drawable.tab_address_pressed));
 				if (currIndex == 0) {
 					anim = new TranslateAnimation(zero, two, 0, 0);
-					mTab1.setImageDrawable(getResources().getDrawable(R.drawable.down_n));
+					mTab1.setImageDrawable(getResources().getDrawable(R.drawable.tab_weixin_normal));
 				} else if (currIndex == 1) {
 					anim = new TranslateAnimation(one, two, 0, 0);
-					mTab2.setImageDrawable(getResources().getDrawable(R.drawable.up_n));
+					mTab2.setImageDrawable(getResources().getDrawable(R.drawable.tab_find_frd_normal));
 				} else if (currIndex == 3) {
 					anim = new TranslateAnimation(three, two, 0, 0);
-					mTab4.setImageDrawable(getResources().getDrawable(R.drawable.look_n));
+					mTab4.setImageDrawable(getResources().getDrawable(R.drawable.tab_settings_normal));
 				} else if (currIndex == 4) {
-					anim = new TranslateAnimation(four, two, 0, 0);
-					mTab5.setImageDrawable(getResources().getDrawable(R.drawable.more_n));
+//					anim = new TranslateAnimation(four, two, 0, 0);
+//					mTab5.setImageDrawable(getResources().getDrawable(R.drawable.more_n));
 				}
 				break;
 			case 3:
 				obtainFragmentTransaction(3, currIndex);
-				mTab4.setImageDrawable(getResources().getDrawable(R.drawable.look_f));
+				mTab4.setImageDrawable(getResources().getDrawable(R.drawable.tab_settings_pressed));
 				if (currIndex == 0) {
 					anim = new TranslateAnimation(zero, three, 0, 0);
-					mTab1.setImageDrawable(getResources().getDrawable(R.drawable.down_n));
+					mTab1.setImageDrawable(getResources().getDrawable(R.drawable.tab_weixin_normal));
 				} else if (currIndex == 1) {
 					anim = new TranslateAnimation(one, three, 0, 0);
-					mTab2.setImageDrawable(getResources().getDrawable(R.drawable.up_n));
+					mTab2.setImageDrawable(getResources().getDrawable(R.drawable.tab_find_frd_normal));
 				} else if (currIndex == 2) {
 					anim = new TranslateAnimation(two, three, 0, 0);
-					mTab3.setImageDrawable(getResources().getDrawable(R.drawable.measure_n));
+					mTab3.setImageDrawable(getResources().getDrawable(R.drawable.tab_address_normal));
 				} else if (currIndex == 4) {
-					anim = new TranslateAnimation(four, three, 0, 0);
-					mTab5.setImageDrawable(getResources().getDrawable(R.drawable.more_n));
+//					anim = new TranslateAnimation(four, three, 0, 0);
+//					mTab5.setImageDrawable(getResources().getDrawable(R.drawable.more_n));
 				}
 				break;
 			case 4:
@@ -194,8 +194,8 @@ public class MainActivity1 extends AbActivity {
 					anim = new TranslateAnimation(two, four, 0, 0);
 					mTab3.setImageDrawable(getResources().getDrawable(R.drawable.measure_n));
 				} else if (currIndex == 3) {
-					anim = new TranslateAnimation(three, four, 0, 0);
-					mTab4.setImageDrawable(getResources().getDrawable(R.drawable.look_n));
+//					anim = new TranslateAnimation(three, four, 0, 0);
+//					mTab4.setImageDrawable(getResources().getDrawable(R.drawable.look_n));
 				}
 				break;
 			}

@@ -131,9 +131,9 @@ public class PeopelFragment extends Fragment{
 			@Override
 			public void onClick(View v) {
 				// 添加联系人
-//				Intent intent = new Intent(getActivity(), ContactsActivity.class);
-//				startActivityForResult(intent, ADD_PEOPEL);
-				doStartApplicationWithPackageName("com.bjjw.sysbuild");
+				Intent intent = new Intent(getActivity(), ContactsActivity.class);
+				startActivityForResult(intent, ADD_PEOPEL);
+//				doStartApplicationWithPackageName("com.bjjw.sysbuild");
 
 			}
 		});

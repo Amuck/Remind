@@ -55,7 +55,7 @@
             android:contentDescription="@string/add"
             android:padding="0dp"
             android:scaleType="centerInside"
-            android:src="@drawable/add" />
+            android:src="@drawable/find_more_friend_addfriend_icon" />
     </RelativeLayout>
 
     <TextView
