@@ -263,14 +263,38 @@ public class MainActivity1 extends AbActivity {
 			// SdCard不可用
 			AppConstant.MNT = Environment.getRootDirectory().getAbsolutePath();
 		}
-		
+		// 创建数据库文件夹
 		File dbFile = new File(AppConstant.MNT + AppConstant.FILE_PATH
 				+ AppConstant.DB_FILE_PATH);
 		if (!dbFile.exists()) {
 			dbFile.mkdirs();
 		}
+		// 创建音频文件夹
+		File audio = new File(AppConstant.MNT + AppConstant.FILE_PATH
+				+ AppConstant.EDITED_AUDIO_PATH);
+		if (!audio.exists()) {
+			audio.mkdirs();
+		}
+		// 创建图片文件夹
+		File img = new File(AppConstant.MNT + AppConstant.FILE_PATH
+				+ AppConstant.EDITED_IMG_PATH);
+		if (!img.exists()) {
+			img.mkdirs();
+		}
+		// 创建视频文件夹
+		File video = new File(AppConstant.MNT + AppConstant.FILE_PATH
+				+ AppConstant.EDITED_VEDIO_PATH);
+		if (!video.exists()) {
+			video.mkdirs();
+		}
+		// 创建日志文件夹
+		File log = new File(AppConstant.MNT + AppConstant.FILE_PATH
+				+ AppConstant.ERROR_PATH);
+		if (!log.exists()) {
+			log.mkdirs();
+		}
 	}
-	
+
 	@Override
 	protected void onDestroy() {
 		ImageLoader.getInstance(this).clearCache();

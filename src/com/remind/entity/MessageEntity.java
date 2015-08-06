@@ -30,6 +30,10 @@ public class MessageEntity implements Cloneable{
 	 */
 	public final static String TYPE_REMIND = "1";
 	/**
+	 * 消息类型，语音
+	 */
+	public final static String TYPE_VOICE = "2";
+	/**
 	 * 用户发送的消息
 	 */
 	public final static String TYPE_SEND = "0";
@@ -68,7 +72,7 @@ public class MessageEntity implements Cloneable{
 	 */
 	private String time;
 	/**
-	 * 消息内容
+	 * 消息内容/语音时长
 	 */
 	private String content;
 	/**
@@ -81,7 +85,7 @@ public class MessageEntity implements Cloneable{
 	private String isDelete;
 	
 	/**
-	 * 消息类型，文字：{@link #TYPE_TEXT}, 提醒：{@link #TYPE_REMIND},默认为文字
+	 * 消息类型，文字：{@link #TYPE_TEXT}, 提醒：{@link #TYPE_REMIND},语音：{@link #TYPE_VOICE},默认为文字
 	 */
 	private String msgType = MessageEntity.TYPE_TEXT;
 	

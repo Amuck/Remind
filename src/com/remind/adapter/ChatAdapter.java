@@ -4,6 +4,8 @@ import java.util.List;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.media.MediaPlayer;
+import android.media.MediaPlayer.OnCompletionListener;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -51,6 +53,7 @@ public class ChatAdapter extends BaseAdapter {
 	private int historyCount = 0;
 	
 	private ContentClickListener contentClickListener = null;
+	private MediaPlayer mMediaPlayer = new MediaPlayer();
 
 	public ChatAdapter(Context context, List<MessageEntity> datas) {
 		this.context = context;
@@ -275,6 +278,16 @@ public class ChatAdapter extends BaseAdapter {
 			default:
 				break;
 			}
+		} else if (MessageEntity.TYPE_VOICE.equals(type)) {
+			// 如果是语音的话
+			viewHolder.content.setText("");
+			viewHolder.content.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.chatto_voice_playing, 0);
+			
+			viewHolder.contentImg.setImageBitmap(null);
+			viewHolder.title.setVisibility(View.GONE);
+			viewHolder.contentImg.setVisibility(View.GONE);
+			viewHolder.ok.setVisibility(View.GONE);
+			viewHolder.cancel.setVisibility(View.GONE);
 		}
 	}
 	
@@ -325,8 +338,13 @@ public class ChatAdapter extends BaseAdapter {
 			
 			@Override
 			public void onClick(View v) {
-				if (null != contentClickListener) {
-					contentClickListener.onContentClick(position, chatMessage);
+				if (MessageEntity.TYPE_VOICE.equals(chatMessage.getMsgType())) {
+					// 如果是语音则播放
+					playMusic(chatMessage.getMsgPath());
+				} else {
+					if (null != contentClickListener) {
+						contentClickListener.onContentClick(position, chatMessage);
+					}
 				}
 			}
 		});
@@ -385,4 +403,24 @@ public class ChatAdapter extends BaseAdapter {
 		this.contentClickListener = contentClickListener;
 	}
 	
+	private void playMusic(String name) {
+		try {
+			if (mMediaPlayer.isPlaying()) {
+				mMediaPlayer.stop();
+			}
+			mMediaPlayer.reset();
+			mMediaPlayer.setDataSource(name);
+			mMediaPlayer.prepare();
+			mMediaPlayer.start();
+			mMediaPlayer.setOnCompletionListener(new OnCompletionListener() {
+				public void onCompletion(MediaPlayer mp) {
+
+				}
+			});
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+	}
 }
