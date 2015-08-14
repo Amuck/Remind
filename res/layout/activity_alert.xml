@@ -1,62 +1,80 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="70dp"
+    android:layout_height="match_parent"
     android:background="@android:color/white"
-    android:orientation="horizontal"
-    android:descendantFocusability= "blocksDescendants" >
+    android:descendantFocusability="blocksDescendants"
+    android:orientation="vertical" >
 
-    <com.remind.view.RoundImageView
-        android:id="@+id/person_img"
-        android:layout_width="70dp"
-        android:layout_height="70dp"
-        android:layout_margin="5dp"
-        android:src="@drawable/white" />
+    <TextView
+        android:id="@+id/alert_title"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:textColor="@color/black"
+        android:textSize="14sp" />
 
-    <LinearLayout
+    <TextView
+        android:id="@+id/alert_content"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:textColor="@color/black"
+        android:textSize="14sp" />
+
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="fill_parent"
-        android:layout_marginLeft="5dp"
-        android:orientation="horizontal"
-        android:weightSum="5" >
+        android:layout_height="wrap_content" >
 
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="fill_parent"
-            android:layout_marginLeft="5dp"
-            android:layout_marginRight="5dp"
-            android:orientation="vertical"
-            android:layout_weight="4">
+        <ImageView
+            android:id="@+id/alert_img"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+    </FrameLayout>
 
-            <TextView
-                android:id="@+id/name"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:gravity="left"
-                android:textColor="@color/black"
-                android:textSize="24sp" />
+    <Button
+        android:id="@+id/alert_start"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:clickable="false"
+        android:focusable="false"
+        android:gravity="center"
+        android:text="@string/alert_start"
+        android:textSize="14sp" />
 
-            <TextView
-                android:id="@+id/num"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:gravity="left"
-                android:textColor="@color/black"
-                android:textSize="14sp" />
-        </LinearLayout>
+    <Button
+        android:id="@+id/alert_ready"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:clickable="false"
+        android:focusable="false"
+        android:gravity="center"
+        android:text="@string/alert_ready"
+        android:textSize="14sp" />
 
-        <Button
-            android:id="@+id/peopel_status"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:layout_gravity="center"
-            android:clickable="false"
-            android:gravity="center"
-            android:focusable="false"
-            android:text="@string/validate"
-            android:textSize="14sp" />
-    </LinearLayout>
+    <Button
+        android:id="@+id/alert_later"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:clickable="false"
+        android:focusable="false"
+        android:gravity="center"
+        android:text="@string/alert_later"
+        android:textSize="14sp" />
+
+    <Button
+        android:id="@+id/alert_other"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:clickable="false"
+        android:focusable="false"
+        android:gravity="center"
+        android:text="@string/alert_other"
+        android:textSize="14sp" />
 
 </LinearLayout>

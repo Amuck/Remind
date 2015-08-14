@@ -1,11 +1,12 @@
 package com.remind.receiver;
 
-import com.remind.util.AppUtil;
-
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.widget.Toast;
+
+import com.remind.activity.AlertActivity;
+import com.remind.util.AppUtil;
 
 /**
  * @author ChenLong
@@ -24,8 +25,11 @@ public class RemindReceiver extends BroadcastReceiver {
 			Toast.makeText(context, "接收到闹钟广播", Toast.LENGTH_SHORT).show();
 			// the function that we should finsh background
 
-//			Intent intentToService = new Intent(context, checkService.class);
-//			context.startService(intentToService);
+			int requestCode = intent.getIntExtra("requestCode", -1);
+			Intent i = new Intent(context, AlertActivity.class);
+			i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+			i.putExtra("requestCode", requestCode);
+			context.startActivity(i);
 			AppUtil.sendNotif(context);
 		}
 	}

@@ -46,6 +46,8 @@ public class RemindDaoImpl implements RemindDao {
 		values.put(RemindMsg.REMIND_METHOD, entity.getRemindMethod());
 		values.put(RemindMsg.REMIND_STATE, entity.getRemindState());
 		
+		values.put(RemindMsg.REPEAT_TYPE, entity.getRepeatType());
+		
 		values.put(RemindMsg.LAUNCH_STATE, entity.getLaunchState());
 		values.put(RemindMsg.IS_DELETE, entity.getIsDelete());
 		
@@ -83,6 +85,8 @@ public class RemindDaoImpl implements RemindDao {
 			values.put(RemindMsg.IMG_PATH, entity.getImgPath());
 			values.put(RemindMsg.REMIND_METHOD, entity.getRemindMethod());
 			values.put(RemindMsg.REMIND_STATE, entity.getRemindState());
+			
+			values.put(RemindMsg.REPEAT_TYPE, entity.getRepeatType());
 			
 			values.put(RemindMsg.LAUNCH_STATE, entity.getLaunchState());
 			values.put(RemindMsg.IS_DELETE, entity.getIsDelete());
@@ -133,6 +137,9 @@ public class RemindDaoImpl implements RemindDao {
 		sb.append(RemindMsg.REMIND_METHOD + "	= '" + entity.getRemindMethod() + "',");
 		sb.append(RemindMsg.REMIND_STATE + "	= '" + entity.getRemindState() + "',");
 		sb.append(RemindMsg.LAUNCH_STATE + "	= '" + entity.getLaunchState() + "',");
+		
+		sb.append(RemindMsg.REPEAT_TYPE + "	= '" + entity.getRepeatType() + "',");
+		
 		sb.append(RemindMsg.IS_DELETE + "	= '" + entity.getIsDelete() + "' ");
 		
 		sb.append(" where " + RemindMsg.ID + " = '" + entity.getId() + "'");

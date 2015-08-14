@@ -108,6 +108,8 @@ public class DBHelper extends SQLiteOpenHelper {
 		remindSql.append(" text,");
 		remindSql.append(RemindMsg.IMG_PATH);
 		remindSql.append(" text,");
+		remindSql.append(RemindMsg.REPEAT_TYPE);
+		remindSql.append(" text,");
 		remindSql.append(RemindMsg.ADD_TIME);
 		remindSql.append(" varchar(30),");
 		remindSql.append(RemindMsg.LAST_EDIT_TIME);

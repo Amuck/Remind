@@ -74,8 +74,8 @@
                     android:layout_width="0dp"
                     android:layout_height="60dp"
                     android:layout_gravity="center"
-                    android:gravity="center"
                     android:layout_weight="1"
+                    android:gravity="center"
                     android:text="@string/peopel"
                     android:textColor="@color/black"
                     android:textSize="20sp" />
@@ -85,9 +85,9 @@
                     android:layout_width="0dp"
                     android:layout_height="60dp"
                     android:layout_gravity="center"
+                    android:layout_weight="4"
                     android:gravity="center_vertical"
                     android:paddingLeft="5dp"
-                    android:layout_weight="4"
                     android:textColor="@color/black"
                     android:textSize="18sp" />
 
@@ -98,8 +98,8 @@
                     android:layout_marginRight="10dp"
                     android:layout_weight="2"
                     android:padding="0dp"
-                    android:textSize="12sp"
-                    android:text="@string/select_peopel" />
+                    android:text="@string/select_peopel"
+                    android:textSize="12sp" />
             </LinearLayout>
 
             <LinearLayout
@@ -113,8 +113,8 @@
                     android:layout_width="0dp"
                     android:layout_height="60dp"
                     android:layout_gravity="center"
-                    android:gravity="center"
                     android:layout_weight="1"
+                    android:gravity="center"
                     android:text="@string/date"
                     android:textColor="@color/black"
                     android:textSize="20sp" />
@@ -124,10 +124,10 @@
                     android:layout_width="0dp"
                     android:layout_height="60dp"
                     android:layout_gravity="center"
-                    android:gravity="center_vertical"
-                    android:paddingLeft="5dp"
                     android:layout_weight="4"
                     android:background="@android:drawable/btn_default"
+                    android:gravity="center_vertical"
+                    android:paddingLeft="5dp"
                     android:textColor="@color/black"
                     android:textSize="20sp" />
 
@@ -153,8 +153,8 @@
                     android:layout_width="0dp"
                     android:layout_height="60dp"
                     android:layout_gravity="center"
-                    android:gravity="center"
                     android:layout_weight="1"
+                    android:gravity="center"
                     android:text="@string/time"
                     android:textColor="@color/black"
                     android:textSize="20sp" />
@@ -164,10 +164,10 @@
                     android:layout_width="0dp"
                     android:layout_height="60dp"
                     android:layout_gravity="center"
-                    android:gravity="center_vertical"
-                    android:paddingLeft="5dp"
                     android:layout_weight="4"
                     android:background="@android:drawable/btn_default"
+                    android:gravity="center_vertical"
+                    android:paddingLeft="5dp"
                     android:textColor="@color/black"
                     android:textSize="20sp" />
 
@@ -193,33 +193,56 @@
                     android:layout_width="0dp"
                     android:layout_height="60dp"
                     android:layout_gravity="center"
-                    android:gravity="center"
                     android:layout_weight="1"
-                    android:text="@string/title"
+                    android:gravity="center"
+                    android:text="@string/repeat"
                     android:textColor="@color/black"
                     android:textSize="20sp" />
 
-                <EditText
-                    android:id="@+id/set_title_edit"
-                    android:layout_width="0dp"
-                    android:layout_height="60dp"
-                    android:layout_gravity="center"
-                    android:gravity="center_vertical"
-                    android:paddingLeft="5dp"
-                    android:layout_weight="4"
-                    android:hint="@string/set_title"
-                    android:textColor="@color/black"
-                    android:textSize="20sp" />
-                
-                <Button
-                    android:layout_width="0dp"
-                    android:layout_height="60dp"
-                    android:layout_marginRight="10dp"
-                    android:layout_weight="2"
-                    android:padding="0dp"
-                    android:text="@string/select_time"
-                    android:visibility="invisible" />
+                <RadioGroup
+                    android:id="@+id/repeat_group"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal" >
+
+                    <RadioButton
+                        android:id="@+id/repeat_no_btn"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:checked="true"
+                        android:text="@string/repeat_no" />
+
+                    <RadioButton
+                        android:id="@+id/repeat_day_btn"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="@string/repeat_day" />
+
+                    <RadioButton
+                        android:id="@+id/repeat_week_btn"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="@string/repeat_week" />
+
+                    <RadioButton
+                        android:id="@+id/repeat_month_btn"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="@string/repeat_month" />
+
+                    <RadioButton
+                        android:id="@+id/repeat_year_btn"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="@string/repeat_year" />
+                </RadioGroup>
             </LinearLayout>
+
             <LinearLayout
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
@@ -231,8 +254,47 @@
                     android:layout_width="0dp"
                     android:layout_height="60dp"
                     android:layout_gravity="center"
-                    android:gravity="center"
                     android:layout_weight="1"
+                    android:gravity="center"
+                    android:text="@string/title"
+                    android:textColor="@color/black"
+                    android:textSize="20sp" />
+
+                <EditText
+                    android:id="@+id/set_title_edit"
+                    android:layout_width="0dp"
+                    android:layout_height="60dp"
+                    android:layout_gravity="center"
+                    android:layout_weight="4"
+                    android:gravity="center_vertical"
+                    android:hint="@string/set_title"
+                    android:paddingLeft="5dp"
+                    android:textColor="@color/black"
+                    android:textSize="20sp" />
+
+                <Button
+                    android:layout_width="0dp"
+                    android:layout_height="60dp"
+                    android:layout_marginRight="10dp"
+                    android:layout_weight="2"
+                    android:padding="0dp"
+                    android:text="@string/select_time"
+                    android:visibility="invisible" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:orientation="horizontal"
+                android:weightSum="7" >
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="60dp"
+                    android:layout_gravity="center"
+                    android:layout_weight="1"
+                    android:gravity="center"
                     android:text="@string/content"
                     android:textColor="@color/black"
                     android:textSize="20sp" />
@@ -242,13 +304,13 @@
                     android:layout_width="0dp"
                     android:layout_height="60dp"
                     android:layout_gravity="center"
-                    android:gravity="center_vertical"
-                    android:paddingLeft="5dp"
                     android:layout_weight="4"
+                    android:gravity="center_vertical"
                     android:hint="@string/set_content"
+                    android:paddingLeft="5dp"
                     android:textColor="@color/black"
                     android:textSize="20sp" />
-                
+
                 <Button
                     android:layout_width="0dp"
                     android:layout_height="60dp"

@@ -429,7 +429,7 @@ public class AppUtil {
 	 * @param context
 	 * @param date
 	 */
-	public static void setAlarm(Context context, String date) {
+	public static void setAlarm(Context context, String date, int requestCode) {
 		Calendar calendar = Calendar.getInstance();
 		// 获取目的时间毫秒数
 		try {
@@ -442,10 +442,11 @@ public class AppUtil {
 		}
 
 		Intent intent = new Intent("android.alarm.remind.action");
+		intent.putExtra("requestCode", requestCode);
 		// create the Intent between activity and broadcast
 		AlarmManager alarm = (AlarmManager) context
 				.getSystemService(Context.ALARM_SERVICE);
-		PendingIntent sender = PendingIntent.getBroadcast(context, 0, intent,
+		PendingIntent sender = PendingIntent.getBroadcast(context, requestCode, intent,
 				PendingIntent.FLAG_CANCEL_CURRENT);
 
 		// define the PendingIntent

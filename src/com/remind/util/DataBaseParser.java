@@ -65,6 +65,7 @@ public class DataBaseParser {
 			String videoPath = mCursor.getString(mCursor.getColumnIndex(RemindMsg.VIDEO_PATH));
 			String imgPath = mCursor.getString(mCursor.getColumnIndex(RemindMsg.IMG_PATH));
 			String isDelete = mCursor.getString(mCursor.getColumnIndex(RemindMsg.IS_DELETE));
+			String repeatType = mCursor.getString(mCursor.getColumnIndex(RemindMsg.REPEAT_TYPE));
 			int remindMethod = mCursor.getInt(mCursor.getColumnIndex(RemindMsg.REMIND_METHOD));
 			int remindState = mCursor.getInt(mCursor.getColumnIndex(RemindMsg.REMIND_STATE));
 			int launchState = mCursor.getInt(mCursor.getColumnIndex(RemindMsg.LAUNCH_STATE));
@@ -72,7 +73,7 @@ public class DataBaseParser {
 			RemindEntity entity = new RemindEntity(id, ownerNum, targetNum, 
 					targetName, targetNick, addTime, lastEditTime, title, 
 					content, limitTime, remindTime, audioPath, videoPath, 
-					imgPath, remindMethod, remindState, launchState, isDelete);
+					imgPath, remindMethod, remindState, launchState, isDelete, repeatType);
 			lists.add(entity);
 		}
 		return lists;

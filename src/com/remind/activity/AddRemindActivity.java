@@ -17,6 +17,9 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
+import android.widget.RadioGroup.OnCheckedChangeListener;
 import android.widget.TextView;
 
 import com.ab.activity.AbActivity;
@@ -102,6 +105,36 @@ public class AddRemindActivity extends AbActivity implements OnClickListener {
 	 * 是否是给自己的
 	 */
 	private boolean isForSelf = false;
+	
+	/**
+	 * 设置重复周期
+	 */
+	private RadioGroup repeatGroup;
+	/**
+	 * 只响一次
+	 */
+	private RadioButton repeatNoBtn;
+	/**
+	 * 每天重复
+	 */
+	private RadioButton repeatDayBtn;
+	/**
+	 * 每周重复
+	 */
+	private RadioButton repeatWeekBtn;
+	/**
+	 * 每月重复
+	 */
+	private RadioButton repeatMonthBtn;
+	/**
+	 * 每年重复
+	 */
+	private RadioButton repeatYearBtn;
+	
+	/**
+	 * 重复类型,默认为只响一次
+	 */
+	private String repeatType = RemindEntity.REPEAT_NO;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -129,6 +162,13 @@ public class AddRemindActivity extends AbActivity implements OnClickListener {
 		contentEidt = (EditText) findViewById(R.id.set_content_edit);
 		titleEidt = (EditText) findViewById(R.id.set_title_edit);
 
+		repeatGroup = (RadioGroup) findViewById(R.id.repeat_group);
+		repeatNoBtn = (RadioButton) findViewById(R.id.repeat_no_btn);
+		repeatDayBtn = (RadioButton) findViewById(R.id.repeat_day_btn);
+		repeatWeekBtn = (RadioButton) findViewById(R.id.repeat_week_btn);
+		repeatMonthBtn = (RadioButton) findViewById(R.id.repeat_month_btn);
+		repeatYearBtn = (RadioButton) findViewById(R.id.repeat_year_btn);
+		
 		mDateView = mInflater.inflate(R.layout.choose_three, null);
 		mTimeView = mInflater.inflate(R.layout.choose_two, null);
 
@@ -158,8 +198,44 @@ public class AddRemindActivity extends AbActivity implements OnClickListener {
 		selectPeopelBtn.setOnClickListener(this);
 		selectDateBtn.setOnClickListener(this);
 		selectTimeBtn.setOnClickListener(this);
+		repeatGroup.setOnCheckedChangeListener(repeatCheckListener);
 	}
 
+	/**
+	 * 监听重复周期改变
+	 */
+	private OnCheckedChangeListener repeatCheckListener = new OnCheckedChangeListener() {
+
+		@Override
+		public void onCheckedChanged(RadioGroup group, int checkedId) {
+			switch (checkedId) {
+			case R.id.repeat_no_btn:
+				// 只响一次
+				repeatType = RemindEntity.REPEAT_NO;
+				break;
+			case R.id.repeat_day_btn:
+				// 每天重复
+				repeatType = RemindEntity.REPEAT_DAY;
+				break;
+			case R.id.repeat_week_btn:
+				// 每周重复
+				repeatType = RemindEntity.REPEAT_WEEK;
+				break;
+			case R.id.repeat_month_btn:
+				// 每月重复
+				repeatType = RemindEntity.REPEAT_MONTH;
+				break;
+			case R.id.repeat_year_btn:
+				// 每年重复
+				repeatType = RemindEntity.REPEAT_YEAR;
+				break;
+
+			default:
+				break;
+			}
+		}
+	};
+	
 	@Override
 	public void onClick(View v) {
 		switch (v.getId()) {
@@ -205,18 +281,19 @@ public class AddRemindActivity extends AbActivity implements OnClickListener {
 							.getText().toString()
 							+ " "
 							+ selectTimeTxt.getText().toString(), titleEidt
-							.getText().toString());
+							.getText().toString(), repeatType);
 			
 			if (isForSelf) {
 				// 如果为自己，设置为已接受的提醒
 				remindEntity.setRemindState(RemindEntity.ACCEPT);
-				// TODO 测试为自己添加任务
-				AppUtil.setAlarm(this, remindEntity.getRemindTime());
 			} else {
 				// 如果为别人，设置为我发起的提醒
 				remindEntity.setRemindState(RemindEntity.LAUNCH);
 			}
 			long id = remindDao.insertRemind(remindEntity);
+			if (isForSelf)
+				// TODO 测试为自己添加任务
+				AppUtil.setAlarm(this, remindEntity.getRemindTime(), (int) id);
 
 			Intent intent = new Intent(AddRemindActivity.this, ChatActivity.class);
 			remindEntity.setId(id + "");

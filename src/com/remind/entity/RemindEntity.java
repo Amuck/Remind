@@ -62,6 +62,26 @@ public class RemindEntity implements Serializable{
 	 * 已删除状态
 	 */
 	public final static String DELETED = "1";
+	/**
+	 * 只响一次
+	 */
+	public final static String REPEAT_NO = "repeat_no";
+	/**
+	 * 每天重复
+	 */
+	public final static String REPEAT_DAY = "repeat_day";
+	/**
+	 * 每周重复
+	 */
+	public final static String REPEAT_WEEK = "repeat_week";
+	/**
+	 * 每月重复
+	 */
+	public final static String REPEAT_MONTH = "repeat_month";
+	/**
+	 * 每年重复
+	 */
+	public final static String REPEAT_YEAR = "repeat_year";
 	
 	/**
 	 * id
@@ -149,6 +169,15 @@ public class RemindEntity implements Serializable{
 	 */
 	private int launchState = RemindEntity.LAUNCH_WAIT;
 	/**
+	 * 重复模式：
+	 * 不重复：{@link #REPEAT_NO},
+	 * 每天重复：{@link #REPEAT_DAY},
+	 * 每周重复：{@link #REPEAT_WEEK},
+	 * 每月重复：{@link #REPEAT_MONTH},
+	 * 每年重复：{@link #REPEAT_YEAR},
+	 */
+	private String repeatType = RemindEntity.REPEAT_NO;
+	/**
 	 * 是否删除, {@link #NORMAL}：未删除；{@link #DELETED}：已删除
 	 * 默认为未删除:{@link #NORMAL}
 	 */
@@ -184,7 +213,7 @@ public class RemindEntity implements Serializable{
 	 */
 	public RemindEntity(String id,String ownerNum, String targetNum, String targetName,
 			String targetNick, String addTime, String lastEditTime,
-			String content, String limitTime, String remindTime, String title) {
+			String content, String limitTime, String remindTime, String title, String repeatType) {
 		super();
 		this.id = id;
 		this.ownerNum = ownerNum;
@@ -238,7 +267,7 @@ public class RemindEntity implements Serializable{
 			String lastEditTime, String title, String content,
 			String limitTime, String remindTime, String audioPath,
 			String videoPath, String imgPath, int remindMethod,
-			int remindState, int launchState, String isDelete) {
+			int remindState, int launchState, String isDelete, String repeatType) {
 		super();
 		this.id = id;
 		this.ownerNum = ownerNum;
@@ -344,30 +373,36 @@ public class RemindEntity implements Serializable{
 		return audioPath;
 	}
 
+	/**
+	 * 设置音频路径，同时不要忘了改变类型为音频
+	 * @param audioPath
+	 */
 	public void setAudioPath(String audioPath) {
 		this.audioPath = audioPath;
-		// 改变提醒为音频
-		remindMethod = RemindEntity.AUDIO_REMIND;
 	}
 
 	public String getVideoPath() {
 		return videoPath;
 	}
 
+	/**
+	 * 设置视频路径，同时不要忘了改变类型为视频
+	 * @param videoPath
+	 */
 	public void setVideoPath(String videoPath) {
 		this.videoPath = videoPath;
-		// 改变提醒为视频
-		remindMethod = RemindEntity.VIDEO_REMIND;
 	}
 
 	public String getImgPath() {
 		return imgPath;
 	}
 
+	/**
+	 * 设置图片路径，同时不要忘了改变类型为图片
+	 * @param imgPath
+	 */
 	public void setImgPath(String imgPath) {
 		this.imgPath = imgPath;
-		// 改变提醒为图像
-		remindMethod = RemindEntity.IMAGE_REMIND;
 	}
 
 	/**
@@ -376,6 +411,10 @@ public class RemindEntity implements Serializable{
 	 */
 	public int getRemindMethod() {
 		return remindMethod;
+	}
+
+	public void setRemindMethod(int remindMethod) {
+		this.remindMethod = remindMethod;
 	}
 
 	/**
@@ -408,6 +447,14 @@ public class RemindEntity implements Serializable{
 	 */
 	public void setLaunchState(int launchState) {
 		this.launchState = launchState;
+	}
+
+	public String getRepeatType() {
+		return repeatType;
+	}
+
+	public void setRepeatType(String repeatType) {
+		this.repeatType = repeatType;
 	}
 
 	/**

@@ -468,7 +468,7 @@ public class ContentFragment extends Fragment {
 				
 				@Override
 				public void onClick(View v) {
-					AppUtil.setAlarm(mContext, item.getRemindTime());
+					AppUtil.setAlarm(mContext, item.getRemindTime(), Integer.valueOf(item.getId()));
 				}
 			});
 		}

@@ -85,6 +85,16 @@ public class RemindMsg {
 	 * 默认为等待对方接受
 	 */
 	public static final String LAUNCH_STATE = "launchState";
+	
+	/**
+	 * 重复模式：
+	 * @see com.remind.entity.RemindEntity#REPEAT_NO 
+	 * @see com.remind.entity.RemindEntity#REPEAT_DAY
+	 * @see com.remind.entity.RemindEntity#REPEAT_WEEK
+	 * @see com.remind.entity.RemindEntity#REPEAT_MONTH
+	 * @see com.remind.entity.RemindEntity#REPEAT_YEAR
+	 */
+	public static final String REPEAT_TYPE = "repeatType";
 	/**
 	 * 是否删除, 0：未删除；1：已删除
 	 * 默认为未删除

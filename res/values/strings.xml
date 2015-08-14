@@ -34,6 +34,12 @@
     <string name="content">提醒  </string>
     <string name="title">标题  </string>
     <string name="select">选择</string>
+    <string name="repeat">重复  </string>
+    <string name="repeat_no">无  </string>
+    <string name="repeat_day">每天 </string>
+    <string name="repeat_week">每周 </string>
+    <string name="repeat_month">每月</string>
+    <string name="repeat_year">每年</string>
     
     <string name="remind_wait">等待对方接受</string>
     <string name="remind_refuse">对方已拒绝</string>
@@ -43,4 +49,9 @@
     <string name="info">信息</string>
     <string name="add_remind">添加提醒</string>
     <string name="send">发送</string>
+    
+    <string name="alert_start">已开始</string>
+    <string name="alert_ready">马上开始</string>
+    <string name="alert_later">10分钟后提醒</string>
+    <string name="alert_other">其他</string>
 </resources>
