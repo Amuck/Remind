@@ -33,7 +33,19 @@
             android:layout_height="wrap_content" />
     </FrameLayout>
 
-    <Button
+    <android.support.v4.view.ViewPager
+            android:id="@+id/start_pager"
+            android:layout_width="fill_parent"
+            android:layout_height="60dp" />
+    <android.support.v4.view.ViewPager
+            android:id="@+id/ready_pager"
+            android:layout_width="fill_parent"
+            android:layout_height="60dp" />
+    <android.support.v4.view.ViewPager
+            android:id="@+id/later_pager"
+            android:layout_width="fill_parent"
+            android:layout_height="60dp" />
+    <!-- <Button
         android:id="@+id/alert_start"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -64,7 +76,7 @@
         android:focusable="false"
         android:gravity="center"
         android:text="@string/alert_later"
-        android:textSize="14sp" />
+        android:textSize="14sp" /> -->
 
     <Button
         android:id="@+id/alert_other"

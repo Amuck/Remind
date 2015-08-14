@@ -1,11 +1,18 @@
 package com.remind.activity;
 
+import java.util.ArrayList;
+
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.os.PowerManager;
 import android.os.PowerManager.WakeLock;
+import android.support.v4.view.PagerAdapter;
+import android.support.v4.view.ViewPager;
+import android.support.v4.view.ViewPager.OnPageChangeListener;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.Window;
@@ -57,6 +64,12 @@ public class AlertActivity extends BaseActivity implements OnClickListener{
 	 */
 	private Button otherBtn;
 	
+	private ViewPager startPager;
+	private ViewPager readyPager;
+	private ViewPager laterPager;
+	private ArrayList<View> startViews;
+	private ArrayList<View> readyViews;
+	private ArrayList<View> laterViews;
 	/**
 	 * 提醒的id
 	 */
@@ -92,15 +105,52 @@ public class AlertActivity extends BaseActivity implements OnClickListener{
 		title = (TextView) findViewById(R.id.alert_title);
 		content = (TextView) findViewById(R.id.alert_content);
 		contentImg = (ImageView) findViewById(R.id.alert_img);
-		startBtn = (Button) findViewById(R.id.alert_start);
-		readyBtn = (Button) findViewById(R.id.alert_ready);
-		laterBtn = (Button) findViewById(R.id.alert_later);
+//		startBtn = (Button) findViewById(R.id.alert_start);
+//		readyBtn = (Button) findViewById(R.id.alert_ready);
+//		laterBtn = (Button) findViewById(R.id.alert_later);
+		startPager = (ViewPager) findViewById(R.id.start_pager);
+		readyPager = (ViewPager) findViewById(R.id.ready_pager);
+		laterPager = (ViewPager) findViewById(R.id.later_pager);
 		otherBtn = (Button) findViewById(R.id.alert_other);
 		
 		remindDao = new RemindDaoImpl(this);
 		getRemindData();
 		
 		otherBtn.setOnClickListener(this);
+		
+		initViewPager();
+	}
+	
+	private void initViewPager() {
+		LayoutInflater inflater = getLayoutInflater();
+		startViews = new ArrayList<View>();
+		startViews.add(inflater.inflate(R.layout.item05, null));
+		startViews.add(inflater.inflate(R.layout.item06, null));
+		startViews.add(inflater.inflate(R.layout.item01, null));
+		
+		startPager.setAdapter(new GuidePageAdapter(startViews));
+		startPager.setOnPageChangeListener(new GuidePageChangeListener());
+		startPager.setCurrentItem(1);
+		
+		readyViews = new ArrayList<View>();
+		readyViews.add(inflater.inflate(R.layout.item05, null));
+		readyViews.add(inflater.inflate(R.layout.item06, null));
+		readyViews.add(inflater.inflate(R.layout.item01, null));
+		Button button1 = (Button) readyViews.get(1).findViewById(R.id.pager_btn);
+		button1.setText(R.string.alert_ready);
+		readyPager.setAdapter(new GuidePageAdapter(readyViews));
+		readyPager.setOnPageChangeListener(new GuidePageChangeListener());
+		readyPager.setCurrentItem(1);
+		
+		laterViews = new ArrayList<View>();
+		laterViews.add(inflater.inflate(R.layout.item05, null));
+		laterViews.add(inflater.inflate(R.layout.item06, null));
+		laterViews.add(inflater.inflate(R.layout.item01, null));
+		Button button2 = (Button) laterViews.get(1).findViewById(R.id.pager_btn);
+		button2.setText(R.string.alert_later);
+		laterPager.setAdapter(new GuidePageAdapter(laterViews));
+		laterPager.setOnPageChangeListener(new GuidePageChangeListener());
+		laterPager.setCurrentItem(1);
 	}
 	
 	/**
@@ -176,4 +226,76 @@ public class AlertActivity extends BaseActivity implements OnClickListener{
 		}
 	}
 
+	// 指引页面数据适配器
+		class GuidePageAdapter extends PagerAdapter {
+			private ArrayList<View> pageViews;
+
+			public GuidePageAdapter(ArrayList<View> pageViews) {
+				super();
+				this.pageViews = pageViews;
+			}
+
+			@Override
+			public int getCount() {
+				return pageViews.size();
+			}
+
+			@Override
+			public boolean isViewFromObject(View arg0, Object arg1) {
+				return arg0 == arg1;
+			}
+
+			@Override
+			public int getItemPosition(Object object) {
+				return super.getItemPosition(object);
+			}
+
+			@Override
+			public void destroyItem(View arg0, int arg1, Object arg2) {
+				((ViewPager) arg0).removeView(pageViews.get(arg1));
+			}
+
+			@Override
+			public Object instantiateItem(View arg0, int arg1) {
+				((ViewPager) arg0).addView(pageViews.get(arg1));
+				return pageViews.get(arg1);
+			}
+
+			@Override
+			public void restoreState(Parcelable arg0, ClassLoader arg1) {
+
+			}
+
+			@Override
+			public Parcelable saveState() {
+				return null;
+			}
+
+			@Override
+			public void startUpdate(View arg0) {
+			}
+
+			@Override
+			public void finishUpdate(View arg0) {
+			}
+		}
+		
+		// 指引页面更改事件监听器
+		class GuidePageChangeListener implements OnPageChangeListener {
+
+			@Override
+			public void onPageScrollStateChanged(int arg0) {
+			}
+
+			@Override
+			public void onPageScrolled(int arg0, float arg1, int arg2) {
+			}
+
+			@Override
+			public void onPageSelected(int arg0) {
+				if (1 != arg0) {
+					finish();
+				}
+			}
+		}
 }

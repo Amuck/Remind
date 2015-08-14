@@ -570,7 +570,7 @@ public class ChatActivity extends BaseActivity implements OnClickListener, OnScr
 			}
 
 			if (btn_vocie) {
-				System.out.println("1");
+//				System.out.println("1");
 				int[] location = new int[2];
 				mBtnRcd.getLocationInWindow(location); // 获取在当前窗口内的绝对坐标
 				int btn_rc_Y = location[1];
@@ -584,10 +584,10 @@ public class ChatActivity extends BaseActivity implements OnClickListener, OnScr
 						Toast.makeText(this, "No SDCard", Toast.LENGTH_LONG).show();
 						return false;
 					}
-					System.out.println("2");
+//					System.out.println("2");
 					if (event.getY() > btn_rc_Y && event.getX() > btn_rc_X) {
 						//判断手势按下的位置是否是语音录制按钮的范围内
-						System.out.println("3");
+//						System.out.println("3");
 						mBtnRcd.setBackgroundResource(R.drawable.voice_rcd_btn_pressed);
 						rcChat_popup.setVisibility(View.VISIBLE);
 						voice_rcd_hint_loading.setVisibility(View.VISIBLE);
@@ -612,7 +612,7 @@ public class ChatActivity extends BaseActivity implements OnClickListener, OnScr
 					}
 				} else if (event.getAction() == MotionEvent.ACTION_UP && flag == 2) {
 					//松开手势时执行录制完成
-					System.out.println("4");
+//					System.out.println("4");
 					mBtnRcd.setBackgroundResource(R.drawable.voice_rcd_btn_nor);
 					if (event.getY() >= del_Y
 							&& event.getY() <= del_Y + del_re.getHeight()
@@ -664,7 +664,7 @@ public class ChatActivity extends BaseActivity implements OnClickListener, OnScr
 				}
 				if (event.getY() < btn_rc_Y) {
 					//手势按下的位置不在语音录制按钮的范围内
-					System.out.println("5");
+//					System.out.println("5");
 					Animation mLitteAnimation = AnimationUtils.loadAnimation(this,
 							R.anim.cancel_rc);
 					Animation mBigAnimation = AnimationUtils.loadAnimation(this,

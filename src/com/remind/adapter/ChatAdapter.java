@@ -190,6 +190,7 @@ public class ChatAdapter extends BaseAdapter {
 	 * 根据消息类型的不同改变显示
 	 */
 	private void changeMsgType(String type, final ViewHolder viewHolder, MessageEntity chatMessage) {
+		viewHolder.content.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
 		if (MessageEntity.TYPE_TEXT.equals(type)) {
 			// 正常文字消息
 			viewHolder.content.setText(chatMessage.getContent());
