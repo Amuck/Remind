@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -547,5 +548,39 @@ public class AppUtil {
 	 */
 	public static String getUserName() {
 		return "自己";
+	}
+	
+	/**
+	 * 如果服务器不支持中文路径的情况下需要转换url的编码。
+	 * 
+	 * @param string
+	 * @return
+	 */
+	public static String encodeGB(String string) {
+		// 转换中文编码
+		if (string.contains("/")) {
+			String split[] = string.split("/");
+			for (int i = 1; i < split.length; i++) {
+				try {
+					split[i] = URLEncoder.encode(split[i], "UTF-8");
+				} catch (UnsupportedEncodingException e) {
+					e.printStackTrace();
+				}
+				split[0] = split[0] + "/" + split[i];
+			}
+			split[0] = split[0].replaceAll("\\+", "%20");// 处理空格
+			split[0] = split[0].replaceAll("\\{", "%7B");
+			split[0] = split[0].replaceAll("\\}", "%7D");
+			split[0] = split[0].replaceAll("%3A", "\\:");
+			return split[0];
+		} else {
+			try {
+				return URLEncoder.encode(string, "UTF-8");
+			} catch (UnsupportedEncodingException e) {
+				e.printStackTrace();
+				return string;
+			}
+		}
+		
 	}
 }
