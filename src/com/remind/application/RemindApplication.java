@@ -31,49 +31,109 @@ public class RemindApplication extends Application {
 	 */
 	public static int WEATHER_FINE = R.drawable.sun;
 	/**
-	 * 多云,暂无
+	 * 晴,夜间
+	 */
+	public static int WEATHER_FINE_NIGHT = R.drawable.sun_night;
+	/**
+	 * 多云
 	 */
 	public static int WEATHER_CLOUD = R.drawable.cloud;
+	/**
+	 * 多云,夜间
+	 */
+	public static int WEATHER_CLOUD_NIGHT = R.drawable.cloud_night;
 	/**
 	 * 雾霾,暂无
 	 */
 	public static int WEATHER_HAZE = R.drawable.sun;
 	/**
-	 * 雾,暂无
+	 * 雾
 	 */
-	public static int WEATHER_FOG = R.drawable.sun;
+	public static int WEATHER_FOG = R.drawable.fog;
 	/**
-	 * 大雨,暂无
+	 * 暴雨
 	 */
-	public static int WEATHER_DAYU = R.drawable.rain;
+	public static int WEATHER_BAOYU = R.drawable.rain_bao;
 	/**
-	 * 中雨,暂无
+	 * 大暴雨
 	 */
-	public static int WEATHER_ZHONGYU = R.drawable.rain;
+	public static int WEATHER_DABAOYU = R.drawable.rain_da_bao;
+	/**
+	 * 特大暴雨
+	 */
+	public static int WEATHER_TEDABAO = R.drawable.rain_te_da;
+	/**
+	 * 大雨
+	 */
+	public static int WEATHER_DAYU = R.drawable.rain_da;
+	/**
+	 * 中雨
+	 */
+	public static int WEATHER_ZHONGYU = R.drawable.rain_zhong;
 	/**
 	 * 小雨
 	 */
-	public static int WEATHER_XIAOYU = R.drawable.rain;
+	public static int WEATHER_XIAOYU = R.drawable.rain_xiao;
 	/**
-	 * 阵雨,暂无
+	 * 阵雨
 	 */
-	public static int WEATHER_ZHENYU = R.drawable.sun;
+	public static int WEATHER_ZHENYU = R.drawable.zhen_yu;
 	/**
 	 * 雷阵雨
 	 */
 	public static int WEATHER_LEIZHENYU = R.drawable.lei_zhen_yu;
 	/**
-	 * 雨夹雪,暂无
+	 * 雨夹雪
 	 */
-	public static int WEATHER_YUJIAXUE = R.drawable.sun;
+	public static int WEATHER_YUJIAXUE = R.drawable.rain_and_snow;
 	/**
-	 * 雪
+	 * 阵雪
 	 */
-	public static int WEATHER_SNOW = R.drawable.snow;
+	public static int WEATHER_ZHENXUE = R.drawable.snow_zhen;
+	/**
+	 * 小雪
+	 */
+	public static int WEATHER_SNOW = R.drawable.snow_xiao;
+	/**
+	 * 中雪
+	 */
+	public static int WEATHER_ZHONGXUE = R.drawable.snow_zhong;
+	/**
+	 * 大雪
+	 */
+	public static int WEATHER_DAXUE = R.drawable.snow_da;
+	/**
+	 * 暴雪
+	 */
+	public static int WEATHER_BAOXUE = R.drawable.snow_bao;
 	/**
 	 * 阴
 	 */
-	public static int WEATHER_YIN = R.drawable.cloud;
+	public static int WEATHER_YIN = R.drawable.yin;
+	/**
+	 * 冻雨
+	 */
+	public static int WEATHER_DONGYU = R.drawable.rain_freeze;
+	/**
+	 * 浮尘
+	 */
+	public static int WEATHER_FUCHEN = R.drawable.fu_chen;
+	/**
+	 * 沙尘暴
+	 */
+	public static int WEATHER_SHACHENBAO = R.drawable.sha_chen_bao;
+	/**
+	 * 强沙尘暴
+	 */
+	public static int WEATHER_SHACHENBAO_QIANG = R.drawable.sha_chen_bao_qiang;
+	/**
+	 * 扬沙
+	 */
+	public static int WEATHER_YANGSHA = R.drawable.yang_sha;
+	/**
+	 * 冰雹
+	 */
+	public static int WEATHER_BINGBAO = R.drawable.bing_bao;
 	
 	public LocationClient mLocationClient;
 	public MyLocationListener mMyLocationListener;
@@ -481,17 +541,24 @@ public class RemindApplication extends Application {
 			} else if (weather.equals("阴") ||
 					   weather.equals("Overcast")) {
 				mWeatherIconFlg = WEATHER_YIN;
+			} else if (weather.equals("冻雨")) {
+				mWeatherIconFlg = WEATHER_DONGYU;
 			} else if (weather.equals("雪") || 
-					   weather.equals("小雪") || 
-					   weather.equals("中雪") ||
-					   weather.equals("大雪") ||
-					   weather.equals("暴雪") ||
+					   weather.equals("小雪") ||
 					   weather.equals("Light snow") ||
 					   weather.equals("Snow")) {
 				mWeatherIconFlg = WEATHER_SNOW;
+			} else if (weather.equals("中雪")) {
+				mWeatherIconFlg = WEATHER_ZHONGXUE;
+			} else if (weather.equals("大雪")) {
+				mWeatherIconFlg = WEATHER_DAXUE;
+			} else if (weather.equals("暴雪")) {
+				mWeatherIconFlg = WEATHER_BAOXUE;
 			} else if (weather.equals("雨夹雪") || 
 					   weather.equals("Sleet")) {
 				mWeatherIconFlg = WEATHER_YUJIAXUE;
+			} else if (weather.equals("阵雪")) {
+				mWeatherIconFlg = WEATHER_ZHENXUE;
 			} else if (weather.equals("雷阵雨") || 
 					   weather.equals("Thunderstorm")) {
 				mWeatherIconFlg = WEATHER_LEIZHENYU;
@@ -508,20 +575,46 @@ public class RemindApplication extends Application {
 			} else if (weather.equals("中雨") || 
 					   weather.equals("雨") || 
 					   weather.equals("小到中雨") ||
+					   weather.equals("小雨转中雨") ||
 					   weather.equals("Rain") ||
 					   weather.equals("Moderate rain")) {
 				mWeatherIconFlg = WEATHER_ZHONGYU;
 			} else if (weather.equals("大雨") ||
 					   weather.equals("中到大雨") ||
+					   weather.equals("中雨转大雨") ||
 					   weather.equals("Pour")) {
 				mWeatherIconFlg = WEATHER_DAYU;
 			} else if (weather.equals("暴雨") || 
 					   weather.equals("大到暴雨") || 
+					   weather.equals("大雨转暴雨") || 
 					   weather.equals("Rainstorm")) {
-				mWeatherIconFlg = WEATHER_DAYU;
+				mWeatherIconFlg = WEATHER_BAOYU;
+			} else if (weather.equals("大暴雨") || 
+					   weather.equals("暴雨到大暴雨") || 
+					   weather.equals("暴雨转大暴雨") || 
+					   weather.equals("Rainstorm")) {
+				mWeatherIconFlg = WEATHER_DABAOYU;
+			} else if (weather.equals("特大暴雨") || 
+					   weather.equals("大暴雨到特大暴雨") || 
+					   weather.equals("大暴雨转特大暴雨") || 
+					   weather.equals("Rainstorm")) {
+				mWeatherIconFlg = WEATHER_TEDABAO;
 			} else if (weather.equals("雾") || 
 					   weather.equals("Fog")) {
 				mWeatherIconFlg = WEATHER_FOG;
+			} else if (weather.equals("浮尘")) {
+				mWeatherIconFlg = WEATHER_FUCHEN;
+			} else if (weather.equals("沙尘暴")) {
+				mWeatherIconFlg = WEATHER_SHACHENBAO;
+			} else if (weather.equals("强沙尘暴")) {
+				mWeatherIconFlg = WEATHER_SHACHENBAO_QIANG;
+			} else if (weather.equals("扬沙")) {
+				mWeatherIconFlg = WEATHER_YANGSHA;
+			} else if (weather.contains("雹") || 
+					   weather.equals("冰雹") || 
+					   weather.equals("雨加冰雹") || 
+					   weather.equals("雷阵雨伴有冰雹")) {
+				mWeatherIconFlg = WEATHER_BINGBAO;
 			} else {
 				mWeatherIconFlg = WEATHER_FINE;
 			}
