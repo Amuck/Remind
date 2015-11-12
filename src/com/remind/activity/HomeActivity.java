@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
@@ -102,7 +103,6 @@ public class HomeActivity extends BaseActivity implements OnClickListener {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.activity_home);
 
 		createFile();
@@ -253,6 +253,8 @@ public class HomeActivity extends BaseActivity implements OnClickListener {
 
 			break;
 		case R.id.more_btn:
+			// 添加提醒
+			startActivity(new Intent(HomeActivity.this, AddRemindActivity.class));
 			break;
 		default:
 			break;

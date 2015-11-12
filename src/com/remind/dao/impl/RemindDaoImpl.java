@@ -34,7 +34,7 @@ public class RemindDaoImpl implements RemindDao {
 		values.put(RemindMsg.TARGET_NAME, entity.getTargetName());
 		values.put(RemindMsg.NICK_NAME, entity.getNickName());
 		values.put(RemindMsg.ADD_TIME, entity.getAddTime());
-		values.put(RemindMsg.LAST_EDIT_TIME, entity.getLastEditTime());
+		values.put(RemindMsg.REMIND_TIME_MILI, entity.getLastEditTime());
 		values.put(RemindMsg.TITLE, entity.getTitle());
 		values.put(RemindMsg.CONTENT, entity.getContent());
 		values.put(RemindMsg.LIMIT_TIME, entity.getLimitTime());
@@ -51,6 +51,8 @@ public class RemindDaoImpl implements RemindDao {
 		values.put(RemindMsg.LAUNCH_STATE, entity.getLaunchState());
 		values.put(RemindMsg.IS_DELETE, entity.getIsDelete());
 		
+		values.put(RemindMsg.IS_PRIVIEW, entity.getIsPreview());
+		values.put(RemindMsg.REMIND_COUNT, entity.getRemindCount());
 //		values.put(RemindMsg.Z1, entity.getZ1());
 //		values.put(RemindMsg.Z2, entity.getZ2());
 //		values.put(RemindMsg.Z3, entity.getZ3());
@@ -74,7 +76,7 @@ public class RemindDaoImpl implements RemindDao {
 			values.put(RemindMsg.TARGET_NAME, entity.getTargetName());
 			values.put(RemindMsg.NICK_NAME, entity.getNickName());
 			values.put(RemindMsg.ADD_TIME, entity.getAddTime());
-			values.put(RemindMsg.LAST_EDIT_TIME, entity.getLastEditTime());
+			values.put(RemindMsg.REMIND_TIME_MILI, entity.getLastEditTime());
 			values.put(RemindMsg.CONTENT, entity.getContent());
 			values.put(RemindMsg.TITLE, entity.getTitle());
 			values.put(RemindMsg.LIMIT_TIME, entity.getLimitTime());
@@ -90,6 +92,9 @@ public class RemindDaoImpl implements RemindDao {
 			
 			values.put(RemindMsg.LAUNCH_STATE, entity.getLaunchState());
 			values.put(RemindMsg.IS_DELETE, entity.getIsDelete());
+			
+			values.put(RemindMsg.IS_PRIVIEW, entity.getIsPreview());
+			values.put(RemindMsg.REMIND_COUNT, entity.getRemindCount());
 			
 //			values.put(RemindMsg.Z1, entity.getZ1());
 //			values.put(RemindMsg.Z2, entity.getZ2());
@@ -125,7 +130,7 @@ public class RemindDaoImpl implements RemindDao {
 		sb.append(RemindMsg.TARGET_NAME + "	= '" + entity.getTargetName() + "',");
 		sb.append(RemindMsg.NICK_NAME + "	= '" + entity.getNickName() + "',");
 		sb.append(RemindMsg.ADD_TIME + "	= '" + entity.getAddTime() + "',");
-		sb.append(RemindMsg.LAST_EDIT_TIME + "	= '" + entity.getLastEditTime() + "',");
+		sb.append(RemindMsg.REMIND_TIME_MILI + "	= '" + entity.getLastEditTime() + "',");
 		sb.append(RemindMsg.CONTENT + "	= '" + entity.getContent() + "',");
 		sb.append(RemindMsg.TITLE + "	= '" + entity.getTitle() + "',");
 		
@@ -140,7 +145,11 @@ public class RemindDaoImpl implements RemindDao {
 		
 		sb.append(RemindMsg.REPEAT_TYPE + "	= '" + entity.getRepeatType() + "',");
 		
+		sb.append(RemindMsg.IS_PRIVIEW + "	= '" + entity.getIsPreview() + "',");
+		sb.append(RemindMsg.REMIND_COUNT + "	= '" + entity.getRemindCount() + "',");
+		
 		sb.append(RemindMsg.IS_DELETE + "	= '" + entity.getIsDelete() + "' ");
+		
 		
 		sb.append(" where " + RemindMsg.ID + " = '" + entity.getId() + "'");
 		String sql = sb.toString();
@@ -171,7 +180,7 @@ public class RemindDaoImpl implements RemindDao {
 	public Cursor queryRemind() {
 		SQLiteDatabase db = mDBHelper.getWritableDatabase();
 		String sql = "select * from " + RemindMsg.TABLENAME + " where "
-				+ RemindMsg.IS_DELETE + " = 0 order by " + RemindMsg.LAST_EDIT_TIME;
+				+ RemindMsg.IS_DELETE + " = 0 order by " + RemindMsg.REMIND_TIME_MILI;
 		Cursor mCursor = null;
 		mCursor = db.rawQuery(sql, null);
 		return mCursor;

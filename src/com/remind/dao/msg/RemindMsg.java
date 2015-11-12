@@ -30,9 +30,9 @@ public class RemindMsg {
 	 */
 	public static final String ADD_TIME = "addTime";
 	/**
-	 * 最后编辑时间
+	 * 提醒时间毫秒数
 	 */
-	public static final String LAST_EDIT_TIME = "lastEditTime";
+	public static final String REMIND_TIME_MILI = "remind_time_mili";
 	/**
 	 * 提醒标题
 	 */
@@ -100,6 +100,15 @@ public class RemindMsg {
 	 * 默认为未删除
 	 */
 	public static final String IS_DELETE = "isDelete";
+	
+	/**
+	 * 是否可以预览，0：不可以；1可以，默认0.
+	 */
+	public static final String IS_PRIVIEW = "isPreview";
+	/**
+	 * 提醒的次数，每次响铃次数加一
+	 */
+	public static final String REMIND_COUNT = "remindCount";
 	/**
 	 * 预留字段
 	 */

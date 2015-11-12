@@ -155,7 +155,6 @@ public class ChatActivity extends BaseActivity implements OnClickListener, OnScr
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.activity_chat);
 		// 启动activity时不自动弹出软键盘
 		getWindow().setSoftInputMode(

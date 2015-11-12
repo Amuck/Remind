@@ -1,0 +1,227 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:imagecontrol="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/img_frame_background"
+    android:descendantFocusability="blocksDescendants"
+    android:orientation="vertical" >
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" >
+            <FrameLayout
+        android:layout_width="280dp"
+        android:layout_height="330dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="16dp" >
+
+        <ImageView
+            android:id="@+id/alert_img"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:src="@drawable/remind_back" />
+
+        <ImageView
+            android:id="@+id/alert_bord_img"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:src="@drawable/remind_back_bord" />
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="54dp"
+            android:layout_marginLeft="12dp"
+            android:layout_marginTop="30dp"
+            android:padding="0dp" >
+
+            <com.remind.view.RoleDetailImageView
+                android:id="@+id/remind_img"
+                android:layout_width="54dp"
+                android:layout_height="54dp"
+                android:layout_alignParentLeft="true"
+                android:padding="0dp"
+                android:src="@drawable/role_1"
+                imagecontrol:border_inside_color="#ff0000"
+                imagecontrol:border_thickness="1dp" />
+
+            <LinearLayout
+                android:id="@+id/top_panel"
+                android:layout_width="match_parent"
+                android:layout_height="24dp"
+                android:layout_alignParentTop="true"
+                android:layout_marginLeft="20dp"
+                android:layout_toRightOf="@+id/remind_img"
+                android:orientation="horizontal" >
+
+                <TextView
+                    android:id="@+id/remind_name_txt"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="left|center_vertical"
+                    android:text="小王"
+                    android:textColor="@android:color/white"
+                    android:textSize="20sp" />
+
+                <TextView
+                    android:id="@+id/remind_time_txt"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="20dp"
+                    android:gravity="left|center_vertical"
+                    android:text="10:20"
+                    android:textColor="@android:color/white"
+                    android:textSize="16sp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="24dp"
+                android:layout_below="@+id/top_panel"
+                android:layout_marginLeft="20dp"
+                android:layout_toRightOf="@+id/remind_img"
+                android:orientation="horizontal" >
+
+                <TextView
+                    android:id="@+id/remind_title_txt"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="left|center_vertical"
+                    android:text="聚会"
+                    android:textColor="@android:color/white"
+                    android:textSize="16sp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="left|center_vertical"
+                    android:text=":"
+                    android:textColor="@android:color/white"
+                    android:textSize="16sp" />
+
+                <TextView
+                    android:id="@+id/remind_content_txt"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="left|center_vertical"
+                    android:text="下班一起去吃饭吧"
+                    android:textColor="@android:color/white"
+                    android:textSize="16sp" />
+            </LinearLayout>
+        </RelativeLayout>
+    </FrameLayout>
+
+    <LinearLayout
+        android:id="@+id/alert_panel"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:orientation="vertical" >
+
+        <TextView
+            android:id="@+id/start"
+            android:layout_width="203dp"
+            android:layout_height="43dp"
+            android:layout_gravity="center_horizontal"
+            android:background="@drawable/item_back"
+            android:gravity="center"
+            android:text="@string/alert_start"
+            android:textColor="@color/white"
+            android:textSize="12sp" />
+
+        <TextView
+            android:id="@+id/already"
+            android:layout_width="203dp"
+            android:layout_height="43dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="16dp"
+            android:background="@drawable/item_back"
+            android:gravity="center"
+            android:text="@string/alert_ready"
+            android:textColor="@color/white"
+            android:textSize="12sp" />
+
+        <TextView
+            android:id="@+id/later"
+            android:layout_width="203dp"
+            android:layout_height="43dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="16dp"
+            android:background="@drawable/item_back"
+            android:gravity="center"
+            android:text="@string/alert_later"
+            android:textColor="@color/white"
+            android:textSize="12sp" />
+
+        <TextView
+            android:id="@+id/other"
+            android:layout_width="103dp"
+            android:layout_height="43dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="16dp"
+            android:background="@drawable/item_back"
+            android:gravity="center"
+            android:padding="0dp"
+            android:text="@string/alert_other"
+            android:textColor="@color/white"
+            android:textSize="12sp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/other_panel"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:orientation="horizontal"
+        android:visibility="gone"
+        android:weightSum="2" >
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center_horizontal"
+            android:orientation="vertical" >
+
+            <TextView
+                android:id="@+id/delete"
+                android:layout_width="73dp"
+                android:layout_height="43dp"
+                android:background="@drawable/item_back"
+                android:gravity="center"
+                android:padding="0dp"
+                android:text="@string/alert_delete"
+                android:textColor="@color/white"
+                android:textSize="12sp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center_horizontal"
+            android:orientation="vertical" >
+
+            <TextView
+                android:id="@+id/close"
+                android:layout_width="73dp"
+                android:layout_height="43dp"
+                android:padding="0dp"
+                android:background="@drawable/item_back"
+                android:gravity="center"
+                android:text="@string/alert_close"
+                android:textColor="@color/white"
+                android:textSize="12sp" />
+        </LinearLayout>
+    </LinearLayout>
+        </LinearLayout>
+    </ScrollView>
+
+    
+
+</LinearLayout>

@@ -56,7 +56,7 @@ public class DataBaseParser {
 			String targetName = mCursor.getString(mCursor.getColumnIndex(RemindMsg.TARGET_NAME));
 			String targetNick = mCursor.getString(mCursor.getColumnIndex(RemindMsg.NICK_NAME));
 			String addTime = mCursor.getString(mCursor.getColumnIndex(RemindMsg.ADD_TIME));
-			String lastEditTime = mCursor.getString(mCursor.getColumnIndex(RemindMsg.LAST_EDIT_TIME));
+			String lastEditTime = mCursor.getString(mCursor.getColumnIndex(RemindMsg.REMIND_TIME_MILI));
 			String content = mCursor.getString(mCursor.getColumnIndex(RemindMsg.CONTENT));
 			String limitTime = mCursor.getString(mCursor.getColumnIndex(RemindMsg.LIMIT_TIME));
 			String remindTime = mCursor.getString(mCursor.getColumnIndex(RemindMsg.REMIND_TIME));
@@ -69,11 +69,14 @@ public class DataBaseParser {
 			int remindMethod = mCursor.getInt(mCursor.getColumnIndex(RemindMsg.REMIND_METHOD));
 			int remindState = mCursor.getInt(mCursor.getColumnIndex(RemindMsg.REMIND_STATE));
 			int launchState = mCursor.getInt(mCursor.getColumnIndex(RemindMsg.LAUNCH_STATE));
+			int isPreview = mCursor.getInt(mCursor.getColumnIndex(RemindMsg.IS_PRIVIEW));
+			int remindCount = mCursor.getInt(mCursor.getColumnIndex(RemindMsg.REMIND_COUNT));
 			
 			RemindEntity entity = new RemindEntity(id, ownerNum, targetNum, 
 					targetName, targetNick, addTime, lastEditTime, title, 
 					content, limitTime, remindTime, audioPath, videoPath, 
-					imgPath, remindMethod, remindState, launchState, isDelete, repeatType);
+					imgPath, remindMethod, remindState, launchState, isDelete, repeatType,
+					isPreview, remindCount);
 			lists.add(entity);
 		}
 		return lists;

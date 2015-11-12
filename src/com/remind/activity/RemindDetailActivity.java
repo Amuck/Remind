@@ -118,7 +118,6 @@ public class RemindDetailActivity extends AbActivity implements OnClickListener 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		// requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setAbContentView(R.layout.activity_add_remind);
 		setNotitle();
 		peopelDao = new PeopelDaoImpl(this);
@@ -138,8 +137,8 @@ public class RemindDetailActivity extends AbActivity implements OnClickListener 
 		selectDateTxt = (TextView) findViewById(R.id.select_date_text);
 		selectTimeTxt = (TextView) findViewById(R.id.select_time_text);
 
-		contentEidt = (EditText) findViewById(R.id.set_content_edit);
-		titleEidt = (EditText) findViewById(R.id.set_title_edit);
+//		contentEidt = (EditText) findViewById(R.id.set_content_edit);
+//		titleEidt = (EditText) findViewById(R.id.set_title_edit);
 
 		mDateView = mInflater.inflate(R.layout.choose_three, null);
 		mTimeView = mInflater.inflate(R.layout.choose_two, null);

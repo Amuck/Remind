@@ -63,6 +63,14 @@ public class RemindEntity implements Serializable{
 	 */
 	public final static String DELETED = "1";
 	/**
+	 * 不能预览
+	 */
+	public final static int NOT_PREV = 0;
+	/**
+	 * 可以预览
+	 */
+	public final static int CAN_PREV = 1;
+	/**
 	 * 只响一次
 	 */
 	public final static String REPEAT_NO = "repeat_no";
@@ -110,9 +118,9 @@ public class RemindEntity implements Serializable{
 	 */
 	private String addTime;
 	/**
-	 * 最后编辑时间
+	 * 提醒时间毫秒数
 	 */
-	private String lastEditTime;
+	private String remindTimeMiLi;
 	/**
 	 * 提醒标题
 	 */
@@ -183,6 +191,15 @@ public class RemindEntity implements Serializable{
 	 */
 	private String isDelete = RemindEntity.NORMAL;
 	/**
+	 * 是否可以预览，{@link #NOT_PREV}：不能预览；{@link #CAN_PREV}：能预览
+	 * 默认为不能预览:{@link #NOT_PREV}
+	 */
+	private int isPreview = NOT_PREV;
+	/**
+	 * 提醒过的次数
+	 */
+	private int remindCount = 0;
+	/**
 	 * 预留字段
 	 */
 	private String z1;
@@ -205,15 +222,17 @@ public class RemindEntity implements Serializable{
 	 * @param targetName	对方联系人名称
 	 * @param targetNick	对方昵称
 	 * @param addTime		添加时间
-	 * @param lastEditTime	最后编辑时间
+	 * @param remindTimeMiLi	提醒时间毫秒数
 	 * @param content		提醒内容
 	 * @param limitTime		任务时限
 	 * @param remindTime	提醒时间
 	 * @param title			提醒标题
+	 * @param repeatType	重复模式
+	 * @param isPreview		是否可以预览
 	 */
 	public RemindEntity(String id,String ownerNum, String targetNum, String targetName,
-			String targetNick, String addTime, String lastEditTime,
-			String content, String limitTime, String remindTime, String title, String repeatType) {
+			String targetNick, String addTime, String remindTimeMiLi,
+			String content, String limitTime, String remindTime, String title, String repeatType, int isPreview) {
 		super();
 		this.id = id;
 		this.ownerNum = ownerNum;
@@ -221,14 +240,14 @@ public class RemindEntity implements Serializable{
 		this.targetName = targetName;
 		this.nickName = targetNick;
 		this.addTime = addTime;
-		this.lastEditTime = lastEditTime;
+		this.remindTimeMiLi = remindTimeMiLi;
 		this.content = content;
 		this.limitTime = limitTime;
 		this.remindTime = remindTime;
 		this.title = title;
+		this.repeatType = repeatType;
+		this.isPreview = isPreview;
 	}
-	
-	
 
 	/**
 	 * @param id
@@ -237,7 +256,7 @@ public class RemindEntity implements Serializable{
 	 * @param targetName	对方联系人名称
 	 * @param targetNick	对方昵称
 	 * @param addTime		添加时间
-	 * @param lastEditTime	最后编辑时间
+	 * @param remindTimeMiLi	提醒时间毫秒数
 	 * @param content		提醒内容
 	 * @param limitTime		任务时限
 	 * @param remindTime	提醒时间
@@ -261,13 +280,21 @@ public class RemindEntity implements Serializable{
 	 * 							默认为等待对方接受{@link #LAUNCH_WAIT}
 	 * @param isDelete		是否删除, {@link #NORMAL}：未删除；{@link #DELETED}：已删除
 	 * 							默认为未删除:{@link #NORMAL}
+	 * @param repeatType	重复模式： 不重复：{@link #REPEAT_NO},
+	 * 								每天重复：{@link #REPEAT_DAY},
+	 * 								每周重复：{@link #REPEAT_WEEK},
+	 * 								每月重复：{@link #REPEAT_MONTH},
+	 * 								每年重复：{@link #REPEAT_YEAR},
+	 * @param isPreview		是否可以预览,{@link #NOT_PREV}：不能预览；{@link #CAN_PREV}：能预览
+	 * 								默认为不能预览:{@link #NOT_PREV}
+	 * @param remindCount	提醒过的次数
 	 */
 	public RemindEntity(String id, String ownerNum, String targetNum,
 			String targetName, String nickName, String addTime,
-			String lastEditTime, String title, String content,
+			String remindTimeMiLi, String title, String content,
 			String limitTime, String remindTime, String audioPath,
 			String videoPath, String imgPath, int remindMethod,
-			int remindState, int launchState, String isDelete, String repeatType) {
+			int remindState, int launchState, String isDelete, String repeatType, int isPreview, int remindCount) {
 		super();
 		this.id = id;
 		this.ownerNum = ownerNum;
@@ -275,7 +302,7 @@ public class RemindEntity implements Serializable{
 		this.targetName = targetName;
 		this.nickName = nickName;
 		this.addTime = addTime;
-		this.lastEditTime = lastEditTime;
+		this.remindTimeMiLi = remindTimeMiLi;
 		this.title = title;
 		this.content = content;
 		this.limitTime = limitTime;
@@ -287,6 +314,9 @@ public class RemindEntity implements Serializable{
 		this.remindState = remindState;
 		this.launchState = launchState;
 		this.isDelete = isDelete;
+		this.repeatType = repeatType;
+		this.isPreview = isPreview;
+		this.remindCount = remindCount;
 	}
 
 	public String getId() {
@@ -338,11 +368,11 @@ public class RemindEntity implements Serializable{
 	}
 
 	public String getLastEditTime() {
-		return lastEditTime;
+		return remindTimeMiLi;
 	}
 
 	public void setLastEditTime(String lastEditTime) {
-		this.lastEditTime = lastEditTime;
+		this.remindTimeMiLi = lastEditTime;
 	}
 
 	public String getContent() {
@@ -479,6 +509,38 @@ public class RemindEntity implements Serializable{
 
 	public void setTitle(String title) {
 		this.title = title;
+	}
+
+	/**
+	 * @return		是否可以预览，{@link #NOT_PREV}：不能预览；{@link #CAN_PREV}：能预览
+	 * 默认为不能预览:{@link #NOT_PREV}
+	 */
+	public int getIsPreview() {
+		return isPreview;
+	}
+
+	/**
+	 * 是否可以预览，{@link #NOT_PREV}：不能预览；{@link #CAN_PREV}：能预览
+	 * 默认为不能预览:{@link #NOT_PREV}
+	 * @param isPreview
+	 */
+	public void setIsPreview(int isPreview) {
+		this.isPreview = isPreview;
+	}
+
+	/**
+	 * @return		提醒过的次数
+	 */
+	public int getRemindCount() {
+		return remindCount;
+	}
+
+	/**
+	 * 提醒过的次数
+	 * @param remindCount
+	 */
+	public void setRemindCount(int remindCount) {
+		this.remindCount = remindCount;
 	}
 
 	public String getZ1() {

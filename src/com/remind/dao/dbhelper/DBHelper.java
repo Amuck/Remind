@@ -112,7 +112,7 @@ public class DBHelper extends SQLiteOpenHelper {
 		remindSql.append(" text,");
 		remindSql.append(RemindMsg.ADD_TIME);
 		remindSql.append(" varchar(30),");
-		remindSql.append(RemindMsg.LAST_EDIT_TIME);
+		remindSql.append(RemindMsg.REMIND_TIME_MILI);
 		remindSql.append(" varchar(30),");
 		remindSql.append(RemindMsg.LIMIT_TIME);
 		remindSql.append(" varchar(30),");
@@ -126,6 +126,11 @@ public class DBHelper extends SQLiteOpenHelper {
 		remindSql.append(RemindMsg.LAUNCH_STATE);
 		remindSql.append(" varchar(2),");
 		remindSql.append(RemindMsg.IS_DELETE);
+		remindSql.append(" varchar(2),");
+		
+		remindSql.append(RemindMsg.IS_PRIVIEW);
+		remindSql.append(" varchar(2),");
+		remindSql.append(RemindMsg.REMIND_COUNT);
 		remindSql.append(" varchar(2),");
 		
 		remindSql.append(RemindMsg.Z1);

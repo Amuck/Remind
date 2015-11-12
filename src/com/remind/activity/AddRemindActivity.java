@@ -1,7 +1,10 @@
 package com.remind.activity;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import android.app.AlertDialog;
@@ -19,8 +22,8 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
-import android.widget.RadioGroup.OnCheckedChangeListener;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.ab.activity.AbActivity;
 import com.ab.global.AbConstant;
@@ -37,21 +40,39 @@ import com.remind.entity.PeopelEntity;
 import com.remind.entity.RemindEntity;
 import com.remind.util.AppUtil;
 import com.remind.util.DataBaseParser;
+import com.remind.view.SwitchButton;
+import com.remind.view.SwitchButton.OnSwitchListener;
 
 public class AddRemindActivity extends AbActivity implements OnClickListener {
 
 	/**
 	 * 选择联系人按钮
 	 */
-	private Button selectPeopelBtn;
+	private TextView selectPeopelBtn;
 	/**
 	 * 选择日期按钮
 	 */
-	private Button selectDateBtn;
+	private TextView selectDateBtn;
 	/**
 	 * 选择时间按钮
 	 */
-	private Button selectTimeBtn;
+	private TextView selectTimeBtn;
+	/**
+	 * 选择主题按钮
+	 */
+	private TextView selectTitleBtn;
+	/**
+	 * 选择形式按钮
+	 */
+	private TextView selectTypeBtn;
+	/**
+	 * 选择是否预览按钮
+	 */
+	private SwitchButton switchButton;
+	/**
+	 * 是否预览
+	 */
+	private int isPreview = RemindEntity.NOT_PREV;
 	/**
 	 * 确定按钮
 	 */
@@ -63,15 +84,19 @@ public class AddRemindActivity extends AbActivity implements OnClickListener {
 	/**
 	 * 选择联系人姓名
 	 */
-	private TextView selectPeopelTxt;
+//	private TextView selectPeopelTxt;
 	/**
 	 * 选择日期
 	 */
-	private TextView selectDateTxt;
+//	private TextView selectDateTxt;
 	/**
 	 * 选择时间
 	 */
-	private TextView selectTimeTxt;
+//	private TextView selectTimeTxt;
+	/**
+	 * 更多设置
+	 */
+	private TextView moreBtn;
 	/**
 	 * 提醒内容
 	 */
@@ -149,30 +174,34 @@ public class AddRemindActivity extends AbActivity implements OnClickListener {
 	}
 
 	private void setUpView() {
-		okBtn = (Button) findViewById(R.id.title_ok);
-		cancelBtn = (Button) findViewById(R.id.title_cancel);
-		selectPeopelBtn = (Button) findViewById(R.id.select_peopel_btn);
-		selectDateBtn = (Button) findViewById(R.id.select_date_btn);
-		selectTimeBtn = (Button) findViewById(R.id.select_time_btn);
+//		okBtn = (Button) findViewById(R.id.title_ok);
+//		cancelBtn = (Button) findViewById(R.id.title_cancel);
+		selectPeopelBtn = (TextView) findViewById(R.id.select_peopel_btn);
+		selectDateBtn = (TextView) findViewById(R.id.select_date_btn);
+		selectTimeBtn = (TextView) findViewById(R.id.select_time_btn);
+		selectTitleBtn = (TextView) findViewById(R.id.select_title_btn);
+		selectTypeBtn = (TextView) findViewById(R.id.select_type_btn);
+		switchButton = (SwitchButton) findViewById(R.id.select_preview_btn);
 
-		selectPeopelTxt = (TextView) findViewById(R.id.select_peopel_text);
-		selectDateTxt = (TextView) findViewById(R.id.select_date_text);
-		selectTimeTxt = (TextView) findViewById(R.id.select_time_text);
+//		selectPeopelTxt = (TextView) findViewById(R.id.select_peopel_text);
+//		selectDateTxt = (TextView) findViewById(R.id.select_date_text);
+//		selectTimeTxt = (TextView) findViewById(R.id.select_time_text);
+		moreBtn = (TextView) findViewById(R.id.select_more_btn);
 
-		contentEidt = (EditText) findViewById(R.id.set_content_edit);
-		titleEidt = (EditText) findViewById(R.id.set_title_edit);
-
-		repeatGroup = (RadioGroup) findViewById(R.id.repeat_group);
-		repeatNoBtn = (RadioButton) findViewById(R.id.repeat_no_btn);
-		repeatDayBtn = (RadioButton) findViewById(R.id.repeat_day_btn);
-		repeatWeekBtn = (RadioButton) findViewById(R.id.repeat_week_btn);
-		repeatMonthBtn = (RadioButton) findViewById(R.id.repeat_month_btn);
-		repeatYearBtn = (RadioButton) findViewById(R.id.repeat_year_btn);
+//		contentEidt = (EditText) findViewById(R.id.set_content_edit);
+//		titleEidt = (EditText) findViewById(R.id.set_title_edit);
+//
+//		repeatGroup = (RadioGroup) findViewById(R.id.repeat_group);
+//		repeatNoBtn = (RadioButton) findViewById(R.id.repeat_no_btn);
+//		repeatDayBtn = (RadioButton) findViewById(R.id.repeat_day_btn);
+//		repeatWeekBtn = (RadioButton) findViewById(R.id.repeat_week_btn);
+//		repeatMonthBtn = (RadioButton) findViewById(R.id.repeat_month_btn);
+//		repeatYearBtn = (RadioButton) findViewById(R.id.repeat_year_btn);
 		
 		mDateView = mInflater.inflate(R.layout.choose_three, null);
 		mTimeView = mInflater.inflate(R.layout.choose_two, null);
 
-		selectDateTxt.setOnClickListener(new OnClickListener() {
+		selectDateBtn.setOnClickListener(new OnClickListener() {
 
 			@Override
 			public void onClick(View v) {
@@ -181,7 +210,7 @@ public class AddRemindActivity extends AbActivity implements OnClickListener {
 
 		});
 
-		selectTimeTxt.setOnClickListener(new OnClickListener() {
+		selectTimeBtn.setOnClickListener(new OnClickListener() {
 
 			@Override
 			public void onClick(View v) {
@@ -190,98 +219,124 @@ public class AddRemindActivity extends AbActivity implements OnClickListener {
 
 		});
 
-		initWheelDate(mDateView, selectDateTxt);
-		initWheelTime(mTimeView, selectTimeTxt);
+		switchButton.setImageResource(R.drawable.preview_bord, R.drawable.preview_btn);
+		switchButton.setOnSwitchStateListener(new OnSwitchListener() {
+			
+			@Override
+			public void onSwitched(boolean state) {
+				isPreview = state ? 1 : 0;
+			}
+		});
 
-		okBtn.setOnClickListener(this);
-		cancelBtn.setOnClickListener(this);
+		initWheelDate(mDateView, selectDateBtn);
+		initWheelTime(mTimeView, selectTimeBtn);
+
+//		okBtn.setOnClickListener(this);
+//		cancelBtn.setOnClickListener(this);
 		selectPeopelBtn.setOnClickListener(this);
-		selectDateBtn.setOnClickListener(this);
-		selectTimeBtn.setOnClickListener(this);
-		repeatGroup.setOnCheckedChangeListener(repeatCheckListener);
+		selectTitleBtn.setOnClickListener(this);
+		selectTypeBtn.setOnClickListener(this);
+		moreBtn.setOnClickListener(this);
+//		repeatGroup.setOnCheckedChangeListener(repeatCheckListener);
+		addSelf();
 	}
 
 	/**
 	 * 监听重复周期改变
 	 */
-	private OnCheckedChangeListener repeatCheckListener = new OnCheckedChangeListener() {
-
-		@Override
-		public void onCheckedChanged(RadioGroup group, int checkedId) {
-			switch (checkedId) {
-			case R.id.repeat_no_btn:
-				// 只响一次
-				repeatType = RemindEntity.REPEAT_NO;
-				break;
-			case R.id.repeat_day_btn:
-				// 每天重复
-				repeatType = RemindEntity.REPEAT_DAY;
-				break;
-			case R.id.repeat_week_btn:
-				// 每周重复
-				repeatType = RemindEntity.REPEAT_WEEK;
-				break;
-			case R.id.repeat_month_btn:
-				// 每月重复
-				repeatType = RemindEntity.REPEAT_MONTH;
-				break;
-			case R.id.repeat_year_btn:
-				// 每年重复
-				repeatType = RemindEntity.REPEAT_YEAR;
-				break;
-
-			default:
-				break;
-			}
-		}
-	};
+//	private OnCheckedChangeListener repeatCheckListener = new OnCheckedChangeListener() {
+//
+//		@Override
+//		public void onCheckedChanged(RadioGroup group, int checkedId) {
+//			switch (checkedId) {
+//			case R.id.repeat_no_btn:
+//				// 只响一次
+//				repeatType = RemindEntity.REPEAT_NO;
+//				break;
+//			case R.id.repeat_day_btn:
+//				// 每天重复
+//				repeatType = RemindEntity.REPEAT_DAY;
+//				break;
+//			case R.id.repeat_week_btn:
+//				// 每周重复
+//				repeatType = RemindEntity.REPEAT_WEEK;
+//				break;
+//			case R.id.repeat_month_btn:
+//				// 每月重复
+//				repeatType = RemindEntity.REPEAT_MONTH;
+//				break;
+//			case R.id.repeat_year_btn:
+//				// 每年重复
+//				repeatType = RemindEntity.REPEAT_YEAR;
+//				break;
+//
+//			default:
+//				break;
+//			}
+//		}
+//	};
 	
+	@SuppressWarnings("deprecation")
 	@Override
 	public void onClick(View v) {
 		switch (v.getId()) {
 		case R.id.select_peopel_btn:
 			// 选择联系人
+//			Intent intentP = new Intent(AddRemindActivity.this, ContactsActivity.class);
+//			startActivity(intentP);
+			
 			openPeopelDig();
 			break;
-		case R.id.select_date_btn:
-			// 选择日期
+		case R.id.select_title_btn:
+			// 选择主题
 			break;
-		case R.id.select_time_btn:
-			// 选择时间
+		case R.id.select_type_btn:
+			// 选择形式
 			break;
+		case R.id.select_more_btn:
+			// 更多
+//			break;
 		case R.id.title_ok:
 			// 确认
 			if (null == currentPeopel) {
 				AppUtil.showToast(this, "请选择联系人");
 				break;
 			}
-			if (null == selectDateTxt.getText()) {
-				AppUtil.showToast(this, "请选择日期");
-				break;
-			}
-			if (null == selectTimeTxt.getText()) {
-				AppUtil.showToast(this, "请选择时间");
-				break;
-			}
-			if (null == contentEidt.getText()) {
-				AppUtil.showToast(this, "请填写提醒内容");
-				break;
-			}
-			if (null == titleEidt.getText()) {
-				AppUtil.showToast(this, "请填写提醒标题");
-				break;
-			}
+//			if (null == selectDateTxt.getText()) {
+//				AppUtil.showToast(this, "请选择日期");
+//				break;
+//			}
+//			if (null == selectTimeTxt.getText()) {
+//				AppUtil.showToast(this, "请选择时间");
+//				break;
+//			}
+//			if (null == contentEidt.getText()) {
+//				AppUtil.showToast(this, "请填写提醒内容");
+//				break;
+//			}
+//			if (null == titleEidt.getText()) {
+//				AppUtil.showToast(this, "请填写提醒标题");
+//				break;
+//			}
 
+			String remindTime = selectDateBtn.getText().toString() + " "
+					+ selectTimeBtn.getText().toString();
+			
+			SimpleDateFormat fmt =new SimpleDateFormat("yyyy-MM-dd hh-mm-ss"); 
+			Date date;
+			String remindTimeMili = "0";
+			try {
+				date = fmt.parse(remindTime);
+				remindTimeMili = date.getTime() + "";
+			} catch (ParseException e) {
+				e.printStackTrace();
+			}
 			RemindEntity remindEntity = new RemindEntity("", AppUtil.getPhoneNumber(this),
 					currentPeopel.getNum(), currentPeopel.getName(),
 					currentPeopel.getNickName(), AppUtil.getNowTime(),
-					AppUtil.getNowTime(), contentEidt.getText().toString(),
-					selectDateTxt.getText().toString() + " "
-							+ selectTimeTxt.getText().toString(), selectDateTxt
-							.getText().toString()
-							+ " "
-							+ selectTimeTxt.getText().toString(), titleEidt
-							.getText().toString(), repeatType);
+					remindTimeMili, "一起去吃饭吧", remindTime
+					, remindTime, selectTitleBtn
+							.getText().toString(), repeatType, isPreview);
 			
 			if (isForSelf) {
 				// 如果为自己，设置为已接受的提醒
@@ -310,6 +365,21 @@ public class AddRemindActivity extends AbActivity implements OnClickListener {
 			break;
 		}
 	}
+	
+	/**
+	 * 将自己添加进数据库
+	 */
+	public void addSelf() {
+		String num = AppUtil.getPhoneNumber(AddRemindActivity.this);
+		Cursor cursor = peopelDao.queryPeopelByNum(num);
+		if (cursor != null && cursor.getCount() > 0) {
+			
+		} else {
+			PeopelEntity myself = new PeopelEntity("自己", "自己", AppUtil.getPhoneNumber(AddRemindActivity.this), "", "", "", PeopelEntity.NORMAL, PeopelEntity.FRIEND);
+			peopelDao.insertPeopel(myself);
+		}
+		cursor.close();
+	}
 
 	/**
 	 * 打开选择联系人对话框
@@ -330,7 +400,7 @@ public class AddRemindActivity extends AbActivity implements OnClickListener {
 			public void onClick(View v) {
 				isForSelf = true;
 				currentPeopel = new PeopelEntity("自己", "自己", AppUtil.getPhoneNumber(AddRemindActivity.this), "", "", "", PeopelEntity.NORMAL, PeopelEntity.FRIEND);
-				selectPeopelTxt.setText(getName(currentPeopel));
+//				selectPeopelTxt.setText(getName(currentPeopel));
 				alertDialog.dismiss();
 			}
 		});
@@ -338,7 +408,7 @@ public class AddRemindActivity extends AbActivity implements OnClickListener {
 		ListView listView = new ListView(this);
 		List<PeopelEntity> datas = getPeopel();
 		
-		layout.addView(textView);
+//		layout.addView(textView);
 		layout.addView(listView);
 		
 		if (null == datas || datas.size() == 0) {
@@ -364,10 +434,16 @@ public class AddRemindActivity extends AbActivity implements OnClickListener {
 			@Override
 			public void onPeopelSelected(int position, PeopelEntity entity) {
 				// 设置选中联系人操作
-				isForSelf = false;
+				if (position == 0) {
+					isForSelf = true;
+				} else {
+					isForSelf = false;
+				}
+				
 				
 				currentPeopel = entity;
-				selectPeopelTxt.setText(getName(entity));
+				selectPeopelBtn.setText(getName(entity));
+				selectPeopelBtn.setBackgroundResource(R.drawable.right_board);
 				alertDialog.dismiss();
 			}
 		});

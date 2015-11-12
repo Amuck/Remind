@@ -40,6 +40,12 @@
     <string name="repeat_week">每周 </string>
     <string name="repeat_month">每月</string>
     <string name="repeat_year">每年</string>
+    <string name="select_title">主题</string>
+    <string name="select_title_txt">工作计划</string>
+    <string name="select_type">形式</string>
+    <string name="select_type_txt">语音</string>
+    <string name="select_prev">是否可预览  </string>
+    <string name="select_more">更多设置</string>
     
     <string name="remind_wait">等待对方接受</string>
     <string name="remind_refuse">对方已拒绝</string>
@@ -52,6 +58,10 @@
     
     <string name="alert_start">已开始</string>
     <string name="alert_ready">马上开始</string>
-    <string name="alert_later">10分钟后提醒</string>
+    <string name="alert_later">延迟10分钟</string>
     <string name="alert_other">其他</string>
+    
+    <string name="alert_delete">删除</string>
+    
+    <string name="alert_close">关闭</string>
 </resources>
