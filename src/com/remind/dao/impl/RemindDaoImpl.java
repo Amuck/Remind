@@ -186,4 +186,69 @@ public class RemindDaoImpl implements RemindDao {
 		return mCursor;
 	}
 
+	/**
+	 * 查询所有提醒,提醒时间当天时间排在最前面，其他按提醒时间排序
+	 * @param today				当天时间
+	 * @param startPosition		开始位置
+	 * @param selectedCount		选择数量
+	 * @return
+	 */
+	@Override
+	public Cursor queryForMain(String today, int startPosition, int selectedCount) {
+//		select * from 
+//		( select * from Remind 
+//		where remindTime like '2015-11-12%' 
+//		 and isDelete <>  1 
+//		order by remindTime desc ) a 
+//		union all select * from 
+//		(select * from Remind 
+//		where id not in 
+//		( select Remind.id from Remind 
+//		where remindTime like '2015-11-12%')
+//		 and isDelete <>  1 
+//		order by remindTime desc ) b 
+//		limit 0,20
+		Cursor mCursor = null;
+		SQLiteDatabase db = mDBHelper.getWritableDatabase();
+		StringBuffer sb = new StringBuffer();
+		sb.append(" select * from ");
+		sb.append(" (select * from " + RemindMsg.TABLENAME);
+		sb.append(" where " + RemindMsg.REMIND_TIME + " like '" + today + "%' ");
+		sb.append(" and " + RemindMsg.IS_DELETE + " =  0 ");
+		sb.append(" order by  " + RemindMsg.REMIND_TIME + " desc ) a ");
+		sb.append(" union all select * from ");
+		sb.append(" (select * from " + RemindMsg.TABLENAME);
+		sb.append(" where " + RemindMsg.ID + " not in ");
+		sb.append(" ( select " + RemindMsg.TABLENAME + "." + RemindMsg.ID + " from " + RemindMsg.TABLENAME);
+		sb.append(" where " + RemindMsg.REMIND_TIME + " like '" + today + "%') ");
+		sb.append(" and " + RemindMsg.IS_DELETE + " =  0 ");
+		sb.append(" order by  " + RemindMsg.REMIND_TIME + " desc ) b ");
+		sb.append(" limit " + startPosition + "," + selectedCount);
+		sb.append(";");
+		String sql = sb.toString();
+		mCursor = db.rawQuery(sql, null);
+		return mCursor;
+	}
+	
+	@Override
+	public int getEffectiveCount() {
+//		select count(id) from Remind where  isDelete =  0 
+		int count = 0;
+		SQLiteDatabase db = mDBHelper.getWritableDatabase();
+		StringBuffer sb = new StringBuffer();
+		sb.append(" select count( ");
+		sb.append(RemindMsg.ID);
+		sb.append(" ) from  ");
+		sb.append(RemindMsg.TABLENAME);
+		sb.append(" where  ");
+		sb.append(RemindMsg.IS_DELETE);
+		sb.append("  =  0  ");
+		sb.append(";");
+		String sql = sb.toString();
+		Cursor mCursor = db.rawQuery(sql, null);
+		mCursor.moveToFirst();
+		count = mCursor.getInt(0);
+		mCursor.close();
+		return count;
+	}
 }

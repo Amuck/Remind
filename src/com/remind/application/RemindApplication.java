@@ -23,6 +23,7 @@ import com.baidu.location.BDLocationListener;
 import com.baidu.location.LocationClient;
 import com.help.remind.R;
 import com.remind.sevice.WeatherGetRequest;
+import com.remind.sp.WeatherSp;
 import com.remind.util.AppUtil;
 
 public class RemindApplication extends Application {
@@ -158,6 +159,7 @@ public class RemindApplication extends Application {
 	public final static int GET_INFO_OK = 1000001;// 成功
 	public final static int GET_INFO_ERROR = 1000002;// 连接出错
 	public final static int GET_WEATHER_OK = 1000003;// 连接出错
+	
 	public Handler mHandler = new Handler() {
 		@Override
 		public void handleMessage(Message msg) {
@@ -278,7 +280,10 @@ public class RemindApplication extends Application {
 	public void showTemp(String str) {
 		try {
 			if (mTemp != null)
+			{
 				mTemp.setText(str + "℃");
+				WeatherSp.saveTEM(getApplicationContext(), str + "℃");
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -291,12 +296,15 @@ public class RemindApplication extends Application {
 	 */
 	public void showWeather(String str) {
 		try {
-			if (mWeather != null)
+			if (mWeather != null) {
 				mWeather.setText(str);
+				WeatherSp.saveWEATHER(getApplicationContext(), str);
+			}
 			if (mWeatherImg != null) {
 				// 根据天气设置图片
 				getWeatherImg(str);
 				mWeatherImg.setBackgroundResource(mWeatherIconFlg);
+				WeatherSp.saveWeatherImg(getApplicationContext(), mWeatherIconFlg);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -310,8 +318,10 @@ public class RemindApplication extends Application {
 	 */
 	public void showLoc(String str) {
 		try {
-			if (mLocationResult != null)
+			if (mLocationResult != null) {
 				mLocationResult.setText(str);
+				WeatherSp.saveLOC(getApplicationContext(), str);
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

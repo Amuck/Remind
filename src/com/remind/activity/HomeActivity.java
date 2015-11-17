@@ -1,19 +1,20 @@
 package com.remind.activity;
 
 import java.io.File;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import android.content.Intent;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.Window;
 import android.widget.AbsListView;
 import android.widget.AbsListView.OnScrollListener;
 import android.widget.AdapterView;
@@ -29,9 +30,13 @@ import com.help.remind.R;
 import com.remind.adapter.RemindAdapter;
 import com.remind.application.RemindApplication;
 import com.remind.asyn.ImageLoader;
+import com.remind.dao.RemindDao;
+import com.remind.dao.impl.RemindDaoImpl;
 import com.remind.entity.RemindEntity;
 import com.remind.global.AppConstant;
+import com.remind.sp.WeatherSp;
 import com.remind.util.AppUtil;
+import com.remind.util.DataBaseParser;
 
 public class HomeActivity extends BaseActivity implements OnClickListener {
 
@@ -72,11 +77,19 @@ public class HomeActivity extends BaseActivity implements OnClickListener {
 	private LocationClient mLocationClient;
 
 	private int number = 10; // 每次获取多少条数据
-	private int maxpage = 5; // 总共有多少页
+	private int maxpage = 0; // 总共有多少页
+	private int maxCount = 0; // 总共有多少条目
 	private boolean loadfinish = true; // 指示数据是否加载完成
 	private View footer;
 	private RemindAdapter remindAdapter;
 	private List<RemindEntity> datas = new ArrayList<RemindEntity>();// 数据源
+	
+	/**
+	 * 提醒数据库
+	 */
+	private RemindDao remindDao;
+	private String today;
+	private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 	
 	private Handler handler = new Handler() {
 		public void handleMessage(android.os.Message msg) {
@@ -116,9 +129,22 @@ public class HomeActivity extends BaseActivity implements OnClickListener {
 		weatherImg = (ImageView) findViewById(R.id.weather_img);
 		listView = (PullToZoomListViewEx) findViewById(R.id.listview);
 		footer = LayoutInflater.from(this).inflate(R.layout.itembottom, null);
+		remindDao = new RemindDaoImpl(this);
+		today = dateFormat.format(new Date());
 
+		initWeather();
 		getLocationAndWeather();
 		setUpView();
+	}
+	
+	/**
+	 * 显示上一次的天气信息
+	 */
+	private void initWeather() {
+		locTxt.setText(WeatherSp.getString(this, WeatherSp.LOC));
+		tempTxt.setText(WeatherSp.getString(this, WeatherSp.TEM));
+		weatherTxt.setText(WeatherSp.getString(this, WeatherSp.WEATHER));
+		weatherImg.setBackgroundResource(WeatherSp.getInt(this, WeatherSp.WEATHER_IMG));
 	}
 
 	/**
@@ -162,14 +188,12 @@ public class HomeActivity extends BaseActivity implements OnClickListener {
 		// set up listview
 		listView.setOnScrollListener(new ScrollListener());
 		
-		getMoreData();
 		remindAdapter = new RemindAdapter(this, datas);
 		listView.setAdapter(remindAdapter);
 		listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view,
 					int position, long id) {
-				Log.e("zhuwenwu", "position = " + position);
 
 			}
 		});
@@ -184,7 +208,7 @@ public class HomeActivity extends BaseActivity implements OnClickListener {
 		// set up title view
 		userInfoBtn.setOnClickListener(this);
 		moreBtn.setOnClickListener(this);
-		 dateTxt.setText(AppUtil.getToday());
+		dateTxt.setText(AppUtil.getToday());
 	}
 
 	/**
@@ -232,6 +256,16 @@ public class HomeActivity extends BaseActivity implements OnClickListener {
 			log.mkdirs();
 		}
 	}
+	
+	@Override
+	protected void onResume() {
+		super.onResume();
+		maxCount = remindDao.getEffectiveCount();
+		maxpage = (int) Math.ceil((double ) maxCount/ (double )number);
+		datas.clear();
+		getMoreData(1);
+		remindAdapter.notifyDataSetChanged();
+	}
 
 	@Override
 	protected void onStop() {
@@ -276,11 +310,11 @@ public class HomeActivity extends BaseActivity implements OnClickListener {
 			if ((lastItemid + 1) == totalItemCount) { // 达到数据的最后一条记录
 				if (totalItemCount > 0) {
 					// 当前页
-					int currentpage = totalItemCount % number == 0 ? totalItemCount
+					final int nextpage = totalItemCount % number == 0 ? totalItemCount
 							/ number
 							: totalItemCount / number + 1;
-					int nextpage = currentpage + 1; // 下一页
-					if (nextpage <= maxpage && loadfinish) {
+//					final int nextpage = currentpage + 1; // 下一页
+					if (nextpage <= maxpage && loadfinish && lastItemid < maxCount) {
 //						handler.sendEmptyMessage(REFRESH_START);
 						
 						loadfinish = false;
@@ -291,12 +325,7 @@ public class HomeActivity extends BaseActivity implements OnClickListener {
 
 							@Override
 							public void run() {
-								try {
-									Thread.sleep(3000);
-								} catch (InterruptedException e) {
-									e.printStackTrace();
-								}
-								getMoreData();
+								getMoreData(nextpage);
 								// 发送消息
 								handler.sendMessage(handler.obtainMessage(LOAD_OK,
 										datas));
@@ -319,13 +348,16 @@ public class HomeActivity extends BaseActivity implements OnClickListener {
 	/**
 	 * TODO test
 	 */
-	private void getMoreData() {
-		List<RemindEntity> temp = new ArrayList<RemindEntity>();
-		for (int i = 0; i < 10; i++) {
-			RemindEntity entity = new RemindEntity();
-			temp.add(entity);
-		}
+	private void getMoreData(int currentpage) {
+//		List<RemindEntity> temp = new ArrayList<RemindEntity>();
+//		for (int i = 0; i < 10; i++) {
+//			RemindEntity entity = new RemindEntity();
+//			temp.add(entity);
+//		}
 		
+		Cursor cursor = remindDao.queryForMain(today, (currentpage - 1) * number, number);
+		ArrayList<RemindEntity> temp = DataBaseParser.getRemindDetail(cursor);
+		cursor.close();
 		datas.addAll(temp);
 	}
 }

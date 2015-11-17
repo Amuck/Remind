@@ -322,15 +322,7 @@ public class AddRemindActivity extends AbActivity implements OnClickListener {
 			String remindTime = selectDateBtn.getText().toString() + " "
 					+ selectTimeBtn.getText().toString();
 			
-			SimpleDateFormat fmt =new SimpleDateFormat("yyyy-MM-dd hh-mm-ss"); 
-			Date date;
-			String remindTimeMili = "0";
-			try {
-				date = fmt.parse(remindTime);
-				remindTimeMili = date.getTime() + "";
-			} catch (ParseException e) {
-				e.printStackTrace();
-			}
+			String remindTimeMili = System.currentTimeMillis() + "";
 			RemindEntity remindEntity = new RemindEntity("", AppUtil.getPhoneNumber(this),
 					currentPeopel.getNum(), currentPeopel.getName(),
 					currentPeopel.getNickName(), AppUtil.getNowTime(),

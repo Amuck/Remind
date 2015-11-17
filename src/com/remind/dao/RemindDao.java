@@ -38,4 +38,17 @@ public interface RemindDao {
 	 * @return
 	 */
 	public Cursor queryRemind();
+	/**
+	 * 查询所有提醒,提醒时间当天时间排在最前面，其他按提醒时间排序
+	 * @param today				当天时间
+	 * @param startPosition		开始位置
+	 * @param selectedCount		选择数量
+	 * @return
+	 */
+	public Cursor queryForMain(String today, int startPosition, int selectedCount);
+	/**
+	 * 获取有效闹钟数量
+	 * @return
+	 */
+	public int getEffectiveCount();
 }

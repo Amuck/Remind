@@ -7,11 +7,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.help.remind.R;
 import com.remind.entity.RemindEntity;
+import com.remind.view.RoleDetailImageView;
 
 public class RemindAdapter extends BaseAdapter {
 	
@@ -45,7 +45,7 @@ public class RemindAdapter extends BaseAdapter {
 	
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
-//		RemindEntity remindEntity = datas.get(position);
+		RemindEntity remindEntity = datas.get(position);
 
 		if (convertView == null)
 		{
@@ -60,7 +60,7 @@ public class RemindAdapter extends BaseAdapter {
 						.findViewById(R.id.remind_content_txt);
 				viewHolder.remind_name_txt = (TextView) convertView
 						.findViewById(R.id.remind_name_txt);
-				viewHolder.remind_img =  (ImageView) convertView.
+				viewHolder.remind_img =  (RoleDetailImageView) convertView.
 						findViewById(R.id.remind_img);
 				convertView.setTag(viewHolder);
 		} else
@@ -68,7 +68,11 @@ public class RemindAdapter extends BaseAdapter {
 			viewHolder = (ViewHolder) convertView.getTag();
 		}
 		
-		
+		viewHolder.remind_time_txt.setText(remindEntity.getRemindTime().split(" ")[1]);
+		viewHolder.remind_title_txt.setText(remindEntity.getTitle());
+		viewHolder.remind_content_txt.setText(remindEntity.getContent());
+		viewHolder.remind_name_txt.setText(remindEntity.getTargetName() + remindEntity.getId());
+//		viewHolder.remind_img.setImageResource(resId);
 		
 		return convertView;
 	}
@@ -93,7 +97,7 @@ public class RemindAdapter extends BaseAdapter {
 		/**
 		 * 头像
 		 */
-		ImageView remind_img;
+		RoleDetailImageView remind_img;
 	}
 	
 }
