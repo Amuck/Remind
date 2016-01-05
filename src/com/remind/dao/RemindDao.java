@@ -51,4 +51,55 @@ public interface RemindDao {
 	 * @return
 	 */
 	public int getEffectiveCount();
+	/**
+	 * 获取非今天的已接受的提醒
+	 * @param today
+	 * @return
+	 */
+	public Cursor getOtherdayRemind(String today, int startPosition, int selectedCount);
+	/**
+	 * 获取非今天的已接受的提醒数量
+	 * @param today
+	 * @return
+	 */
+	public int getOtherdayCount(String today);
+	/**
+	 * 获取今天的已接受的提醒
+	 * @param today
+	 * @return
+	 */
+	public Cursor getTodayRemind(String today, int startPosition, int selectedCount);
+	/**
+	 * 获取今天的已接受的提醒数量
+	 * @param today
+	 * @return
+	 */
+	public int getTodayCount(String today);
+	/**
+	 * 获取未接受的提醒
+	 * @return
+	 */
+	public Cursor getUnAcceptRemind(int startPosition, int selectedCount);
+	/**
+	 * 获取未接受的提醒数量
+	 * @return
+	 */
+	public int getUnAcceptCount();
+	/**
+	 * 获取非今天的已接受的提醒
+	 * @param today
+	 * @return
+	 */
+	public Cursor getOtherdayRemind(String today);
+	/**
+	 * 获取今天的已接受的提醒
+	 * @param today
+	 * @return
+	 */
+	public Cursor getTodayRemind(String today);
+	/**
+	 * 获取未接受的提醒
+	 * @return
+	 */
+	public Cursor getUnAcceptRemind();
 }

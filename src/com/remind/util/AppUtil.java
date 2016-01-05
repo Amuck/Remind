@@ -416,12 +416,12 @@ public class AppUtil {
 	}
 
 	/**
-	 * @return 当前时间 "yyyy-MM-dd hh:mm:ss"
+	 * @return 当前时间 "yyyy-MM-dd HH:mm:ss"
 	 */
 	public static String getNowTime() {
 		Date date = new Date();
 		SimpleDateFormat dateFormat = new SimpleDateFormat(
-				"yyyy-MM-dd hh:mm:ss");
+				"yyyy-MM-dd HH:mm:ss");
 		return dateFormat.format(date).toString();
 	}
 
@@ -435,7 +435,7 @@ public class AppUtil {
 		Calendar calendar = Calendar.getInstance();
 		// 获取目的时间毫秒数
 		try {
-			calendar.setTime(new SimpleDateFormat("yyyy-MM-dd hh:mm")
+			calendar.setTime(new SimpleDateFormat("yyyy-MM-dd HH:mm")
 					.parse(date));
 		} catch (ParseException e) {
 			showToast(context, "时间错误，接受任务失败。");

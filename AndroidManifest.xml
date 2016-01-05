@@ -119,6 +119,9 @@
                 </action>
             </intent-filter>
         </service>
+        
+        <service android:name="com.remind.sevice.BackService" >
+        </service>HttpClient.java
 
         <meta-data
             android:name="com.baidu.lbsapi.API_KEY"

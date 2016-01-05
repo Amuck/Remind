@@ -34,7 +34,7 @@ public class RemindDaoImpl implements RemindDao {
 		values.put(RemindMsg.TARGET_NAME, entity.getTargetName());
 		values.put(RemindMsg.NICK_NAME, entity.getNickName());
 		values.put(RemindMsg.ADD_TIME, entity.getAddTime());
-		values.put(RemindMsg.REMIND_TIME_MILI, entity.getLastEditTime());
+		values.put(RemindMsg.REMIND_TIME_MILI, entity.getRemindTimeMiLi());
 		values.put(RemindMsg.TITLE, entity.getTitle());
 		values.put(RemindMsg.CONTENT, entity.getContent());
 		values.put(RemindMsg.LIMIT_TIME, entity.getLimitTime());
@@ -76,7 +76,7 @@ public class RemindDaoImpl implements RemindDao {
 			values.put(RemindMsg.TARGET_NAME, entity.getTargetName());
 			values.put(RemindMsg.NICK_NAME, entity.getNickName());
 			values.put(RemindMsg.ADD_TIME, entity.getAddTime());
-			values.put(RemindMsg.REMIND_TIME_MILI, entity.getLastEditTime());
+			values.put(RemindMsg.REMIND_TIME_MILI, entity.getRemindTimeMiLi());
 			values.put(RemindMsg.CONTENT, entity.getContent());
 			values.put(RemindMsg.TITLE, entity.getTitle());
 			values.put(RemindMsg.LIMIT_TIME, entity.getLimitTime());
@@ -130,7 +130,7 @@ public class RemindDaoImpl implements RemindDao {
 		sb.append(RemindMsg.TARGET_NAME + "	= '" + entity.getTargetName() + "',");
 		sb.append(RemindMsg.NICK_NAME + "	= '" + entity.getNickName() + "',");
 		sb.append(RemindMsg.ADD_TIME + "	= '" + entity.getAddTime() + "',");
-		sb.append(RemindMsg.REMIND_TIME_MILI + "	= '" + entity.getLastEditTime() + "',");
+		sb.append(RemindMsg.REMIND_TIME_MILI + "	= '" + entity.getRemindTimeMiLi() + "',");
 		sb.append(RemindMsg.CONTENT + "	= '" + entity.getContent() + "',");
 		sb.append(RemindMsg.TITLE + "	= '" + entity.getTitle() + "',");
 		
@@ -215,14 +215,14 @@ public class RemindDaoImpl implements RemindDao {
 		sb.append(" (select * from " + RemindMsg.TABLENAME);
 		sb.append(" where " + RemindMsg.REMIND_TIME + " like '" + today + "%' ");
 		sb.append(" and " + RemindMsg.IS_DELETE + " =  0 ");
-		sb.append(" order by  " + RemindMsg.REMIND_TIME + " desc ) a ");
+		sb.append(" order by  " + RemindMsg.REMIND_TIME_MILI + " desc ) a ");
 		sb.append(" union all select * from ");
 		sb.append(" (select * from " + RemindMsg.TABLENAME);
 		sb.append(" where " + RemindMsg.ID + " not in ");
 		sb.append(" ( select " + RemindMsg.TABLENAME + "." + RemindMsg.ID + " from " + RemindMsg.TABLENAME);
 		sb.append(" where " + RemindMsg.REMIND_TIME + " like '" + today + "%') ");
 		sb.append(" and " + RemindMsg.IS_DELETE + " =  0 ");
-		sb.append(" order by  " + RemindMsg.REMIND_TIME + " desc ) b ");
+		sb.append(" order by  " + RemindMsg.REMIND_TIME_MILI + " desc ) b ");
 		sb.append(" limit " + startPosition + "," + selectedCount);
 		sb.append(";");
 		String sql = sb.toString();
@@ -232,7 +232,7 @@ public class RemindDaoImpl implements RemindDao {
 	
 	@Override
 	public int getEffectiveCount() {
-//		select count(id) from Remind where  isDelete =  0 
+//		select count(id) from Remind where  isDelete =  0 and remindState = 0 ;
 		int count = 0;
 		SQLiteDatabase db = mDBHelper.getWritableDatabase();
 		StringBuffer sb = new StringBuffer();
@@ -243,6 +243,9 @@ public class RemindDaoImpl implements RemindDao {
 		sb.append(" where  ");
 		sb.append(RemindMsg.IS_DELETE);
 		sb.append("  =  0  ");
+		sb.append(" and  ");
+		sb.append(RemindMsg.REMIND_STATE);
+		sb.append("  =  0  ");
 		sb.append(";");
 		String sql = sb.toString();
 		Cursor mCursor = db.rawQuery(sql, null);
@@ -250,5 +253,215 @@ public class RemindDaoImpl implements RemindDao {
 		count = mCursor.getInt(0);
 		mCursor.close();
 		return count;
+	}
+	
+	@Override
+	public int getUnAcceptCount() {
+		int count = 0;
+		SQLiteDatabase db = mDBHelper.getWritableDatabase();
+		StringBuffer sb = new StringBuffer();
+		sb.append(" select count( ");
+		sb.append(RemindMsg.ID);
+		sb.append(" ) from  ");
+		sb.append(RemindMsg.TABLENAME);
+		sb.append(" where  ");
+		sb.append(RemindMsg.IS_DELETE);
+		sb.append("  =  0  ");
+		sb.append(" and  ");
+		sb.append(RemindMsg.REMIND_STATE);
+		sb.append("  =  1  ");
+		sb.append(" order by  " + RemindMsg.ADD_TIME + " desc ");
+		sb.append(";");
+		String sql = sb.toString();
+		Cursor mCursor = db.rawQuery(sql, null);
+		mCursor.moveToFirst();
+		count = mCursor.getInt(0);
+		mCursor.close();
+		return count;
+	}
+	
+	@Override
+	public Cursor getUnAcceptRemind(int startPosition, int selectedCount) {
+		SQLiteDatabase db = mDBHelper.getWritableDatabase();
+		StringBuffer sb = new StringBuffer();
+		sb.append(" select * from ");
+		sb.append(RemindMsg.TABLENAME);
+		sb.append(" where  ");
+		sb.append(RemindMsg.IS_DELETE);
+		sb.append("  =  0  ");
+		sb.append(" and  ");
+		sb.append(RemindMsg.REMIND_STATE);
+		sb.append("  =  1  ");
+		sb.append(" order by  " + RemindMsg.ADD_TIME + " desc ");
+		sb.append(" limit " + startPosition + "," + selectedCount);
+		sb.append(";");
+		String sql = sb.toString();
+		Cursor mCursor = db.rawQuery(sql, null);
+		return mCursor;
+	}
+	
+	@Override
+	public Cursor getUnAcceptRemind() {
+		SQLiteDatabase db = mDBHelper.getWritableDatabase();
+		StringBuffer sb = new StringBuffer();
+		sb.append(" select * from ");
+		sb.append(RemindMsg.TABLENAME);
+		sb.append(" where  ");
+		sb.append(RemindMsg.IS_DELETE);
+		sb.append("  =  0  ");
+		sb.append(" and  ");
+		sb.append(RemindMsg.REMIND_STATE);
+		sb.append("  =  1  ");
+		sb.append(" order by  " + RemindMsg.ADD_TIME + " desc ");
+		sb.append(";");
+		String sql = sb.toString();
+		Cursor mCursor = db.rawQuery(sql, null);
+		return mCursor;
+	}
+	
+	@Override
+	public int getTodayCount(String today) {
+		int count = 0;
+		SQLiteDatabase db = mDBHelper.getWritableDatabase();
+		StringBuffer sb = new StringBuffer();
+		sb.append(" select count( ");
+		sb.append(RemindMsg.ID);
+		sb.append(" ) from  ");
+		sb.append(RemindMsg.TABLENAME);
+		sb.append(" where  ");
+		sb.append(RemindMsg.IS_DELETE);
+		sb.append("  =  0  ");
+		sb.append(" and  ");
+		sb.append(RemindMsg.REMIND_STATE);
+		sb.append("  =  0  ");
+		sb.append(" and  ");
+		sb.append(RemindMsg.REMIND_TIME);
+		sb.append(" like '" + today + "%' ");
+		sb.append(" order by  " + RemindMsg.REMIND_TIME_MILI + " desc ");
+		sb.append(";");
+		String sql = sb.toString();
+		Cursor mCursor = db.rawQuery(sql, null);
+		mCursor.moveToFirst();
+		count = mCursor.getInt(0);
+		mCursor.close();
+		return count;
+	}
+	
+	@Override
+	public Cursor getTodayRemind(String today, int startPosition, int selectedCount) {
+		SQLiteDatabase db = mDBHelper.getWritableDatabase();
+		StringBuffer sb = new StringBuffer();
+		sb.append(" select * from  ");
+		sb.append(RemindMsg.TABLENAME);
+		sb.append(" where  ");
+		sb.append(RemindMsg.IS_DELETE);
+		sb.append("  =  0  ");
+		sb.append(" and  ");
+		sb.append(RemindMsg.REMIND_STATE);
+		sb.append("  =  0  ");
+		sb.append(" and  ");
+		sb.append(RemindMsg.REMIND_TIME);
+		sb.append(" like '" + today + "%' ");
+		sb.append(" order by  " + RemindMsg.REMIND_TIME_MILI + " desc ");
+		sb.append(" limit " + startPosition + "," + selectedCount);
+		sb.append(";");
+		String sql = sb.toString();
+		Cursor mCursor = db.rawQuery(sql, null);
+		return mCursor;
+	}
+	
+	@Override
+	public Cursor getTodayRemind(String today) {
+		SQLiteDatabase db = mDBHelper.getWritableDatabase();
+		StringBuffer sb = new StringBuffer();
+		sb.append(" select * from  ");
+		sb.append(RemindMsg.TABLENAME);
+		sb.append(" where  ");
+		sb.append(RemindMsg.IS_DELETE);
+		sb.append("  =  0  ");
+		sb.append(" and  ");
+		sb.append(RemindMsg.REMIND_STATE);
+		sb.append("  =  0  ");
+		sb.append(" and  ");
+		sb.append(RemindMsg.REMIND_TIME);
+		sb.append(" like '" + today + "%' ");
+		sb.append(" order by  " + RemindMsg.REMIND_TIME_MILI + " desc ");
+		sb.append(";");
+		String sql = sb.toString();
+		Cursor mCursor = db.rawQuery(sql, null);
+		return mCursor;
+	}
+	
+	@Override
+	public int getOtherdayCount(String today) {
+		int count = 0;
+		SQLiteDatabase db = mDBHelper.getWritableDatabase();
+		StringBuffer sb = new StringBuffer();
+		sb.append(" select count( ");
+		sb.append(RemindMsg.ID);
+		sb.append(" ) from  ");
+		sb.append(RemindMsg.TABLENAME);
+		sb.append(" where  ");
+		sb.append(RemindMsg.IS_DELETE);
+		sb.append("  =  0  ");
+		sb.append(" and  ");
+		sb.append(RemindMsg.REMIND_STATE);
+		sb.append("  =  0  ");
+		sb.append(" and  ");
+		sb.append(RemindMsg.REMIND_TIME);
+		sb.append(" not like '" + today + "%' ");
+		sb.append(" order by  " + RemindMsg.REMIND_TIME_MILI + " desc ");
+		sb.append(";");
+		String sql = sb.toString();
+		Cursor mCursor = db.rawQuery(sql, null);
+		mCursor.moveToFirst();
+		count = mCursor.getInt(0);
+		mCursor.close();
+		return count;
+	}
+	
+	@Override
+	public Cursor getOtherdayRemind(String today, int startPosition, int selectedCount) {
+		SQLiteDatabase db = mDBHelper.getWritableDatabase();
+		StringBuffer sb = new StringBuffer();
+		sb.append(" select * from  ");
+		sb.append(RemindMsg.TABLENAME);
+		sb.append(" where  ");
+		sb.append(RemindMsg.IS_DELETE);
+		sb.append("  =  0  ");
+		sb.append(" and  ");
+		sb.append(RemindMsg.REMIND_STATE);
+		sb.append("  =  0  ");
+		sb.append(" and  ");
+		sb.append(RemindMsg.REMIND_TIME);
+		sb.append(" not like '" + today + "%' ");
+		sb.append(" order by  " + RemindMsg.REMIND_TIME_MILI + " desc ");
+		sb.append(" limit " + startPosition + "," + selectedCount);
+		sb.append(";");
+		String sql = sb.toString();
+		Cursor mCursor = db.rawQuery(sql, null);
+		return mCursor;
+	}
+	
+	@Override
+	public Cursor getOtherdayRemind(String today) {
+		SQLiteDatabase db = mDBHelper.getWritableDatabase();
+		StringBuffer sb = new StringBuffer();
+		sb.append(" select * from  ");
+		sb.append(RemindMsg.TABLENAME);
+		sb.append(" where  ");
+		sb.append(RemindMsg.IS_DELETE);
+		sb.append("  =  0  ");
+		sb.append(" and  ");
+		sb.append(RemindMsg.REMIND_STATE);
+		sb.append("  =  0  ");
+		sb.append(" and  ");
+		sb.append(RemindMsg.REMIND_TIME);
+		sb.append(" not like '" + today + "%' ");
+		sb.append(" order by  " + RemindMsg.REMIND_TIME_MILI + " desc ");
+		sb.append(";");
+		String sql = sb.toString();
+		Cursor mCursor = db.rawQuery(sql, null);
+		return mCursor;
 	}
 }

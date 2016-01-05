@@ -7,5 +7,6 @@
 	<classpathentry exported="true" kind="con" path="com.android.ide.eclipse.adt.DEPENDENCIES"/>
 	<classpathentry kind="lib" path="libs/locSDK_6.03.jar"/>
 	<classpathentry kind="lib" path="libs/volley.jar"/>
+	<classpathentry kind="lib" path="libs/gson-2.2.1.jar"/>
 	<classpathentry kind="output" path="bin/classes"/>
 </classpath>

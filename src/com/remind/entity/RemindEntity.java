@@ -367,12 +367,12 @@ public class RemindEntity implements Serializable{
 		this.addTime = addTime;
 	}
 
-	public String getLastEditTime() {
+	public String getRemindTimeMiLi() {
 		return remindTimeMiLi;
 	}
 
-	public void setLastEditTime(String lastEditTime) {
-		this.remindTimeMiLi = lastEditTime;
+	public void setRemindTimeMiLi(String remindTimeMiLi) {
+		this.remindTimeMiLi = remindTimeMiLi;
 	}
 
 	public String getContent() {
@@ -479,10 +479,30 @@ public class RemindEntity implements Serializable{
 		this.launchState = launchState;
 	}
 
+	/**
+	 *
+	 * 重复模式：
+	 * 不重复：{@link #REPEAT_NO},
+	 * 每天重复：{@link #REPEAT_DAY},
+	 * 每周重复：{@link #REPEAT_WEEK},
+	 * 每月重复：{@link #REPEAT_MONTH},
+	 * 每年重复：{@link #REPEAT_YEAR},
+	 *
+	 * @return
+	 */
 	public String getRepeatType() {
 		return repeatType;
 	}
 
+	/**
+	 *  重复模式：
+	 * 不重复：{@link #REPEAT_NO},
+	 * 每天重复：{@link #REPEAT_DAY},
+	 * 每周重复：{@link #REPEAT_WEEK},
+	 * 每月重复：{@link #REPEAT_MONTH},
+	 * 每年重复：{@link #REPEAT_YEAR},
+	 * @param repeatType
+	 */
 	public void setRepeatType(String repeatType) {
 		this.repeatType = repeatType;
 	}

@@ -3,6 +3,7 @@ package com.remind.adapter;
 import java.util.List;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -72,7 +73,7 @@ public class RemindAdapter extends BaseAdapter {
 		viewHolder.remind_title_txt.setText(remindEntity.getTitle());
 		viewHolder.remind_content_txt.setText(remindEntity.getContent());
 		viewHolder.remind_name_txt.setText(remindEntity.getTargetName() + remindEntity.getId());
-//		viewHolder.remind_img.setImageResource(resId);
+		viewHolder.remind_img.setmBorderInsideColor(remindEntity.getRemindState() == RemindEntity.NEW ? Color.RED : Color.WHITE);
 		
 		return convertView;
 	}

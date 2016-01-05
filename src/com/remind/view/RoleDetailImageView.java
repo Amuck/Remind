@@ -345,4 +345,22 @@ public class RoleDetailImageView extends ImageView implements Runnable{
 	public boolean isRunning() {
 		return isRunning;
 	}
+
+	public int getmBorderOutsideColor() {
+		return mBorderOutsideColor;
+	}
+
+	public void setmBorderOutsideColor(int mBorderOutsideColor) {
+		this.mBorderOutsideColor = mBorderOutsideColor;
+		invalidate();
+	}
+
+	public int getmBorderInsideColor() {
+		return mBorderInsideColor;
+	}
+
+	public void setmBorderInsideColor(int mBorderInsideColor) {
+		this.mBorderInsideColor = mBorderInsideColor;
+		invalidate();
+	}
 }

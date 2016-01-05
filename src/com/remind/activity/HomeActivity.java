@@ -38,6 +38,11 @@ import com.remind.sp.WeatherSp;
 import com.remind.util.AppUtil;
 import com.remind.util.DataBaseParser;
 
+/**
+ * @author ChenLong
+ *
+ *	主页面
+ */
 public class HomeActivity extends BaseActivity implements OnClickListener {
 
 	private final static int LOAD_OK = 100;
@@ -79,6 +84,18 @@ public class HomeActivity extends BaseActivity implements OnClickListener {
 	private int number = 10; // 每次获取多少条数据
 	private int maxpage = 0; // 总共有多少页
 	private int maxCount = 0; // 总共有多少条目
+	/**
+	 * 未接受的提醒数
+	 */
+	private int notAcceptCount = 0;
+	/**
+	 * 今天提醒数
+	 */
+	private int todayCount = 0;
+	/**
+	 * 其他提醒数
+	 */
+	private int otherDayCount = 0;
 	private boolean loadfinish = true; // 指示数据是否加载完成
 	private View footer;
 	private RemindAdapter remindAdapter;
@@ -186,7 +203,7 @@ public class HomeActivity extends BaseActivity implements OnClickListener {
 	 */
 	private void setUpView() {
 		// set up listview
-		listView.setOnScrollListener(new ScrollListener());
+//		listView.setOnScrollListener(new ScrollListener());
 		
 		remindAdapter = new RemindAdapter(this, datas);
 		listView.setAdapter(remindAdapter);
@@ -260,11 +277,22 @@ public class HomeActivity extends BaseActivity implements OnClickListener {
 	@Override
 	protected void onResume() {
 		super.onResume();
+//		resetDataPage();
+//		getMoreData(1);
+		getData();
+		remindAdapter.notifyDataSetChanged();
+	}
+	
+	/**
+	 * 重置数据库查询分页查询索引
+	 */
+	private void resetDataPage() {
 		maxCount = remindDao.getEffectiveCount();
+		notAcceptCount = remindDao.getUnAcceptCount();
+		todayCount  = remindDao.getTodayCount(today);
+		otherDayCount = remindDao.getOtherdayCount(today);
 		maxpage = (int) Math.ceil((double ) maxCount/ (double )number);
 		datas.clear();
-		getMoreData(1);
-		remindAdapter.notifyDataSetChanged();
 	}
 
 	@Override
@@ -307,14 +335,14 @@ public class HomeActivity extends BaseActivity implements OnClickListener {
 
 //			final int loadtotal = totalItemCount;
 			int lastItemid = listView.getLastVisiblePosition(); // 获取当前屏幕最后Item的ID
-			if ((lastItemid + 1) == totalItemCount) { // 达到数据的最后一条记录
+			if ((lastItemid + 1) == totalItemCount && lastItemid < maxCount) { // 达到数据的最后一条记录
 				if (totalItemCount > 0) {
 					// 当前页
 					final int nextpage = totalItemCount % number == 0 ? totalItemCount
 							/ number
 							: totalItemCount / number + 1;
 //					final int nextpage = currentpage + 1; // 下一页
-					if (nextpage <= maxpage && loadfinish && lastItemid < maxCount) {
+					if (nextpage <= maxpage && loadfinish ) {
 //						handler.sendEmptyMessage(REFRESH_START);
 						
 						loadfinish = false;
@@ -346,18 +374,124 @@ public class HomeActivity extends BaseActivity implements OnClickListener {
 	}
 	
 	/**
+	 * 获取数据
+	 */
+	private void getData() {
+		datas.clear();
+		// 显示未接受的数据
+		Cursor cursor = remindDao.getUnAcceptRemind();
+		datas.addAll(DataBaseParser.getRemindDetail(cursor));
+		// 显示今天的提醒
+		cursor = remindDao.getTodayRemind(today);
+		datas.addAll(DataBaseParser.getRemindDetail(cursor));
+		// 显示其他天的提醒
+		cursor = remindDao.getOtherdayRemind(today);
+		datas.addAll(DataBaseParser.getRemindDetail(cursor));
+		cursor.close();
+	}
+	
+	/**
 	 * TODO test
 	 */
 	private void getMoreData(int currentpage) {
-//		List<RemindEntity> temp = new ArrayList<RemindEntity>();
+		List<RemindEntity> temp = new ArrayList<RemindEntity>();
 //		for (int i = 0; i < 10; i++) {
 //			RemindEntity entity = new RemindEntity();
 //			temp.add(entity);
 //		}
+		int currentCount = currentpage * number;
+		if (currentCount <= notAcceptCount) {
+			// 首先显示未接受, 未接受足够当前页
+			
+		} else {
+			// 未接受不够当前页，判断是否还有未接受提醒没有显示
+			int notShowCount = notAcceptCount - (currentpage - 1) * number;
+			if (notShowCount > 0) {
+				// 还有未接受提醒没有显示
+				Cursor cursor = remindDao.getUnAcceptRemind((currentpage - 1) * number, notShowCount);
+				temp = DataBaseParser.getRemindDetail(cursor);
+				cursor.close();
+				// 显示今天的提醒
+				Cursor cursor1 = remindDao.getTodayRemind(today, (currentpage - 1 - (notAcceptCount / 1)) * number, number - notShowCount);
+				temp.addAll(DataBaseParser.getRemindDetail(cursor1));
+				cursor1.close();
+			} else {
+				// 未接受提醒全部显示
+				if (loadfinish) {
+					// 显示今天提醒，今天提醒足够显示当前页
+					Cursor cursor = remindDao.getTodayRemind(today, (currentpage - 1 - (notAcceptCount / 1)) * number, number);
+					temp = DataBaseParser.getRemindDetail(cursor);
+					cursor.close();
+				} else {
+					// 今天提醒不够当前页，判断是否还有今天提醒没有显示
+					if (loadfinish) {
+						// 还有今天提醒没有显示
+						
+					} else {
+						// 今天提醒全部显示，显示其他
+						
+					}
+				}
+				
+			}
+		}
 		
-		Cursor cursor = remindDao.queryForMain(today, (currentpage - 1) * number, number);
-		ArrayList<RemindEntity> temp = DataBaseParser.getRemindDetail(cursor);
-		cursor.close();
+		
+		
+		datas.addAll(temp);
+	}
+	
+	/**
+	 * 获取下一页的数据
+	 * @param page		下一页页码
+	 */
+	public void getNextPageDatas(int page) {
+		List<RemindEntity> temp = new ArrayList<RemindEntity>();
+		int currentCount = page * number;
+		if (currentCount <= notAcceptCount) {
+			// 显示未接受的数据
+			Cursor cursor = remindDao.getUnAcceptRemind((page - 1) * number, number);
+			temp = DataBaseParser.getRemindDetail(cursor);
+			cursor.close();
+		} else if (currentCount <= (notAcceptCount + todayCount)){
+			// 显示未接受的数据和今天的
+			int notShowCount = notAcceptCount - (page - 1) * number;
+			if (notShowCount > 0) {
+				// 还有未接受提醒没有显示
+				Cursor cursor = remindDao.getUnAcceptRemind((page - 1) * number, notShowCount);
+				temp = DataBaseParser.getRemindDetail(cursor);
+				cursor.close();
+				// 显示今天的提醒
+				Cursor cursor1 = remindDao.getTodayRemind(today, 0, number - notShowCount);
+				temp.addAll(DataBaseParser.getRemindDetail(cursor1));
+				cursor1.close();
+			} else {
+				// 未接受提醒全部显示
+				Cursor cursor1 = remindDao.getTodayRemind(today, (page - 1) * number - notAcceptCount, number);
+				temp = DataBaseParser.getRemindDetail(cursor1);
+				cursor1.close();
+			}
+			
+		} else if (currentCount <= (notAcceptCount + todayCount + otherDayCount)){
+			// 显示其他天的数据和今天的
+			int notShowCount = notAcceptCount + todayCount - (page - 1) * number;
+			if (notShowCount > 0) {
+				// 还有今天提醒没有显示
+				Cursor cursor = remindDao.getTodayRemind(today, (page - 1) * number - notAcceptCount, notShowCount);
+				temp = DataBaseParser.getRemindDetail(cursor);
+				cursor.close();
+				// 显示其他天的提醒
+				Cursor cursor1 = remindDao.getOtherdayRemind(today, 0, number - notShowCount);
+				temp.addAll(DataBaseParser.getRemindDetail(cursor1));
+				cursor1.close();
+			} else {
+				// 今天提醒全部显示
+				Cursor cursor1 = remindDao.getOtherdayRemind(today, (page - 1) * number - notAcceptCount - todayCount, number);
+				temp = DataBaseParser.getRemindDetail(cursor1);
+				cursor1.close();
+			}
+		}
+		
 		datas.addAll(temp);
 	}
 }
