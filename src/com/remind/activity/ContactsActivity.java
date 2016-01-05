@@ -37,6 +37,11 @@ import com.remind.dao.impl.PeopelDaoImpl;
 import com.remind.entity.PeopelEntity;
 import com.remind.util.AppUtil;
 
+/**
+ * @author ChenLong
+ *
+ *	联系人界面
+ */
 public class ContactsActivity extends ListActivity {
 
 	private Context mContext = null;
@@ -170,7 +175,7 @@ public class ContactsActivity extends ListActivity {
 	 */
 	private void addPersonIntoDB(int position) {
 		Date date = new Date();
-		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		PeopelEntity entity = new PeopelEntity(mContactsName.get(position),
 				mContactsName.get(position), mContactsNumber.get(position),
 				format.format(date), format.format(date),
