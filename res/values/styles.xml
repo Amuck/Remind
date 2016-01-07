@@ -36,4 +36,7 @@
         <item name="android:layout_gravity">center</item>
     </style>
 
+    	<style name="CustomCheckboxRectangle" parent="@android:style/Widget.CompoundButton.CheckBox">  
+	    <item name="android:button">@drawable/check_box_style_rectangle</item>  
+	</style>
 </resources>

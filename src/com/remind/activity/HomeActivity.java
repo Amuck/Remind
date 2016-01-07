@@ -312,7 +312,8 @@ public class HomeActivity extends BaseActivity implements OnClickListener {
 	public void onClick(View v) {
 		switch (v.getId()) {
 		case R.id.user_btn:
-
+			// 用户注册登陆
+			startActivity(new Intent(HomeActivity.this, LoginActivity.class));
 			break;
 		case R.id.more_btn:
 			// 添加提醒

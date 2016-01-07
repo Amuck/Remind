@@ -53,6 +53,19 @@ public class HttpClient {
 		public String password;
 	}
 	
+	/**
+	 * 获取登陆的json数据
+	 * @param mobile
+	 * @param pwd
+	 * @return
+	 */
+	public static Login getUserForLogin(String mobile, String pwd) {
+		Login login = new Login();
+		login.mobile = mobile;
+		login.password = pwd;
+		return login;
+	}
+	
 	public static Login loginUser1() {
 		Login login = new Login();
 		login.mobile = "13716022537";
@@ -67,6 +80,23 @@ public class HttpClient {
 		return login;
 	}
 
+	/**
+	 * 获取注册用户需要的json
+	 * @param mobile
+	 * @param pwd
+	 * @param nick
+	 * @param avatar
+	 * @return
+	 */
+	public static UserInfo getUserForReg(String mobile, String pwd, String nick, String avatar) {
+		UserInfo userInfo = new UserInfo();
+		userInfo.mobile = mobile;
+		userInfo.password = pwd;
+		userInfo.nick = nick;
+		userInfo.avatar = avatar;
+		return userInfo;
+	}
+	
 	public static UserInfo getUser1() {
 		UserInfo userInfo = new UserInfo();
 		userInfo.mobile = "13716022537";
@@ -114,7 +144,7 @@ public class HttpClient {
 	}
 	
 	/**
-	 * @return
+	 * @return		将对象转换为相应的json
 	 */
 	public static String getJsonForPost(Object object) {
 		String result = "";

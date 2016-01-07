@@ -47,4 +47,7 @@
     <drawable name="type_bkgnd_music">#88000000</drawable>
     <drawable name="type_bkgnd_unsupported">#88cccccc</drawable>
 
+    <!-- LOGIN -->
+    <color name="login_words">#5B5B5B</color>
+    
 </resources>
