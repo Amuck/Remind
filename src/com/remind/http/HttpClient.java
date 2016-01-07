@@ -188,6 +188,36 @@ public class HttpClient {
 	}
 	
 	/**
+	 * 获取提醒内容json
+	 * 
+	 * @param user_id		使用者号码
+	 * @param owner_id		拥有者号码
+	 * @param title			标题
+	 * @param isPrev		是否可以预览
+	 * @param time			提醒时间
+	 * @param type			重复响铃类型
+	 * @return
+	 */
+	public static String getCreateNofiJsonForPost(String user_id, String owner_id, String title, String isPrev,
+			String time, String type) {
+		Gson gson = new Gson();
+		String result = "";
+		Notify notify = new Notify();
+		notify.user_id = user_id;
+		notify.owner_id = owner_id;
+		Content content = new Content();
+		content.title = title;
+		content.isPrev = isPrev;
+		content.time = time;
+		content.type = type;
+		notify.content = content;
+//		JSONArray jsonObject = new JSONArray();
+//		jsonObject.
+		result = gson.toJson(notify);
+		return notify.toString();
+	}
+	
+	/**
 	 * @return
 	 */
 	public static String getCreateNofiJsonForPost() {

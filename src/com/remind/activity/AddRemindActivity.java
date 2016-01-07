@@ -1,10 +1,7 @@
 package com.remind.activity;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 
 import android.app.AlertDialog;
@@ -13,6 +10,9 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
+import android.text.TextUtils;
 import android.view.Gravity;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -38,13 +38,26 @@ import com.remind.dao.impl.PeopelDaoImpl;
 import com.remind.dao.impl.RemindDaoImpl;
 import com.remind.entity.PeopelEntity;
 import com.remind.entity.RemindEntity;
+import com.remind.http.HttpClient;
 import com.remind.util.AppUtil;
 import com.remind.util.DataBaseParser;
+import com.remind.util.NetWorkUtil;
 import com.remind.view.SwitchButton;
 import com.remind.view.SwitchButton.OnSwitchListener;
 
+/**
+ * 添加提醒
+ * 
+ * @author ChenLong
+ *
+ */
 public class AddRemindActivity extends AbActivity implements OnClickListener {
-
+	private final static int HTTP_OVER = 0;
+	private final static int LOGIN_SUCCESS = 1;
+	/**
+	 * 提醒对象
+	 */
+	private RemindEntity remindEntity;
 	/**
 	 * 选择联系人按钮
 	 */
@@ -161,6 +174,43 @@ public class AddRemindActivity extends AbActivity implements OnClickListener {
 	 */
 	private String repeatType = RemindEntity.REPEAT_NO;
 
+	private Handler handler = new Handler() {
+		@Override
+		public void handleMessage(Message msg) {
+
+			switch (msg.what) {
+			case HTTP_OVER:
+				String s = (String) msg.obj;
+				if (TextUtils.isEmpty(s) || s.length() < 10) {
+					// 失败
+					removeProgressDialog();
+					Toast.makeText(AddRemindActivity.this, "失败，请重试",
+							Toast.LENGTH_SHORT).show();
+				} else {
+					// 成功
+					handler.sendEmptyMessage(LOGIN_SUCCESS);
+				}
+				
+				break;
+			case LOGIN_SUCCESS:
+				// 成功
+				
+				long id = remindDao.insertRemind(remindEntity);
+				Intent intent = new Intent(AddRemindActivity.this, ChatActivity.class);
+				remindEntity.setId(id + "");
+				intent.putExtra("remind", remindEntity);
+				setResult(RESULT_OK, intent);
+				
+				removeProgressDialog();
+
+				finish();
+				break;
+
+			}
+
+		}
+	};
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -276,7 +326,6 @@ public class AddRemindActivity extends AbActivity implements OnClickListener {
 //		}
 //	};
 	
-	@SuppressWarnings("deprecation")
 	@Override
 	public void onClick(View v) {
 		switch (v.getId()) {
@@ -319,34 +368,8 @@ public class AddRemindActivity extends AbActivity implements OnClickListener {
 //				break;
 //			}
 
-			String remindTime = selectDateBtn.getText().toString() + " "
-					+ selectTimeBtn.getText().toString();
+			createNotify();
 			
-			String remindTimeMili = System.currentTimeMillis() + "";
-			RemindEntity remindEntity = new RemindEntity("", AppUtil.getPhoneNumber(this),
-					currentPeopel.getNum(), currentPeopel.getName(),
-					currentPeopel.getNickName(), AppUtil.getNowTime(),
-					remindTimeMili, "一起去吃饭吧", remindTime
-					, remindTime, selectTitleBtn
-							.getText().toString(), repeatType, isPreview);
-			
-			if (isForSelf) {
-				// 如果为自己，设置为已接受的提醒
-				remindEntity.setRemindState(RemindEntity.ACCEPT);
-			} else {
-				// 如果为别人，设置为我发起的提醒
-				remindEntity.setRemindState(RemindEntity.LAUNCH);
-			}
-			long id = remindDao.insertRemind(remindEntity);
-			if (isForSelf)
-				// TODO 测试为自己添加任务
-				AppUtil.setAlarm(this, remindEntity.getRemindTime(), (int) id);
-
-			Intent intent = new Intent(AddRemindActivity.this, ChatActivity.class);
-			remindEntity.setId(id + "");
-			intent.putExtra("remind", remindEntity);
-			setResult(RESULT_OK, intent);
-			finish();
 			break;
 		case R.id.title_cancel:
 			// 取消
@@ -356,6 +379,57 @@ public class AddRemindActivity extends AbActivity implements OnClickListener {
 		default:
 			break;
 		}
+	}
+	
+	/**
+	 * 注册
+	 */
+	private void createNotify() {
+		String remindTime = selectDateBtn.getText().toString() + " "
+				+ selectTimeBtn.getText().toString();
+		
+		String remindTimeMili = System.currentTimeMillis() + "";
+		remindEntity = new RemindEntity("", AppUtil.getPhoneNumber(this),
+				currentPeopel.getNum(), currentPeopel.getName(),
+				currentPeopel.getNickName(), AppUtil.getNowTime(),
+				remindTimeMili, "一起去吃饭吧", remindTime
+				, remindTime, selectTitleBtn
+						.getText().toString(), repeatType, isPreview);
+		
+		if (isForSelf) {
+			// 如果为自己，设置为已接受的提醒
+			remindEntity.setRemindState(RemindEntity.ACCEPT);
+		} else {
+			// 如果为别人，设置为我发起的提醒
+			remindEntity.setRemindState(RemindEntity.LAUNCH);
+		}
+		
+		if (isForSelf) {
+			long id = remindDao.insertRemind(remindEntity);
+			// TODO 测试为自己添加任务
+			AppUtil.setAlarm(this, remindEntity.getRemindTime(), (int) id);
+		} else {
+			// 为别人添加任务
+			if (NetWorkUtil.isAvailable(AddRemindActivity.this)) {
+				showProgressDialog();
+				new Thread(new Runnable() {
+
+					@Override
+					public void run() {
+						String params = HttpClient.getCreateNofiJsonForPost(remindEntity.getTargetNum(), remindEntity.getOwnerNum(), remindEntity.getTitle(), remindEntity.getIsPreview() + "", remindEntity.getRemindTime(), remindEntity.getRepeatType());
+						String s = HttpClient.post(
+								HttpClient.url + HttpClient.create_notify, params);
+						Message msg = new Message();
+						msg.what = HTTP_OVER;
+						msg.obj = s;
+						handler.sendMessage(msg);
+					}
+				}).start();
+			} else {
+				showToast(getResources().getString(R.string.net_null));
+			}
+		}
+		
 	}
 	
 	/**
