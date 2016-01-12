@@ -96,6 +96,29 @@ public class PeopelDaoImpl implements PeopelDao {
 		Log.d(TAG, sql);
 		db.execSQL(sql);
 	}
+	
+	@Override
+	public void updateOwner(PeopelEntity entity) {
+		if (null == entity) {
+			return;
+		}
+		
+		SQLiteDatabase db = mDBHelper.getWritableDatabase();
+		StringBuffer sb = new StringBuffer();
+		sb.append("update " + PeopelMsg.TABLENAME + " set ");
+		sb.append(PeopelMsg.NAME + "	= '" + entity.getName() + "',");
+		sb.append(PeopelMsg.ADDTIME + "	= '" + entity.getAddTime() + "',");
+		sb.append(PeopelMsg.NICKNAME + "	= '" + entity.getNickName() + "',");
+		sb.append(PeopelMsg.IMGPATH + "	= '" + entity.getImgPath() + "',");
+		sb.append(PeopelMsg.UPDATETIME + "	= '" + entity.getUpdateTime() + "',");
+		sb.append(PeopelMsg.ISDELETE + "	= '" + entity.getIsDelete() + "',");
+		sb.append(PeopelMsg.STATUS + "	= '" + entity.getStatus() + "' ");
+		sb.append(" where " + PeopelMsg.ID + " = '" + 1 + "'");
+		String sql = sb.toString();
+		
+		Log.d(TAG, sql);
+		db.execSQL(sql);
+	}
 
 	@Override
 	public Cursor queryPeopel() {
@@ -113,6 +136,16 @@ public class PeopelDaoImpl implements PeopelDao {
 		SQLiteDatabase db = mDBHelper.getWritableDatabase();
 		String sql = "select * from " + PeopelMsg.TABLENAME + " where "
 				+ PeopelMsg.ISDELETE + " = 0 and " + PeopelMsg.NUM + " = '" + num + "'";
+		Cursor mCursor = null;
+		mCursor = db.rawQuery(sql, null);
+		return mCursor;
+	}
+
+	@Override
+	public Cursor queryOwner() {
+		SQLiteDatabase db = mDBHelper.getWritableDatabase();
+		String sql = "select * from " + PeopelMsg.TABLENAME + " where "
+				+ PeopelMsg.ISDELETE + " = 0 and " + PeopelMsg.ID + " = '" + 1 + "'";
 		Cursor mCursor = null;
 		mCursor = db.rawQuery(sql, null);
 		return mCursor;

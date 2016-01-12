@@ -30,111 +30,117 @@ public class RemindApplication extends Application {
 	/**
 	 * 晴
 	 */
-	public static int WEATHER_FINE = R.drawable.sun;
+	public final static int WEATHER_FINE = R.drawable.sun;
 	/**
 	 * 晴,夜间
 	 */
-	public static int WEATHER_FINE_NIGHT = R.drawable.sun_night;
+	public final static int WEATHER_FINE_NIGHT = R.drawable.sun_night;
 	/**
 	 * 多云
 	 */
-	public static int WEATHER_CLOUD = R.drawable.cloud;
+	public final static int WEATHER_CLOUD = R.drawable.cloud;
 	/**
 	 * 多云,夜间
 	 */
-	public static int WEATHER_CLOUD_NIGHT = R.drawable.cloud_night;
+	public final static int WEATHER_CLOUD_NIGHT = R.drawable.cloud_night;
 	/**
 	 * 雾霾,暂无
 	 */
-	public static int WEATHER_HAZE = R.drawable.sun;
+	public final static int WEATHER_HAZE = R.drawable.sun;
 	/**
 	 * 雾
 	 */
-	public static int WEATHER_FOG = R.drawable.fog;
+	public final static int WEATHER_FOG = R.drawable.fog;
 	/**
 	 * 暴雨
 	 */
-	public static int WEATHER_BAOYU = R.drawable.rain_bao;
+	public final static int WEATHER_BAOYU = R.drawable.rain_bao;
 	/**
 	 * 大暴雨
 	 */
-	public static int WEATHER_DABAOYU = R.drawable.rain_da_bao;
+	public final static int WEATHER_DABAOYU = R.drawable.rain_da_bao;
 	/**
 	 * 特大暴雨
 	 */
-	public static int WEATHER_TEDABAO = R.drawable.rain_te_da;
+	public final static int WEATHER_TEDABAO = R.drawable.rain_te_da;
 	/**
 	 * 大雨
 	 */
-	public static int WEATHER_DAYU = R.drawable.rain_da;
+	public final static int WEATHER_DAYU = R.drawable.rain_da;
 	/**
 	 * 中雨
 	 */
-	public static int WEATHER_ZHONGYU = R.drawable.rain_zhong;
+	public final static int WEATHER_ZHONGYU = R.drawable.rain_zhong;
 	/**
 	 * 小雨
 	 */
-	public static int WEATHER_XIAOYU = R.drawable.rain_xiao;
+	public final static int WEATHER_XIAOYU = R.drawable.rain_xiao;
 	/**
 	 * 阵雨
 	 */
-	public static int WEATHER_ZHENYU = R.drawable.zhen_yu;
+	public final static int WEATHER_ZHENYU = R.drawable.zhen_yu;
 	/**
 	 * 雷阵雨
 	 */
-	public static int WEATHER_LEIZHENYU = R.drawable.lei_zhen_yu;
+	public final static int WEATHER_LEIZHENYU = R.drawable.lei_zhen_yu;
 	/**
 	 * 雨夹雪
 	 */
-	public static int WEATHER_YUJIAXUE = R.drawable.rain_and_snow;
+	public final static int WEATHER_YUJIAXUE = R.drawable.rain_and_snow;
 	/**
 	 * 阵雪
 	 */
-	public static int WEATHER_ZHENXUE = R.drawable.snow_zhen;
+	public final static int WEATHER_ZHENXUE = R.drawable.snow_zhen;
 	/**
 	 * 小雪
 	 */
-	public static int WEATHER_SNOW = R.drawable.snow_xiao;
+	public final static int WEATHER_SNOW = R.drawable.snow_xiao;
 	/**
 	 * 中雪
 	 */
-	public static int WEATHER_ZHONGXUE = R.drawable.snow_zhong;
+	public final static int WEATHER_ZHONGXUE = R.drawable.snow_zhong;
 	/**
 	 * 大雪
 	 */
-	public static int WEATHER_DAXUE = R.drawable.snow_da;
+	public final static int WEATHER_DAXUE = R.drawable.snow_da;
 	/**
 	 * 暴雪
 	 */
-	public static int WEATHER_BAOXUE = R.drawable.snow_bao;
+	public final static int WEATHER_BAOXUE = R.drawable.snow_bao;
 	/**
 	 * 阴
 	 */
-	public static int WEATHER_YIN = R.drawable.yin;
+	public final static int WEATHER_YIN = R.drawable.yin;
 	/**
 	 * 冻雨
 	 */
-	public static int WEATHER_DONGYU = R.drawable.rain_freeze;
+	public final static int WEATHER_DONGYU = R.drawable.rain_freeze;
 	/**
 	 * 浮尘
 	 */
-	public static int WEATHER_FUCHEN = R.drawable.fu_chen;
+	public final static int WEATHER_FUCHEN = R.drawable.fu_chen;
 	/**
 	 * 沙尘暴
 	 */
-	public static int WEATHER_SHACHENBAO = R.drawable.sha_chen_bao;
+	public final static int WEATHER_SHACHENBAO = R.drawable.sha_chen_bao;
 	/**
 	 * 强沙尘暴
 	 */
-	public static int WEATHER_SHACHENBAO_QIANG = R.drawable.sha_chen_bao_qiang;
+	public final static int WEATHER_SHACHENBAO_QIANG = R.drawable.sha_chen_bao_qiang;
 	/**
 	 * 扬沙
 	 */
-	public static int WEATHER_YANGSHA = R.drawable.yang_sha;
+	public final static int WEATHER_YANGSHA = R.drawable.yang_sha;
 	/**
 	 * 冰雹
 	 */
-	public static int WEATHER_BINGBAO = R.drawable.bing_bao;
+	public  final static int WEATHER_BINGBAO = R.drawable.bing_bao;
+	
+	/**
+	 * 是否登陆
+	 */
+	public static boolean IS_LOGIN = false;
+	
 	
 	public LocationClient mLocationClient;
 	public MyLocationListener mMyLocationListener;

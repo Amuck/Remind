@@ -2,7 +2,6 @@ package com.remind.activity;
 
 import java.io.File;
 import java.io.InputStream;
-import java.util.ArrayList;
 
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
@@ -18,7 +17,6 @@ import android.text.Spanned;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.Window;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -32,7 +30,6 @@ import com.remind.dao.impl.PeopelDaoImpl;
 import com.remind.entity.MessageIndexEntity;
 import com.remind.entity.PeopelEntity;
 import com.remind.util.AppUtil;
-import com.remind.util.DataBaseParser;
 import com.remind.view.RoleDetailImageView;
 
 /**
@@ -171,22 +168,32 @@ public class EditPeopelActivity extends BaseActivity implements OnClickListener 
 	 * 设置头像
 	 */
 	private void setupImg() {
-		// 显示图片
-		BitmapFactory.Options options = new BitmapFactory.Options();
-		options.inSampleSize = 2;
-		Bitmap bm = BitmapFactory
-				.decodeFile(peopelEntity.getImgPath(), options);
+		
+		try {
+			// 如果头像是软件自带的图片
+			int id = Integer.valueOf(imgPath);
+			imgView.setImageResource(id);
+			imgView.init();
+		} catch (Exception e) {
+			// 如果头像是用户上传的图片
+			
+			// 显示图片
+			BitmapFactory.Options options = new BitmapFactory.Options();
+			options.inSampleSize = 2;
+			Bitmap bm = BitmapFactory
+					.decodeFile(peopelEntity.getImgPath(), options);
 
-		if (bm == null) {
-			// from contacts
-			Uri uri = Uri.parse(peopelEntity.getImgPath());
-			InputStream input = ContactsContract.Contacts
-					.openContactPhotoInputStream(this.getContentResolver(), uri);
-			bm = BitmapFactory.decodeStream(input);
+			if (bm == null) {
+				// from contacts
+				Uri uri = Uri.parse(peopelEntity.getImgPath());
+				InputStream input = ContactsContract.Contacts
+						.openContactPhotoInputStream(this.getContentResolver(), uri);
+				bm = BitmapFactory.decodeStream(input);
+			}
+
+			imgView.setImageDrawable(AppUtil.bitmapToDrawable(bm));
+			imgView.init();
 		}
-
-		imgView.setImageDrawable(AppUtil.bitmapToDrawable(bm));
-		imgView.init();
 	}
 
 	/**

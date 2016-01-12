@@ -46,4 +46,14 @@ public interface PeopelDao {
 	 * @return
 	 */
 	public String getImgPath(String num);
+	/**
+	 * 查询登陆用户信息
+	 * @return
+	 */
+	public Cursor queryOwner();
+	/**
+	 * 更新登陆用户信息
+	 * @param entity
+	 */
+	public void updateOwner(PeopelEntity entity);
 }

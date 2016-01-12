@@ -6,11 +6,15 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,6 +25,7 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.baidu.location.LocationClient;
 import com.baidu.location.LocationClientOption;
@@ -30,10 +35,14 @@ import com.help.remind.R;
 import com.remind.adapter.RemindAdapter;
 import com.remind.application.RemindApplication;
 import com.remind.asyn.ImageLoader;
+import com.remind.dao.PeopelDao;
 import com.remind.dao.RemindDao;
+import com.remind.dao.impl.PeopelDaoImpl;
 import com.remind.dao.impl.RemindDaoImpl;
+import com.remind.entity.PeopelEntity;
 import com.remind.entity.RemindEntity;
 import com.remind.global.AppConstant;
+import com.remind.sevice.BackService;
 import com.remind.sp.WeatherSp;
 import com.remind.util.AppUtil;
 import com.remind.util.DataBaseParser;
@@ -105,9 +114,51 @@ public class HomeActivity extends BaseActivity implements OnClickListener {
 	 * 提醒数据库
 	 */
 	private RemindDao remindDao;
+	/**
+	 * 用户联系人数据库
+	 */
+	private PeopelDao peopelDao;
 	private String today;
 	private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 	
+	private MessageBackReciver mReciver;
+
+	private IntentFilter mIntentFilter;
+	
+	private LocalBroadcastManager mLocalBroadcastManager;
+	
+	/**
+	 * @author ChenLong
+	 *
+	 *	推送消息发送过来
+	 */
+	class MessageBackReciver extends BroadcastReceiver {
+//		private WeakReference<TextView> textView;
+
+		public MessageBackReciver() {
+//			textView = new WeakReference<TextView>(tv);
+		}
+//		public MessageBackReciver(TextView tv) {
+//			textView = new WeakReference<TextView>(tv);
+//		}
+
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			String action = intent.getAction();
+//			TextView tv = textView.get();
+			if (action.equals(BackService.HEART_BEAT_ACTION)) {
+//				if (null != tv) {
+//					tv.setText("Get a heart heat");
+//				}
+				Toast.makeText(HomeActivity.this, "Get a heart heat", Toast.LENGTH_SHORT).show();
+			} else {
+				String message = intent.getStringExtra("message");
+//				tv.setText(message);
+				Toast.makeText(HomeActivity.this, message, Toast.LENGTH_SHORT).show();
+			}
+		};
+	}
+
 	private Handler handler = new Handler() {
 		public void handleMessage(android.os.Message msg) {
 			switch (msg.what) {
@@ -147,8 +198,15 @@ public class HomeActivity extends BaseActivity implements OnClickListener {
 		listView = (PullToZoomListViewEx) findViewById(R.id.listview);
 		footer = LayoutInflater.from(this).inflate(R.layout.itembottom, null);
 		remindDao = new RemindDaoImpl(this);
+		peopelDao = new PeopelDaoImpl(this);
 		today = dateFormat.format(new Date());
 
+		mLocalBroadcastManager = LocalBroadcastManager.getInstance(this);
+		mReciver = new MessageBackReciver();
+		mIntentFilter = new IntentFilter();
+		mIntentFilter.addAction(BackService.HEART_BEAT_ACTION);
+		mIntentFilter.addAction(BackService.MESSAGE_ACTION);
+		
 		initWeather();
 		getLocationAndWeather();
 		setUpView();
@@ -294,10 +352,17 @@ public class HomeActivity extends BaseActivity implements OnClickListener {
 		maxpage = (int) Math.ceil((double ) maxCount/ (double )number);
 		datas.clear();
 	}
+	
+	@Override
+	protected void onStart() {
+		super.onStart();
+		mLocalBroadcastManager.registerReceiver(mReciver, mIntentFilter);
+	}
 
 	@Override
 	protected void onStop() {
 		super.onStop();
+		mLocalBroadcastManager.unregisterReceiver(mReciver);
 		mLocationClient.stop();
 		((RemindApplication) getApplication()).cancelRequest();
 	}
@@ -312,8 +377,19 @@ public class HomeActivity extends BaseActivity implements OnClickListener {
 	public void onClick(View v) {
 		switch (v.getId()) {
 		case R.id.user_btn:
-			// 用户注册登陆
-			startActivity(new Intent(HomeActivity.this, LoginActivity.class));
+			// 是否登陆
+			if (!RemindApplication.IS_LOGIN) {
+				// 未登录，跳转用户注册登陆
+				startActivity(new Intent(HomeActivity.this, LoginActivity.class));
+			} else {
+				// 已登录，跳转用户信息
+				Cursor cursor = peopelDao.queryOwner();
+				ArrayList<PeopelEntity> lists = DataBaseParser.getPeoPelDetail(cursor);
+				cursor.close();
+				Intent i = new Intent(HomeActivity.this, EditPeopelActivity.class);
+				i.putExtra("peopel", lists.get(0));
+				startActivity(i);
+			}
 			break;
 		case R.id.more_btn:
 			// 添加提醒

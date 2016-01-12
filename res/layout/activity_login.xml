@@ -136,7 +136,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="37dip"
                     android:layout_marginLeft="29dip"
-                    android:text="@string/user_login_title"
+                    android:text="@string/user_reg_title"
                     android:textColor="@color/black" />
 
             </LinearLayout>

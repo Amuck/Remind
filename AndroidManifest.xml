@@ -125,11 +125,11 @@
         </service>
         
         <service android:name="com.remind.sevice.BackService" >
-        </service>HttpClient.java
+        </service>
 
         <meta-data
             android:name="com.baidu.lbsapi.API_KEY"
-            android:value="请输入AK" />
+            android:value="qgnWdZY2Pz8IZbIOGhED4lKo" />
     </application>
 
 </manifest>

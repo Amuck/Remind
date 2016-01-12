@@ -141,7 +141,6 @@ public class BackService extends Service {
 //				try {
 //					Thread.sleep(100);
 //				} catch (InterruptedException e) {
-//					// TODO Auto-generated catch block
 //					e.printStackTrace();
 //				}
 //				out.write(bs);
@@ -155,7 +154,6 @@ public class BackService extends Service {
 			e.printStackTrace();
 			return false;
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return true;

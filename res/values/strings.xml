@@ -12,7 +12,7 @@
     <string name="peopel_empty">您还没有联系人，快来添加一个试试吧！</string>
     
     <string name="name">名称</string>
-    <string name="nick">备注</string>
+    <string name="nick">昵称</string>
     <string name="num">号码</string>
     <string name="img">头像</string>
     <string name="explor">浏览</string>

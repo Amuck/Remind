@@ -22,6 +22,8 @@ public class HttpClient {
 //	\"password\":\"123456\"," +
 //			"\"nick\":\"123\"," +
 //			"\"avatar\":\"http://sdfsdf.1.pig\"}" -v
+	public static String TYPE_NOTIFICATION = "notificatin";
+	public static String REGIST_MID = "socket_regist";
 	public static String ip = "101.200.200.49";
 	public static String port = "8008";
 	public static String url = "http://" + ip + ":" + port;
@@ -84,8 +86,8 @@ public class HttpClient {
 	 * 获取注册用户需要的json
 	 * @param mobile
 	 * @param pwd
-	 * @param nick
-	 * @param avatar
+	 * @param nick			用户昵称
+	 * @param avatar		用户头像
 	 * @return
 	 */
 	public static UserInfo getUserForReg(String mobile, String pwd, String nick, String avatar) {
@@ -185,6 +187,42 @@ public class HttpClient {
 			
 			return result;
 		}
+	}
+	
+	static class SocketRegist {
+		public String type;
+		public SocketFrom from;
+		public String mid;
+	}
+	
+	static class SocketFrom {
+		public String app_id;
+		public String version;
+		public String from_id;
+	}
+	
+	/**
+	 * 获取注册socket的实体类
+	 * 
+	 * @param type
+	 * @param mid			标识是否发送成功的id
+	 * @param app_id		应用名称
+	 * @param version		应用版本
+	 * @param from_id		用户登陆返回id
+	 * @return
+	 */
+	public static SocketRegist getSocketRegist(String type, String mid, String app_id, String version, String from_id) {
+		SocketFrom socketFrom = new SocketFrom();
+		socketFrom.app_id = app_id;
+		socketFrom.version = version;
+		socketFrom.from_id = from_id;
+		
+		SocketRegist regist = new SocketRegist();
+		regist.type = type;
+		regist.mid = mid;
+		regist.from = socketFrom;
+		
+		return regist;
 	}
 	
 	/**
