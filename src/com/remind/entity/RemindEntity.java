@@ -217,6 +217,7 @@ public class RemindEntity implements Serializable{
 	}
 
 	/**
+	 * @param id			id
 	 * @param ownerNum		本机手机号
 	 * @param targetNum		对方手机号
 	 * @param targetName	对方联系人名称

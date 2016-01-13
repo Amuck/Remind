@@ -103,6 +103,10 @@ public class ChatActivity extends BaseActivity implements OnClickListener, OnScr
 	 */
 	private PeopelEntity peopelEntity;
 	/**
+	 * 登陆用户
+	 */
+	private PeopelEntity user;
+	/**
 	 * 用户消息
 	 */
 	private MessageEntity userMessageEntity;
@@ -177,9 +181,20 @@ public class ChatActivity extends BaseActivity implements OnClickListener, OnScr
 
 		Intent intent = getIntent();
 		num = intent.getStringExtra("num");
+		if (null == num || num.length() <= 0) {
+			AppUtil.showToast(this, "聊天窗口打开失败，请重试");
+			finish();
+			return;
+		}
+		// 获取当前聊天对象
 		Cursor cursor = peopelDao.queryPeopelByNum(num);
 		peopelEntity = DataBaseParser.getPeoPelDetail(cursor).get(0);
 		cursor.close();
+		// 获取登陆用户
+		Cursor cursor1 = peopelDao.queryOwner();
+		user = DataBaseParser.getPeoPelDetail(cursor1).get(0);
+		cursor1.close();
+		
 //		String remindId = intent.getStringExtra("remind_id");
 //		Cursor cursor = messageIndexDao.queryByNum(num);
 //		if (cursor.getCount() > 0) {
@@ -190,10 +205,6 @@ public class ChatActivity extends BaseActivity implements OnClickListener, OnScr
 //		}
 //			cursor.close();
 		
-//		if (null == messageIndexEntity) {
-//			AppUtil.showToast(this, "聊天窗口打开失败，请重试");
-//			finish();
-//		}
 //		if (null == messageIndexEntity) {
 //			AppUtil.showToast(this, "聊天窗口打开失败，请重试");
 //			finish();
@@ -277,14 +288,14 @@ public class ChatActivity extends BaseActivity implements OnClickListener, OnScr
 	private void initMessageEntity() {
 		// TODO 发送状态的改变
 		userMessageEntity = new MessageEntity("", peopelEntity.getName(), 
-				peopelEntity.getNum(), AppUtil.getUserName(),
-				AppUtil.getPhoneNumber(this), AppUtil.getNowTime(), 
+				peopelEntity.getNum(), user.getName(),
+				user.getNum(), AppUtil.getNowTime(), 
 				MessageEntity.SEND_SUCCESS, MessageEntity.NORMAL, 
 				MessageEntity.TYPE_TEXT, "", "", peopelEntity.getNum(),
 				MessageEntity.TYPE_SEND, "");
 		
-		contactMessageEntity = new MessageEntity("", AppUtil.getUserName(),
-				AppUtil.getPhoneNumber(this), peopelEntity.getName(), 
+		contactMessageEntity = new MessageEntity("", user.getName(),
+				user.getNum(), peopelEntity.getName(), 
 				peopelEntity.getNum(), AppUtil.getNowTime(), 
 				MessageEntity.SEND_SUCCESS, MessageEntity.NORMAL, 
 				MessageEntity.TYPE_TEXT, "", "", peopelEntity.getNum(),

@@ -135,10 +135,14 @@ public class AddRemindActivity extends AbActivity implements OnClickListener {
 	private RemindDao remindDao;
 	private MessageDao messageDao;
 	/**
-	 * 当前选择联系人信息
+	 * 当前选择联系人信息，即接收本条消息的用户
 	 */
-	private PeopelEntity currentPeopel;
+	private PeopelEntity targetPeopel;
 
+	/**
+	 * 登陆用户
+	 */
+	private PeopelEntity user;
 	/**
 	 * 日期选择
 	 */
@@ -314,7 +318,15 @@ public class AddRemindActivity extends AbActivity implements OnClickListener {
 		selectTypeBtn.setOnClickListener(this);
 		moreBtn.setOnClickListener(this);
 //		repeatGroup.setOnCheckedChangeListener(repeatCheckListener);
-//		addSelf();
+		
+		Cursor cursor = peopelDao.queryOwner();
+		ArrayList<PeopelEntity> entities = DataBaseParser.getPeoPelDetail(cursor);
+		cursor.close();
+		if (null == entities || entities.size() <= 0) {
+			user = addSelf();
+		} else {
+			user = entities.get(0);
+		}
 	}
 
 	/**
@@ -373,7 +385,7 @@ public class AddRemindActivity extends AbActivity implements OnClickListener {
 //			break;
 		case R.id.title_ok:
 			// 确认
-			if (null == currentPeopel) {
+			if (null == targetPeopel) {
 				AppUtil.showToast(this, "请选择联系人");
 				break;
 			}
@@ -416,8 +428,8 @@ public class AddRemindActivity extends AbActivity implements OnClickListener {
 		
 		String remindTimeMili = System.currentTimeMillis() + "";
 		remindEntity = new RemindEntity("", AppUtil.getPhoneNumber(this),
-				currentPeopel.getNum(), currentPeopel.getName(),
-				currentPeopel.getNickName(), AppUtil.getNowTime(),
+				targetPeopel.getNum(), targetPeopel.getName(),
+				targetPeopel.getNickName(), AppUtil.getNowTime(),
 				remindTimeMili, "一起去吃饭吧", remindTime
 				, remindTime, selectTitleBtn
 						.getText().toString(), repeatType, isPreview);
@@ -432,8 +444,10 @@ public class AddRemindActivity extends AbActivity implements OnClickListener {
 		// 加入到remind数据库
 		remindId = remindDao.insertRemind(remindEntity);
 		// 加入到message数据库
-		messageEntity = new MessageEntity("", currentPeopel.getNum(), currentPeopel.getName(), currentPeopel.getNickName(), AppUtil.getPhoneNumber(this), AppUtil.getNowTime(), MessageEntity.SENDING, 
-				MessageEntity.NORMAL, MessageEntity.TYPE_REMIND, remindId + "", "", currentPeopel.getNum(), MessageEntity.TYPE_SEND, remindEntity.getContent());
+		messageEntity = new MessageEntity("", targetPeopel.getName(), targetPeopel.getNum(), 
+				user.getNickName(), user.getNum(), AppUtil.getNowTime(), 
+				MessageEntity.SENDING, MessageEntity.NORMAL, MessageEntity.TYPE_REMIND, 
+				remindId + "", "", targetPeopel.getNum(), MessageEntity.TYPE_SEND, remindEntity.getContent());
 		msgId = messageDao.insert(messageEntity);
 		
 		if (isForSelf) {
@@ -471,16 +485,18 @@ public class AddRemindActivity extends AbActivity implements OnClickListener {
 	/**
 	 * 将自己添加进数据库
 	 */
-	public void addSelf() {
+	public PeopelEntity addSelf() {
+		PeopelEntity myself = null;
 		String num = AppUtil.getPhoneNumber(AddRemindActivity.this);
 		Cursor cursor = peopelDao.queryPeopelByNum(num);
 		if (cursor != null && cursor.getCount() > 0) {
 			
 		} else {
-			PeopelEntity myself = new PeopelEntity("自己", "自己", AppUtil.getPhoneNumber(AddRemindActivity.this), "", "", "", PeopelEntity.NORMAL, PeopelEntity.FRIEND);
+			myself = new PeopelEntity("自己", "自己", AppUtil.getPhoneNumber(AddRemindActivity.this), "", "", "", PeopelEntity.NORMAL, PeopelEntity.FRIEND);
 			peopelDao.insertPeopel(myself);
 		}
 		cursor.close();
+		return myself;
 	}
 
 	/**
@@ -501,7 +517,7 @@ public class AddRemindActivity extends AbActivity implements OnClickListener {
 			@Override
 			public void onClick(View v) {
 				isForSelf = true;
-				currentPeopel = new PeopelEntity("自己", "自己", AppUtil.getPhoneNumber(AddRemindActivity.this), "", "", "", PeopelEntity.NORMAL, PeopelEntity.FRIEND);
+				targetPeopel = new PeopelEntity("自己", "自己", AppUtil.getPhoneNumber(AddRemindActivity.this), "", "", "", PeopelEntity.NORMAL, PeopelEntity.FRIEND);
 //				selectPeopelTxt.setText(getName(currentPeopel));
 				alertDialog.dismiss();
 			}
@@ -543,7 +559,7 @@ public class AddRemindActivity extends AbActivity implements OnClickListener {
 				}
 				
 				
-				currentPeopel = entity;
+				targetPeopel = entity;
 				selectPeopelBtn.setText(getName(entity));
 				selectPeopelBtn.setBackgroundResource(R.drawable.right_board);
 				alertDialog.dismiss();

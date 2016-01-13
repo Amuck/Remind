@@ -9,6 +9,7 @@ import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.params.CoreConnectionPNames;
 
 import android.content.res.AssetManager;
 
@@ -296,7 +297,12 @@ public class HttpClient {
 			HttpPost request = new HttpPost(httpUrl);
 			StringEntity se = new StringEntity(jsonString);
 			request.setEntity(se);
-			HttpResponse response = new DefaultHttpClient().execute(request);
+			DefaultHttpClient client = new DefaultHttpClient();
+			// 请求超时
+			client.getParams().setParameter(CoreConnectionPNames.CONNECTION_TIMEOUT, 20000);
+			// 读取超时
+			client.getParams().setParameter(CoreConnectionPNames.SO_TIMEOUT, 20000);
+			HttpResponse response = client.execute(request);
 			int code = response.getStatusLine().getStatusCode();
 			System.out.println("postCode= " + code);
 			// 若状态值为200，则ok

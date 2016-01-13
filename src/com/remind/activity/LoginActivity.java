@@ -394,7 +394,7 @@ public class LoginActivity extends BaseActivity implements OnClickListener {
 							peopelDao.insertPeopel(peopelEntity);
 						}
 						cursor.close();
-					} catch (JSONException e) {
+					} catch (Exception e) {
 						e.printStackTrace();
 						
 						handler.sendEmptyMessage(LOGIN_FAIL);
