@@ -18,6 +18,7 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.ab.adapter.AbImageShowAdapter.ViewHolder;
 import com.help.remind.R;
 import com.remind.asyn.ImageLoader;
 import com.remind.dao.PeopelDao;
@@ -165,11 +166,20 @@ public class ChatAdapter extends BaseAdapter {
 		
 		String imgPath = peopelDao.getImgPath(chatMessage.getSendNum());
 		viewHolder.personImg.setTag(imgPath);
-		viewHolder.personImg.setImageResource(R.drawable.white);
 		
-		if (null != imgPath && imgPath.trim().length() > 0 && viewHolder.personImg.getTag() != null && viewHolder.personImg.getTag().equals(imgPath)) {
-			imageLoader.DisplayImage(imgPath, viewHolder.personImg);
+		try {
+			// 如果头像是软件自带的图片
+			int id = Integer.valueOf(imgPath);
+			viewHolder.personImg.setImageResource(id);
+		} catch (Exception e) {
+			// 如果头像是用户上传的图片
+			if (null != imgPath && imgPath.trim().length() > 0 && viewHolder.personImg.getTag() != null && viewHolder.personImg.getTag().equals(imgPath)) {
+				imageLoader.DisplayImage(imgPath, viewHolder.personImg);
+			}
 		}
+//		viewHolder.personImg.setImageResource(R.drawable.white);
+		
+		
 		
 		return convertView;
 	}

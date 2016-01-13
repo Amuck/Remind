@@ -382,8 +382,10 @@ public class LoginActivity extends BaseActivity implements OnClickListener {
 						String num = et_user_mobile.getEditableText().toString();
 						PeopelEntity peopelEntity = new PeopelEntity();
 						peopelEntity.setNum(num);
+						peopelEntity.setName(nick);
 						peopelEntity.setNickName(nick);
 						peopelEntity.setImgPath(avatar);
+						peopelEntity.setStatus(PeopelEntity.FRIEND);
 
 						Cursor cursor = peopelDao.queryPeopel();
 						if (cursor != null && cursor.getCount() > 0) {
@@ -437,8 +439,11 @@ public class LoginActivity extends BaseActivity implements OnClickListener {
 		
 		boolean isSend = false;
 		try {
+			Thread.sleep(100);
 			isSend = iBackService.sendMessage(content);
 		} catch (RemoteException e) {
+			e.printStackTrace();
+		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
 		

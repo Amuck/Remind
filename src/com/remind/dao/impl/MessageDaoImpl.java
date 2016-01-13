@@ -23,9 +23,9 @@ public class MessageDaoImpl implements MessageDao {
 	}
 
 	@Override
-	public synchronized void insert(MessageEntity entity) {
+	public synchronized long insert(MessageEntity entity) {
 		if (null == entity) {
-			return;
+			return 0l;
 		}
 
 		SQLiteDatabase db = mDBHelper.getWritableDatabase();
@@ -47,7 +47,7 @@ public class MessageDaoImpl implements MessageDao {
 		values.put(MessageMsg.MSG_PATH, entity.getMsgPath());
 		values.put(MessageMsg.OTHER_TYPE_ID, entity.getOtherTypeId());
 
-		db.insert(MessageMsg.TABLENAME, null, values);
+		return db.insert(MessageMsg.TABLENAME, null, values);
 	}
 
 	@Override
@@ -60,6 +60,19 @@ public class MessageDaoImpl implements MessageDao {
 		db.execSQL(sql);
 	}
 
+	@Override
+	public synchronized void updateSendState(long msgId, String state) {
+		SQLiteDatabase db = mDBHelper.getWritableDatabase();
+		StringBuffer sb = new StringBuffer();
+		sb.append("update " + MessageMsg.TABLENAME + " set ");
+		sb.append(MessageMsg.SEND_STATE + "	= '" + state + "' ");
+		sb.append(" where " + MessageMsg.ID + " = '" + msgId + "'");
+		String sql = sb.toString();
+
+		Log.d(TAG, sql);
+		db.execSQL(sql);
+	}
+	
 	@Override
 	public synchronized void update(MessageEntity entity) {
 		if (null == entity) {
@@ -97,22 +110,22 @@ public class MessageDaoImpl implements MessageDao {
 	}
 
 	@Override
-	public synchronized Cursor query(String msgIndex) {
+	public synchronized Cursor query(String recieveNum) {
 		SQLiteDatabase db = mDBHelper.getWritableDatabase();
 		String sql = "select * from " + MessageMsg.TABLENAME + " where "
 				+ MessageMsg.ISDELETE + " = 0 and " + MessageMsg.MSG_INDEX
-				+ " = " + msgIndex + " order by " + MessageMsg.TIME + " asc ";
+				+ " = " + recieveNum + " order by " + MessageMsg.TIME + " asc ";
 		Cursor mCursor = null;
 		mCursor = db.rawQuery(sql, null);
 		return mCursor;
 	}
 
 	@Override
-	public int getCount(int msgIndex) {
+	public int getCount(String recieveNum) {
 		SQLiteDatabase db = mDBHelper.getWritableDatabase();
         String sql = "select count(*) from " + MessageMsg.TABLENAME + " where "
 				+ MessageMsg.ISDELETE + " = 0 and " + MessageMsg.MSG_INDEX
-				+ " = " + msgIndex;
+				+ " = " + recieveNum;
         Cursor c = db.rawQuery(sql, null);
         c.moveToFirst();
         int length = c.getInt(0);
@@ -121,13 +134,13 @@ public class MessageDaoImpl implements MessageDao {
 	}
 
 	@Override
-	public synchronized ArrayList<MessageEntity> getMsgByPage(int currentPage, int pageSize, String msgIndex) {
+	public synchronized ArrayList<MessageEntity> getMsgByPage(int currentPage, int pageSize, String recieveNum) {
 		int firstResult = (currentPage - 1) * pageSize;
 //        int maxResult = currentPage * pageSize;
         SQLiteDatabase db = mDBHelper.getWritableDatabase();
         String sql = "select * from " + MessageMsg.TABLENAME + " where "
 				+ MessageMsg.ISDELETE + " = 0 and " + MessageMsg.MSG_INDEX
-				+ " = " + msgIndex  + " order by " + MessageMsg.ID + " desc limit ?,? ";
+				+ " = " + recieveNum  + " order by " + MessageMsg.ID + " desc limit ?,? ";
         Cursor mCursor = db.rawQuery(
                 sql,
                 new String[] { String.valueOf(firstResult),

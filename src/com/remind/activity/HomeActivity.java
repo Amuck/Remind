@@ -187,6 +187,7 @@ public class HomeActivity extends BaseActivity implements OnClickListener {
 		setContentView(R.layout.activity_home);
 
 		createFile();
+		// TODO 删除超过30天的数据
 
 		userInfoBtn = (Button) findViewById(R.id.user_btn);
 		moreBtn = (Button) findViewById(R.id.more_btn);
@@ -269,7 +270,16 @@ public class HomeActivity extends BaseActivity implements OnClickListener {
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view,
 					int position, long id) {
-
+				if (position > 0) {
+					// 点击提醒信息
+					RemindEntity temp = datas.get(position - 1);
+					Intent intent = new Intent(HomeActivity.this, ChatActivity.class);
+					intent.putExtra("num", temp.getTargetNum());
+					intent.putExtra("remind_id", temp.getId());
+					startActivity(intent);
+				} else {
+					// 点击天气信息
+				}
 			}
 		});
 

@@ -1,5 +1,14 @@
 package com.remind.dao.msg;
 
+/**
+ * 存储message， 第一索引为联系人手机号,需要将MSG_INDEX设置为RECIEVE_NUM，第二索引为点击的提醒的id(OTHER_TYPE_ID,MSG_TYPE)；
+ * 建立/收到提醒后，将提醒加入数据库；
+ * 发送/收到消息后，将消息加入数据库；
+ * 发送消息/提醒等失败/成功后，需要修改发送状态SEND_STATE，失败的发送需要再次尝试
+ * 
+ * @author ChenLong
+ *
+ */
 public class MessageMsg {
 
 	/**

@@ -1,5 +1,12 @@
 package com.remind.dao.msg;
 
+/**
+ * 用户联系人表，第一次登陆时，将登陆账户作为第一联系人，状态STATUS修改为已添加，并且不可删除；
+ * 添加其他用户需要需改状态STATUS
+ * 
+ * @author ChenLong
+ *
+ */
 public class PeopelMsg {
 	/**
 	 * 表名

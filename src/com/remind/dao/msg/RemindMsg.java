@@ -1,5 +1,12 @@
 package com.remind.dao.msg;
 
+/**
+ * 提醒，需要根据提醒重复模式（REPEAT_TYPE）来计算下一次提醒时间（REMIND_TIME， REMIND_TIME_MILI），每次提醒增加提醒次数REMIND_COUNT；
+ * 
+ * 
+ * @author ChenLong
+ *
+ */
 public class RemindMsg {
 
 	/**

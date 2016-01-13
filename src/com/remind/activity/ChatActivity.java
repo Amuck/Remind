@@ -11,14 +11,12 @@ import android.database.Cursor;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
-import android.os.SystemClock;
 import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnTouchListener;
 import android.view.ViewGroup.LayoutParams;
-import android.view.Window;
 import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
@@ -40,12 +38,15 @@ import com.remind.adapter.ChatAdapter;
 import com.remind.adapter.ChatAdapter.ContentClickListener;
 import com.remind.dao.MessageDao;
 import com.remind.dao.MessageIndexDao;
+import com.remind.dao.PeopelDao;
 import com.remind.dao.RemindDao;
 import com.remind.dao.impl.MessageDaoImpl;
 import com.remind.dao.impl.MessageIndexDaoImpl;
+import com.remind.dao.impl.PeopelDaoImpl;
 import com.remind.dao.impl.RemindDaoImpl;
 import com.remind.entity.MessageEntity;
 import com.remind.entity.MessageIndexEntity;
+import com.remind.entity.PeopelEntity;
 import com.remind.entity.RemindEntity;
 import com.remind.global.AppConstant;
 import com.remind.record.SoundMeter;
@@ -55,7 +56,7 @@ import com.remind.util.DataBaseParser;
 /**
  * @author ChenLong
  * 
- *         聊天界面
+ *         聊天界面, 展示message数据库中的数据{@link com.remind.dao.msg.MessageMsg}
  */
 public class ChatActivity extends BaseActivity implements OnClickListener, OnScrollListener{
 	/**
@@ -96,6 +97,11 @@ public class ChatActivity extends BaseActivity implements OnClickListener, OnScr
 	private MessageIndexDao messageIndexDao;
 	private MessageDao messageDao;
 	private RemindDao remindDao;
+	private PeopelDao peopelDao;
+	/**
+	 * 聊天对象
+	 */
+	private PeopelEntity peopelEntity;
 	/**
 	 * 用户消息
 	 */
@@ -152,6 +158,10 @@ public class ChatActivity extends BaseActivity implements OnClickListener, OnScr
 	private long startVoiceT, endVoiceT;
 	private Handler mHandler = new Handler();
 	
+	/**
+	 * 接收人num
+	 */
+	private String num;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -163,22 +173,31 @@ public class ChatActivity extends BaseActivity implements OnClickListener, OnScr
 		messageIndexDao = new MessageIndexDaoImpl(this);
 		messageDao = new MessageDaoImpl(this);
 		remindDao = new RemindDaoImpl(this);
+		peopelDao = new PeopelDaoImpl(this);
 
 		Intent intent = getIntent();
-		String num = intent.getStringExtra("num");
-		Cursor cursor = messageIndexDao.queryByNum(num);
+		num = intent.getStringExtra("num");
+		Cursor cursor = peopelDao.queryPeopelByNum(num);
+		peopelEntity = DataBaseParser.getPeoPelDetail(cursor).get(0);
+		cursor.close();
+//		String remindId = intent.getStringExtra("remind_id");
+//		Cursor cursor = messageIndexDao.queryByNum(num);
 //		if (cursor.getCount() > 0) {
-			ArrayList<MessageIndexEntity> messageIndexEntities = DataBaseParser.getMessageIndex(cursor);
-			messageIndexEntity = messageIndexEntities.get(0);
+//			ArrayList<MessageIndexEntity> messageIndexEntities = DataBaseParser.getMessageIndex(cursor);
+//			messageIndexEntity = messageIndexEntities.get(0);
 //		} else {
 //			messageIndexEntity = null;
 //		}
-			cursor.close();
+//			cursor.close();
 		
-		if (null == messageIndexEntity) {
-			AppUtil.showToast(this, "聊天窗口打开失败，请重试");
-			finish();
-		}
+//		if (null == messageIndexEntity) {
+//			AppUtil.showToast(this, "聊天窗口打开失败，请重试");
+//			finish();
+//		}
+//		if (null == messageIndexEntity) {
+//			AppUtil.showToast(this, "聊天窗口打开失败，请重试");
+//			finish();
+//		}
 		
 		initView();
 		initMessageEntity();
@@ -194,7 +213,7 @@ public class ChatActivity extends BaseActivity implements OnClickListener, OnScr
 		contactName = (TextView) findViewById(R.id.title_text);
 		contactInfo = (ImageButton) findViewById(R.id.title_info);
 		initRecord();
-		contactName.setText(messageIndexEntity.getName());
+		contactName.setText(peopelEntity.getName());
 		sendMsgBtn.setOnClickListener(this);
 		sendRemindBtn.setOnClickListener(this);
 		contactInfo.setOnClickListener(this);
@@ -257,18 +276,18 @@ public class ChatActivity extends BaseActivity implements OnClickListener, OnScr
 	 */
 	private void initMessageEntity() {
 		// TODO 发送状态的改变
-		userMessageEntity = new MessageEntity("", messageIndexEntity.getName(), 
-				messageIndexEntity.getNum(), AppUtil.getUserName(),
+		userMessageEntity = new MessageEntity("", peopelEntity.getName(), 
+				peopelEntity.getNum(), AppUtil.getUserName(),
 				AppUtil.getPhoneNumber(this), AppUtil.getNowTime(), 
 				MessageEntity.SEND_SUCCESS, MessageEntity.NORMAL, 
-				MessageEntity.TYPE_TEXT, "", "", messageIndexEntity.getId(),
+				MessageEntity.TYPE_TEXT, "", "", peopelEntity.getNum(),
 				MessageEntity.TYPE_SEND, "");
 		
 		contactMessageEntity = new MessageEntity("", AppUtil.getUserName(),
-				AppUtil.getPhoneNumber(this), messageIndexEntity.getName(), 
-				messageIndexEntity.getNum(), AppUtil.getNowTime(), 
+				AppUtil.getPhoneNumber(this), peopelEntity.getName(), 
+				peopelEntity.getNum(), AppUtil.getNowTime(), 
 				MessageEntity.SEND_SUCCESS, MessageEntity.NORMAL, 
-				MessageEntity.TYPE_TEXT, "", "", messageIndexEntity.getId(),
+				MessageEntity.TYPE_TEXT, "", "", peopelEntity.getNum(),
 				MessageEntity.TYPE_RECIEVE, "");
 	}
 	
@@ -328,11 +347,11 @@ public class ChatActivity extends BaseActivity implements OnClickListener, OnScr
 	 * 查询消息数据
 	 */
 	private void getData() {
-		allRecorders = messageDao.getCount(Integer.valueOf(messageIndexEntity.getId()));
+		allRecorders = messageDao.getCount(num);
         //计算总页数
         pageSize = (allRecorders + lineSize -1) / lineSize;  
 		datas.clear();
-		ArrayList<MessageEntity> items = messageDao.getMsgByPage(currentPage, lineSize, messageIndexEntity.getId());
+		ArrayList<MessageEntity> items = messageDao.getMsgByPage(currentPage, lineSize, num);
 		// 倒序
 		Collections.reverse(items);
 		datas.addAll(items);
@@ -352,19 +371,20 @@ public class ChatActivity extends BaseActivity implements OnClickListener, OnScr
 		String time = AppUtil.getNowTime();
 		// TODO 发送状态的改变
 		// 更新MessageIndexEntity内的数据
-		messageIndexEntity.setMessage(msg);
-		messageIndexEntity.setTime(time);
-		messageIndexEntity.setSendState(MessageIndexEntity.SEND_SUCCESS);
-		messageIndexEntity.setIsDelete(MessageIndexEntity.NORMAL);
+//		messageIndexEntity.setMessage(msg);
+//		messageIndexEntity.setTime(time);
+//		messageIndexEntity.setSendState(MessageIndexEntity.SEND_SUCCESS);
+//		messageIndexEntity.setIsDelete(MessageIndexEntity.NORMAL);
 		// 需要更新的数据为：时间，发送状态，发送消息的类型，非文字信息的消息id与路径，发送的内容
 		userMessageEntity.setTime(time);
 		userMessageEntity.setContent(msg);
 		userMessageEntity.setMsgType(MessageEntity.TYPE_TEXT);
 		userMessageEntity.setOtherTypeId("");
 		userMessageEntity.setMsgPath("");
+		userMessageEntity.setSendState(MessageEntity.SENDING);
 		// 插入数据库
 		messageDao.insert(userMessageEntity);
-		messageIndexDao.update(messageIndexEntity);
+//		messageIndexDao.update(messageIndexEntity);
 		// 添加到listview中显示，通过线程发送
 //		datas.add(userMessageEntity.clone());
 //		chatAdapter.notifyDataSetChanged();
@@ -382,10 +402,10 @@ public class ChatActivity extends BaseActivity implements OnClickListener, OnScr
 		String time = AppUtil.getNowTime();
 		String msg = "知道了";
 		// 更新MessageIndexEntity内的数据
-		messageIndexEntity.setMessage(msg);
-		messageIndexEntity.setTime(time);
-		messageIndexEntity.setSendState(MessageIndexEntity.SEND_SUCCESS);
-		messageIndexEntity.setIsDelete(MessageIndexEntity.NORMAL);
+//		messageIndexEntity.setMessage(msg);
+//		messageIndexEntity.setTime(time);
+//		messageIndexEntity.setSendState(MessageIndexEntity.SEND_SUCCESS);
+//		messageIndexEntity.setIsDelete(MessageIndexEntity.NORMAL);
 		// TODO 接受消息的类型
 		// 需要更新的数据为：时间，发送状态，发送消息的类型，非文字信息的消息id与路径，发送的内容
 		contactMessageEntity.setTime(time);
@@ -395,7 +415,7 @@ public class ChatActivity extends BaseActivity implements OnClickListener, OnScr
 		contactMessageEntity.setMsgPath("");
 		// 插入数据库
 		messageDao.insert(contactMessageEntity);
-		messageIndexDao.update(messageIndexEntity);
+//		messageIndexDao.update(messageIndexEntity);
 		userMessageEntity.setMsgType(MessageEntity.TYPE_TEXT);
 		
 		// 添加到listview中显示
@@ -455,7 +475,7 @@ public class ChatActivity extends BaseActivity implements OnClickListener, OnScr
      */
     private void appendDate(){
 		final ArrayList<MessageEntity> additems = messageDao.getMsgByPage(
-				currentPage, lineSize, messageIndexEntity.getId());
+				currentPage, lineSize, num);
 		// 倒序
 		Collections.reverse(additems);
 		datas.addAll(0, additems);
@@ -505,10 +525,10 @@ public class ChatActivity extends BaseActivity implements OnClickListener, OnScr
 		String time = remindEntity.getAddTime();
 		// TODO 发送状态的改变
 		// 更新MessageIndexEntity内的数据
-		messageIndexEntity.setMessage(msg);
-		messageIndexEntity.setTime(time);
-		messageIndexEntity.setSendState(MessageIndexEntity.SEND_SUCCESS);
-		messageIndexEntity.setIsDelete(MessageIndexEntity.NORMAL);
+//		messageIndexEntity.setMessage(msg);
+//		messageIndexEntity.setTime(time);
+//		messageIndexEntity.setSendState(MessageIndexEntity.SEND_SUCCESS);
+//		messageIndexEntity.setIsDelete(MessageIndexEntity.NORMAL);
 		// 需要更新的数据为：时间，发送状态，发送消息的类型，非文字信息的消息id与路径，发送的内容
 		userMessageEntity.setTime(time);
 		userMessageEntity.setContent(msg);
@@ -517,7 +537,7 @@ public class ChatActivity extends BaseActivity implements OnClickListener, OnScr
 		userMessageEntity.setMsgPath("");
 		// 插入数据库
 		messageDao.insert(userMessageEntity);
-		messageIndexDao.update(messageIndexEntity);
+//		messageIndexDao.update(messageIndexEntity);
 		// 添加到listview中显示，通过线程发送
 		chatAdapter.getNewMsg(userMessageEntity.clone(), chatList);
 		// 清除编辑框内容
@@ -536,10 +556,10 @@ public class ChatActivity extends BaseActivity implements OnClickListener, OnScr
 		String time = AppUtil.getNowTime();
 		// TODO 发送状态的改变
 		// 更新MessageIndexEntity内的数据
-		messageIndexEntity.setMessage("[语音]");
-		messageIndexEntity.setTime(time);
-		messageIndexEntity.setSendState(MessageIndexEntity.SEND_SUCCESS);
-		messageIndexEntity.setIsDelete(MessageIndexEntity.NORMAL);
+//		messageIndexEntity.setMessage("[语音]");
+//		messageIndexEntity.setTime(time);
+//		messageIndexEntity.setSendState(MessageIndexEntity.SEND_SUCCESS);
+//		messageIndexEntity.setIsDelete(MessageIndexEntity.NORMAL);
 		// 需要更新的数据为：时间，发送状态，发送消息的类型，非文字信息的消息id与路径，发送的内容
 		userMessageEntity.setTime(time);
 		userMessageEntity.setContent(voiceTime);
@@ -548,7 +568,7 @@ public class ChatActivity extends BaseActivity implements OnClickListener, OnScr
 		userMessageEntity.setMsgPath(path);
 		// 插入数据库
 		messageDao.insert(userMessageEntity);
-		messageIndexDao.update(messageIndexEntity);
+//		messageIndexDao.update(messageIndexEntity);
 		// 添加到listview中显示，通过线程发送
 //		datas.add(userMessageEntity.clone());
 //		chatAdapter.notifyDataSetChanged();
