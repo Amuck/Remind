@@ -12,13 +12,11 @@ import android.view.View.OnClickListener;
 import android.view.View.OnLongClickListener;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.ab.adapter.AbImageShowAdapter.ViewHolder;
 import com.help.remind.R;
 import com.remind.asyn.ImageLoader;
 import com.remind.dao.PeopelDao;
@@ -29,6 +27,7 @@ import com.remind.entity.MessageEntity;
 import com.remind.entity.RemindEntity;
 import com.remind.util.DataBaseParser;
 import com.remind.util.Utils;
+import com.remind.view.RoleDetailImageView;
 
 public class ChatAdapter extends BaseAdapter {
 	/**
@@ -124,7 +123,7 @@ public class ChatAdapter extends BaseAdapter {
 						.findViewById(R.id.send_state);
 //				viewHolder.contentImg =  (ImageView) convertView.
 //						findViewById(R.id.chat_from_img);
-				viewHolder.personImg =  (ImageView) convertView.
+				viewHolder.personImg =  (RoleDetailImageView) convertView.
 						findViewById(R.id.chat_from_icon);
 				viewHolder.ok = (TextView) convertView.
 						findViewById(R.id.from_button_ok);
@@ -153,7 +152,7 @@ public class ChatAdapter extends BaseAdapter {
 						.findViewById(R.id.send_state);
 //				viewHolder.contentImg =  (ImageView) convertView.
 //						findViewById(R.id.chat_send_img);
-				viewHolder.personImg =  (ImageView) convertView.
+				viewHolder.personImg =  (RoleDetailImageView) convertView.
 						findViewById(R.id.chat_send_icon);
 				viewHolder.ok = (TextView) convertView.
 						findViewById(R.id.send_button_ok);
@@ -203,7 +202,7 @@ public class ChatAdapter extends BaseAdapter {
 		TextView content;
 		TextView remindState;
 		TextView time;
-		ImageView personImg;
+		RoleDetailImageView personImg;
 //		ImageView contentImg;
 		TextView ok;
 		TextView cancel;

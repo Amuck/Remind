@@ -23,7 +23,7 @@
             android:layout_marginLeft="10dp"
             android:orientation="horizontal" >
 
-            <ImageView
+            <com.remind.view.RoleDetailImageView
                 android:id="@+id/chat_from_icon"
                 android:layout_width="49dp"
                 android:layout_height="49dp"

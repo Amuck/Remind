@@ -189,7 +189,7 @@
                     </LinearLayout> -->
                 </LinearLayout>
 
-                <ImageView
+                <com.remind.view.RoleDetailImageView
                     android:id="@+id/chat_send_icon"
                     android:layout_width="49dp"
                     android:layout_height="49dp"
