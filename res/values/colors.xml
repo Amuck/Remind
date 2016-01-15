@@ -1,5 +1,6 @@
 <resources>
 
+    <color name="trans_black">#3f000000</color>
     <color name="black_overlay">#66000000</color>
     <color name="gray">#c7c7c7</color>
     <color name="black">#000</color>
@@ -49,5 +50,10 @@
 
     <!-- LOGIN -->
     <color name="login_words">#5B5B5B</color>
-    
+    <!-- CHAT -->
+    <color name="chat_bottom">#f8f8f8</color>
+    <color name="chat_voice_color">#727272</color>
+    <color name="chat_voice_border">#cecece</color>
+    <color name="chat_send_remind_time_color">#969696</color>
+    <color name="chat_send_remind_ok">#00bcd4</color>
 </resources>

@@ -102,4 +102,11 @@ public interface RemindDao {
 	 * @return
 	 */
 	public Cursor getUnAcceptRemind();
+	/**
+	 * 在聊天界面查询提醒，需要将失效的提醒也查询
+	 * 
+	 * @param entity
+	 * @return
+	 */
+	public Cursor queryRemindInChat(RemindEntity entity);
 }

@@ -175,6 +175,24 @@ public class RemindDaoImpl implements RemindDao {
 		mCursor = db.rawQuery(sql, null);
 		return mCursor;
 	}
+	
+	@Override
+	public Cursor queryRemindInChat(RemindEntity entity) {
+		Cursor mCursor = null;
+		StringBuffer sb = new StringBuffer();
+		sb.append("select * from " + RemindMsg.TABLENAME + " where 1 = 1 ");
+		if (null != entity.getId() && entity.getId().length() > 0)
+			sb.append(" and " + RemindMsg.ID + "='" + entity.getId() + "'");
+//		if (entity.getRemindState() >= 0 && entity.getRemindState() <= 3)
+//			sb.append(" and " + RemindMsg.REMIND_STATE + "='"
+//					+ entity.getRemindState() + "'");
+		sb.append("order by " + RemindMsg.REMIND_TIME + " DESC");
+		sb.append(";");
+		SQLiteDatabase db = mDBHelper.getWritableDatabase();
+		String sql = sb.toString();
+		mCursor = db.rawQuery(sql, null);
+		return mCursor;
+	}
 
 	@Override
 	public Cursor queryRemind() {

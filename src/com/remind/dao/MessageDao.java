@@ -29,4 +29,10 @@ public interface MessageDao {
 	 * @param state
 	 */
 	public void updateSendState(long msgId, String state);
+	/**
+	 * 根据其他的类型id去查询需要的数据
+	 * @param id
+	 * @return
+	 */
+	public Cursor queryByOtherTypeId(String id);
 }

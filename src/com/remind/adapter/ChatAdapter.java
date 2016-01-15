@@ -28,6 +28,7 @@ import com.remind.dao.impl.RemindDaoImpl;
 import com.remind.entity.MessageEntity;
 import com.remind.entity.RemindEntity;
 import com.remind.util.DataBaseParser;
+import com.remind.util.Utils;
 
 public class ChatAdapter extends BaseAdapter {
 	/**
@@ -107,21 +108,27 @@ public class ChatAdapter extends BaseAdapter {
 						parent, false);
 				viewHolder.chatPanel = (LinearLayout) convertView
 						.findViewById(R.id.from_chat_panel);
+				viewHolder.chatRemindPanel = (LinearLayout) convertView
+						.findViewById(R.id.chat_from_remind);
 				viewHolder.time = (TextView) convertView
 						.findViewById(R.id.chat_from_createDate);
 				viewHolder.title = (TextView) convertView
 						.findViewById(R.id.chat_from_title);
+				viewHolder.remindState = (TextView) convertView
+						.findViewById(R.id.chat_from_remind_state);
+				viewHolder.date = (TextView) convertView
+						.findViewById(R.id.chat_from_remind_time);
 				viewHolder.content = (TextView) convertView
 						.findViewById(R.id.chat_from_content);
 				viewHolder.state = (TextView) convertView
 						.findViewById(R.id.send_state);
-				viewHolder.contentImg =  (ImageView) convertView.
-						findViewById(R.id.chat_from_img);
+//				viewHolder.contentImg =  (ImageView) convertView.
+//						findViewById(R.id.chat_from_img);
 				viewHolder.personImg =  (ImageView) convertView.
 						findViewById(R.id.chat_from_icon);
-				viewHolder.ok = (Button) convertView.
+				viewHolder.ok = (TextView) convertView.
 						findViewById(R.id.from_button_ok);
-				viewHolder.cancel = (Button) convertView.
+				viewHolder.cancel = (TextView) convertView.
 						findViewById(R.id.from_button_cancel);
 				convertView.setTag(viewHolder);
 			} else
@@ -130,21 +137,27 @@ public class ChatAdapter extends BaseAdapter {
 						null);
 				viewHolder.chatPanel = (LinearLayout) convertView
 						.findViewById(R.id.send_chat_panel);
+				viewHolder.chatRemindPanel = (LinearLayout) convertView
+						.findViewById(R.id.chat_send_remind);
 				viewHolder.time = (TextView) convertView
 						.findViewById(R.id.chat_send_createDate);
 				viewHolder.title = (TextView) convertView
 						.findViewById(R.id.chat_send_title);
+				viewHolder.remindState = (TextView) convertView
+						.findViewById(R.id.chat_send_remind_state);
+				viewHolder.date = (TextView) convertView
+						.findViewById(R.id.chat_send_remind_time);
 				viewHolder.content = (TextView) convertView
 						.findViewById(R.id.chat_send_content);
 				viewHolder.state = (TextView) convertView
 						.findViewById(R.id.send_state);
-				viewHolder.contentImg =  (ImageView) convertView.
-						findViewById(R.id.chat_send_img);
+//				viewHolder.contentImg =  (ImageView) convertView.
+//						findViewById(R.id.chat_send_img);
 				viewHolder.personImg =  (ImageView) convertView.
 						findViewById(R.id.chat_send_icon);
-				viewHolder.ok = (Button) convertView.
+				viewHolder.ok = (TextView) convertView.
 						findViewById(R.id.send_button_ok);
-				viewHolder.cancel = (Button) convertView.
+				viewHolder.cancel = (TextView) convertView.
 						findViewById(R.id.send_button_cancel);
 				convertView.setTag(viewHolder);
 			}
@@ -167,33 +180,33 @@ public class ChatAdapter extends BaseAdapter {
 		String imgPath = peopelDao.getImgPath(chatMessage.getSendNum());
 		viewHolder.personImg.setTag(imgPath);
 		
-		try {
-			// 如果头像是软件自带的图片
-			int id = Integer.valueOf(imgPath);
-			viewHolder.personImg.setImageResource(id);
-		} catch (Exception e) {
+		int id = Utils.getResoureIdbyName(context, imgPath);
+		if (0 == id) {
 			// 如果头像是用户上传的图片
 			if (null != imgPath && imgPath.trim().length() > 0 && viewHolder.personImg.getTag() != null && viewHolder.personImg.getTag().equals(imgPath)) {
 				imageLoader.DisplayImage(imgPath, viewHolder.personImg);
 			}
+		} else {
+			// 如果头像是软件自带的图片
+			viewHolder.personImg.setImageResource(id);
 		}
-//		viewHolder.personImg.setImageResource(R.drawable.white);
-		
-		
 		
 		return convertView;
 	}
 
 	private class ViewHolder {
 		LinearLayout chatPanel;
+		LinearLayout chatRemindPanel;
 		TextView state;
 		TextView title;
+		TextView date;
 		TextView content;
+		TextView remindState;
 		TextView time;
 		ImageView personImg;
-		ImageView contentImg;
-		Button ok;
-		Button cancel;
+//		ImageView contentImg;
+		TextView ok;
+		TextView cancel;
 	}
 	
 	/**
@@ -205,42 +218,48 @@ public class ChatAdapter extends BaseAdapter {
 			// 正常文字消息
 			viewHolder.content.setText(chatMessage.getContent());
 			
-			viewHolder.contentImg.setImageBitmap(null);
-			viewHolder.title.setVisibility(View.GONE);
-			viewHolder.contentImg.setVisibility(View.GONE);
-			viewHolder.ok.setVisibility(View.GONE);
-			viewHolder.cancel.setVisibility(View.GONE);
+//			viewHolder.contentImg.setImageBitmap(null);
+			viewHolder.remindState.setVisibility(View.GONE);
+			viewHolder.chatRemindPanel.setVisibility(View.GONE);
+			viewHolder.content.setVisibility(View.VISIBLE);
+//			viewHolder.ok.setVisibility(View.GONE);
+//			viewHolder.cancel.setVisibility(View.GONE);
 		}else if (MessageEntity.TYPE_REMIND.equals(type)) {
 			// 如果是提醒的话
 			RemindEntity temp = new RemindEntity();
 			temp.setId(chatMessage.getOtherTypeId());
 			// 查询提醒内容
-			Cursor cursor = remindDao.queryRemind(temp);
+			Cursor cursor = remindDao.queryRemindInChat(temp);
 			final RemindEntity entity = DataBaseParser.getRemindDetail(cursor).get(0);
 			cursor.close();
 			
-			viewHolder.contentImg.setImageBitmap(null);
-			viewHolder.title.setVisibility(View.VISIBLE);
-			viewHolder.contentImg.setVisibility(View.GONE);
+			viewHolder.chatRemindPanel.setVisibility(View.VISIBLE);
+			viewHolder.content.setVisibility(View.GONE);
+//			viewHolder.contentImg.setImageBitmap(null);
+//			viewHolder.title.setVisibility(View.VISIBLE);
+//			viewHolder.contentImg.setVisibility(View.GONE);
 			// 设置文字内容
-			viewHolder.title.setText("提醒消息，长按查看详情");
-			viewHolder.content.setText(entity.getTitle());
+			
+			viewHolder.date.setText(entity.getRemindTime().split(" ")[0]);
+			viewHolder.title.setText(entity.getTitle());
+//			viewHolder.title.setText("提醒消息，长按查看详情");
+//			viewHolder.content.setText(entity.getTitle());
 			// 设置点击事件
 			int remindState = entity.getRemindState();
 //			int remindState = 1;
 			switch (remindState) {
 			case RemindEntity.ACCEPT:
 				// 已接受的提醒
-				changeButtonState("已接受", viewHolder);
+				changeButtonState("任务已接受", viewHolder);
 				break;
 			case RemindEntity.REFUSE:
 				// 拒绝的提醒
-				changeButtonState("已拒绝", viewHolder);
+				changeButtonState("任务已拒绝", viewHolder);
 				break;
 			case RemindEntity.NEW:
 				// 未接受提醒
-				viewHolder.cancel.setVisibility(View.VISIBLE);
-				viewHolder.ok.setVisibility(View.VISIBLE);
+//				viewHolder.cancel.setVisibility(View.VISIBLE);
+//				viewHolder.ok.setVisibility(View.VISIBLE);
 				
 				viewHolder.cancel.setOnClickListener(new OnClickListener() {
 					
@@ -249,7 +268,7 @@ public class ChatAdapter extends BaseAdapter {
 						// 拒绝
 						entity.setRemindState(RemindEntity.REFUSE);
 						remindDao.updateRemind(entity);
-						changeButtonState("已拒绝", viewHolder);
+						changeButtonState("任务已拒绝", viewHolder);
 					}
 				});
 				viewHolder.ok.setOnClickListener(new OnClickListener() {
@@ -259,7 +278,7 @@ public class ChatAdapter extends BaseAdapter {
 						// 接受
 						entity.setRemindState(RemindEntity.ACCEPT);
 						remindDao.updateRemind(entity);
-						changeButtonState("已接受", viewHolder);
+						changeButtonState("任务已接受", viewHolder);
 					}
 				});
 				break;
@@ -293,12 +312,14 @@ public class ChatAdapter extends BaseAdapter {
 			// 如果是语音的话
 			viewHolder.content.setText("");
 			viewHolder.content.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.chatto_voice_playing, 0);
-			
-			viewHolder.contentImg.setImageBitmap(null);
-			viewHolder.title.setVisibility(View.GONE);
-			viewHolder.contentImg.setVisibility(View.GONE);
-			viewHolder.ok.setVisibility(View.GONE);
-			viewHolder.cancel.setVisibility(View.GONE);
+			viewHolder.remindState.setVisibility(View.GONE);
+			viewHolder.chatRemindPanel.setVisibility(View.GONE);
+			viewHolder.content.setVisibility(View.VISIBLE);
+//			viewHolder.contentImg.setImageBitmap(null);
+//			viewHolder.title.setVisibility(View.GONE);
+//			viewHolder.contentImg.setVisibility(View.GONE);
+//			viewHolder.ok.setVisibility(View.GONE);
+//			viewHolder.cancel.setVisibility(View.GONE);
 		}
 	}
 	
@@ -306,9 +327,11 @@ public class ChatAdapter extends BaseAdapter {
 	 * 改变按钮状态
 	 */
 	private void changeButtonState(String text, ViewHolder viewHolder) {
+		viewHolder.remindState.setText(text);
+		viewHolder.remindState.setVisibility(View.VISIBLE);
 		viewHolder.cancel.setVisibility(View.GONE);
-		viewHolder.ok.setVisibility(View.VISIBLE);
-		viewHolder.ok.setText(text);
+		viewHolder.ok.setVisibility(View.GONE);
+//		viewHolder.ok.setText(text);
 		viewHolder.ok.setEnabled(false);
 		
 		viewHolder.cancel.setFocusable(false);

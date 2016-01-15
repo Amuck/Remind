@@ -12,6 +12,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.view.Gravity;
+import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -20,6 +21,7 @@ import android.view.ViewGroup.LayoutParams;
 import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.view.inputmethod.EditorInfo;
 import android.widget.AbsListView;
 import android.widget.AbsListView.OnScrollListener;
 import android.widget.Button;
@@ -31,6 +33,7 @@ import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.TextView.OnEditorActionListener;
 import android.widget.Toast;
 
 import com.help.remind.R;
@@ -75,7 +78,11 @@ public class ChatActivity extends BaseActivity implements OnClickListener, OnScr
 	/**
 	 * 发送提醒按钮
 	 */
-	private Button sendRemindBtn;
+	private ImageView sendRemindBtn;
+	/**
+	 * 后退按钮
+	 */
+	private ImageView backBtn;
 	/**
 	 * 消息编辑框
 	 */
@@ -219,7 +226,8 @@ public class ChatActivity extends BaseActivity implements OnClickListener, OnScr
 	private void initView() {
 		chatList = (ListView) findViewById(R.id.chat_list);
 		sendMsgBtn = (Button) findViewById(R.id.send_msg);
-		sendRemindBtn = (Button) findViewById(R.id.add_remind);
+		backBtn = (ImageView) findViewById(R.id.title_icon);
+		sendRemindBtn = (ImageView) findViewById(R.id.add_remind);
 		sendMsgEidt = (EditText) findViewById(R.id.msg_edit);
 		contactName = (TextView) findViewById(R.id.title_text);
 		contactInfo = (ImageButton) findViewById(R.id.title_info);
@@ -228,6 +236,24 @@ public class ChatActivity extends BaseActivity implements OnClickListener, OnScr
 		sendMsgBtn.setOnClickListener(this);
 		sendRemindBtn.setOnClickListener(this);
 		contactInfo.setOnClickListener(this);
+		backBtn.setOnClickListener(this);
+		sendMsgEidt.setOnEditorActionListener(new OnEditorActionListener() {
+			
+			@Override
+			public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+				if (actionId == EditorInfo.IME_ACTION_SEND) {
+					if (null == sendMsgEidt.getText() || sendMsgEidt.getText().toString().trim().length() <= 0) {
+						AppUtil.showToast(ChatActivity.this, "您还没有输入内容哦！");
+						return false;
+					}
+					// 发送消息
+					sendMsg();
+					// TODO 测试接受
+					newMsg();
+				}
+				return false;
+			}
+		});
 		
 		setupChatList();
 	}
@@ -411,7 +437,7 @@ public class ChatActivity extends BaseActivity implements OnClickListener, OnScr
 	 */
 	public void newMsg() {
 		String time = AppUtil.getNowTime();
-		String msg = "知道了";
+		String msg = "知道了知道了知道了知道了知道了知道了知道了知道了知道了知道了";
 		// 更新MessageIndexEntity内的数据
 //		messageIndexEntity.setMessage(msg);
 //		messageIndexEntity.setTime(time);
@@ -458,6 +484,10 @@ public class ChatActivity extends BaseActivity implements OnClickListener, OnScr
 			break;
 		case R.id.title_info:
 			// 联系人信息
+			break;
+		case R.id.title_icon:
+			// 关闭
+			finish();
 			break;
 
 		default:
@@ -531,9 +561,9 @@ public class ChatActivity extends BaseActivity implements OnClickListener, OnScr
      * 发送提醒类的消息
      */
 	private void setRemindMsg(RemindEntity remindEntity) {
-		String msg = remindEntity.getTitle();
+//		String msg = remindEntity.getTitle();
 
-		String time = remindEntity.getAddTime();
+//		String time = remindEntity.getAddTime();
 		// TODO 发送状态的改变
 		// 更新MessageIndexEntity内的数据
 //		messageIndexEntity.setMessage(msg);
@@ -541,16 +571,19 @@ public class ChatActivity extends BaseActivity implements OnClickListener, OnScr
 //		messageIndexEntity.setSendState(MessageIndexEntity.SEND_SUCCESS);
 //		messageIndexEntity.setIsDelete(MessageIndexEntity.NORMAL);
 		// 需要更新的数据为：时间，发送状态，发送消息的类型，非文字信息的消息id与路径，发送的内容
-		userMessageEntity.setTime(time);
-		userMessageEntity.setContent(msg);
-		userMessageEntity.setMsgType(MessageEntity.TYPE_REMIND);
-		userMessageEntity.setOtherTypeId(remindEntity.getId());
-		userMessageEntity.setMsgPath("");
+//		userMessageEntity.setTime(time);
+//		userMessageEntity.setContent(msg);
+//		userMessageEntity.setMsgType(MessageEntity.TYPE_REMIND);
+//		userMessageEntity.setOtherTypeId(remindEntity.getId());
+//		userMessageEntity.setMsgPath("");
 		// 插入数据库
-		messageDao.insert(userMessageEntity);
+//		messageDao.insert(userMessageEntity);
 //		messageIndexDao.update(messageIndexEntity);
+		Cursor cursor = messageDao.queryByOtherTypeId(remindEntity.getId());
+		MessageEntity entity = DataBaseParser.getMessage(cursor).get(0);
+		cursor.close();
 		// 添加到listview中显示，通过线程发送
-		chatAdapter.getNewMsg(userMessageEntity.clone(), chatList);
+		chatAdapter.getNewMsg(entity, chatList);
 		// 清除编辑框内容
 		sendMsgEidt.setText("");
 	}

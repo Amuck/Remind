@@ -14,6 +14,8 @@ import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 
+import com.help.remind.R;
+
 public class Utils {
 	/**
 	 * 判断空
@@ -37,7 +39,6 @@ public class Utils {
 	public static String stringTrim(String s) {
 		return isNull(s) ? s.trim() : s;
 	}
-
 
 	public static String converIdToString(int id, Context mContext) {
 		String result = null;
@@ -85,7 +86,7 @@ public class Utils {
 		split[0] = split[0].replaceAll("%3A", "\\:");
 		return split[0];
 	}
-	
+
 	/**
 	 * dip转像素
 	 * 
@@ -109,30 +110,32 @@ public class Utils {
 		final float scale = context.getResources().getDisplayMetrics().density;
 		return (int) (pxValue / scale + 0.5f);
 	}
-	  /** 
-     * 将px值转换为sp值，保证文字大小不变 
-     *  
-     * @param pxValue 
-     * @param fontScale 
-     *            （DisplayMetrics类中属性scaledDensity） 
-     * @return 
-     */ 
-    public static int px2sp(Context context, float pxValue) {  
-        final float fontScale = context.getResources().getDisplayMetrics().scaledDensity;  
-        return (int) (pxValue / fontScale + 0.5f);  
-    }  
-    /** 
-     * 将sp值转换为px值，保证文字大小不变 
-     *  
-     * @param spValue 
-     * @param fontScale 
-     *            （DisplayMetrics类中属性scaledDensity） 
-     * @return 
-     */ 
-    public static int sp2px(Context context, float spValue) {  
-        final float fontScale = context.getResources().getDisplayMetrics().scaledDensity;  
-        return (int) (spValue * fontScale + 0.5f);  
-    }  
+
+	/**
+	 * 将px值转换为sp值，保证文字大小不变
+	 * 
+	 * @param pxValue
+	 * @param fontScale
+	 *            （DisplayMetrics类中属性scaledDensity）
+	 * @return
+	 */
+	public static int px2sp(Context context, float pxValue) {
+		final float fontScale = context.getResources().getDisplayMetrics().scaledDensity;
+		return (int) (pxValue / fontScale + 0.5f);
+	}
+
+	/**
+	 * 将sp值转换为px值，保证文字大小不变
+	 * 
+	 * @param spValue
+	 * @param fontScale
+	 *            （DisplayMetrics类中属性scaledDensity）
+	 * @return
+	 */
+	public static int sp2px(Context context, float spValue) {
+		final float fontScale = context.getResources().getDisplayMetrics().scaledDensity;
+		return (int) (spValue * fontScale + 0.5f);
+	}
 
 	/**
 	 * 获取当前时间
@@ -144,6 +147,7 @@ public class Utils {
 		time = temp.format(now);
 		return time;
 	}
+
 	/**
 	 * 获取当前日期
 	 */
@@ -154,6 +158,7 @@ public class Utils {
 		time = temp.format(now);
 		return time;
 	}
+
 	/**
 	 * 获取3天前的日期
 	 */
@@ -162,52 +167,68 @@ public class Utils {
 		String time = null;
 		SimpleDateFormat temp = new SimpleDateFormat("yyyy-MM-dd");
 		cal.setTime(new Date());
-		cal.set(Calendar.DATE, cal.get(Calendar.DATE) -3);
+		cal.set(Calendar.DATE, cal.get(Calendar.DATE) - 3);
 		time = temp.format(cal.getTime());
 		return time;
 	}
-public static boolean isAvailable(Context context){
-		
-		ConnectivityManager manager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+
+	public static boolean isAvailable(Context context) {
+
+		ConnectivityManager manager = (ConnectivityManager) context
+				.getSystemService(Context.CONNECTIVITY_SERVICE);
 		NetworkInfo info = manager.getActiveNetworkInfo();
-		
-		if (info == null || !info.isConnected() || info.isRoaming()) 
+
+		if (info == null || !info.isConnected() || info.isRoaming())
 			return false;
-		
+
 		return true;
 	}
-public static String[] get2File(String uri ){
-	if(uri==null){
-		return null;
+
+	public static String[] get2File(String uri) {
+		if (uri == null) {
+			return null;
+		}
+		String[] strs = new String[2];
+		File file = new File(uri);
+		byte[] b = null;
+		StringBuilder str = null;
+		try {
+			strs[0] = uri.substring(uri.lastIndexOf("/") + 1, uri.length());
+			FileInputStream fis = new FileInputStream(file);
+			b = new byte[fis.available()];
+			str = new StringBuilder();
+			fis.read(b);
+			strs[1] = new String(b, "UTF-8");
+		} catch (FileNotFoundException e1) {
+			e1.printStackTrace();
+		} catch (IOException e1) {
+			e1.printStackTrace();
+		}
+		return strs;
 	}
-	String[] strs= new String[2];
-	File file = new File(uri);
-	byte[] b = null;
-	StringBuilder str = null;
-	try {
-		strs[0]=uri.substring(uri.lastIndexOf("/")+1, uri.length());
-		FileInputStream fis = new FileInputStream(file);
-		b = new byte[fis.available()];
-		str = new StringBuilder();
-		 fis.read(b);
-		 strs[1]=new String(b,"UTF-8");
-	} catch (FileNotFoundException e1) {
-		e1.printStackTrace();
-	} catch (IOException e1) {
-		e1.printStackTrace();
+
+	/**
+	 * 获取明天的日期
+	 */
+	public static String getTomorrowAgoDate() {
+		Calendar cal = Calendar.getInstance();
+		String time = null;
+		SimpleDateFormat temp = new SimpleDateFormat("yyyy-MM-dd");
+		cal.setTime(new Date());
+		cal.set(Calendar.DATE, cal.get(Calendar.DATE) + 1);
+		time = temp.format(cal.getTime());
+		return time;
 	}
-	return strs;
+
+	/**
+	 * 根据资源的名称获取资源的id
+	 * @param context
+	 * @param name
+	 * @return				0:没有此资源
+	 */
+	public static int getResoureIdbyName(Context context, String name) {
+		int resId1 = context.getResources().getIdentifier(name, "drawable",
+				"com.help.remind");
+		return resId1;
 	}
-/**
- * 获取明天的日期
- */
-public static String getTomorrowAgoDate() {
-	Calendar cal = Calendar.getInstance();
-	String time = null;
-	SimpleDateFormat temp = new SimpleDateFormat("yyyy-MM-dd");
-	cal.setTime(new Date());
-	cal.set(Calendar.DATE, cal.get(Calendar.DATE)+1);
-	time = temp.format(cal.getTime());
-	return time;
-}
 }

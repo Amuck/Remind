@@ -107,6 +107,7 @@ public class PeopelDaoImpl implements PeopelDao {
 		StringBuffer sb = new StringBuffer();
 		sb.append("update " + PeopelMsg.TABLENAME + " set ");
 		sb.append(PeopelMsg.NAME + "	= '" + entity.getName() + "',");
+		sb.append(PeopelMsg.NUM + "	= '" + entity.getNum() + "',");
 		sb.append(PeopelMsg.ADDTIME + "	= '" + entity.getAddTime() + "',");
 		sb.append(PeopelMsg.NICKNAME + "	= '" + entity.getNickName() + "',");
 		sb.append(PeopelMsg.IMGPATH + "	= '" + entity.getImgPath() + "',");

@@ -29,10 +29,18 @@
     </style>
 
     <style name="chat_date_style">
-        <item name="android:textColor">#F5F5F5</item>
-        <item name="android:background">#BEBDBE</item>
-        <item name="android:textSize">12sp</item>
+        <item name="android:textColor">#727272</item>
+        <item name="android:background">@color/transparent</item>
+        <item name="android:textSize">10sp</item>
         <item name="android:padding">2dp</item>
+        <item name="android:layout_gravity">center</item>
+    </style>
+    
+    <style name="chat_remind_state_style">
+        <item name="android:textColor">#ffffff</item>
+        <item name="android:background">@drawable/chat_style_bg</item>
+        <item name="android:textSize">10sp</item>
+        <item name="android:padding">8dp</item>
         <item name="android:layout_gravity">center</item>
     </style>
 

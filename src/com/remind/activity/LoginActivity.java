@@ -306,7 +306,7 @@ public class LoginActivity extends BaseActivity implements OnClickListener {
 				} else {
 					// 注册
 					params = HttpClient.getJsonForPost(HttpClient
-							.getUserForReg(mobile, pwdStr, "User", R.drawable.role_1 + ""));
+							.getUserForReg(mobile, pwdStr, "User", "role_1" ));
 					createUser(params);
 				}
 			}

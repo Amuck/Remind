@@ -14,7 +14,8 @@
 
     <RelativeLayout
         android:layout_width="fill_parent"
-        android:layout_height="wrap_content" >
+        android:layout_height="wrap_content"
+        android:layout_marginRight="1dp" >
 
         <LinearLayout
             android:layout_width="wrap_content"
@@ -32,10 +33,18 @@
                     android:id="@+id/send_chat_panel"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:background="@drawable/chat_send_msg"
+                    android:layout_marginRight="8dp"
+                    android:layout_marginTop="10dp"
+                    
                     android:orientation="vertical" >
+<!--                 <LinearLayout
+                    android:id="@+id/send_chat_panel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/chat_send_msg"
+                    android:orientation="vertical" > -->
 
-                    <TextView
+                    <!-- <TextView
                         android:id="@+id/chat_send_title"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -47,22 +56,92 @@
                         android:text="有大吗。。。"
                         android:textColor="#000"
                         android:textSize="12sp"
-                        android:visibility="gone" />
+                        android:visibility="gone" /> -->
 
-                    <LinearLayout
+                    <RelativeLayout
                         android:id="@+id/send_content_panel"
-                        android:layout_width="wrap_content"
+                        android:layout_width="200dp"
                         android:layout_height="wrap_content"
                         android:orientation="horizontal" >
 
-                        <ImageView
+                        <!-- <ImageView
                             android:id="@+id/chat_send_img"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_margin="8dp"
+                            android:layout_margin="16dp"
                             android:focusable="false"
                             android:scaleType="centerInside"
-                            android:visibility="gone" />
+                            android:visibility="gone" /> -->
+                            
+                        <LinearLayout android:id="@+id/chat_send_remind"
+                            android:layout_width="wrap_content"
+                            android:layout_height="68dp"
+                            android:clickable="true"
+                            android:focusable="true"
+                            android:gravity="center_vertical"
+                            android:layout_alignParentRight="true"
+                            android:background="@drawable/remind_right"
+                            android:visibility="gone"
+                            android:orientation="horizontal">
+                            <RelativeLayout
+                                android:layout_width="100dp"
+                                android:layout_height="fill_parent"
+                                android:layout_marginLeft="58dp"
+                                android:orientation="horizontal" >
+
+                                <TextView
+                                    android:id="@+id/chat_send_title"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginLeft="16dp"
+                                    android:layout_marginTop="8dp"
+                                    android:textSize="14sp"
+                                    android:textColor="#000"
+                                    android:layout_alignParentTop="true"
+                                    android:text="生日聚会"
+                                     />
+                                <TextView
+                                    android:id="@+id/chat_send_remind_time"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginLeft="16dp"
+                                    android:layout_marginTop="8dp"
+                                    android:text="2015-08-25"
+                                    android:textColor="@color/chat_send_remind_time_color"
+                                    android:textSize="10sp"
+                                    android:layout_below="@+id/chat_send_title" />
+
+                                <TextView
+                                    android:id="@+id/send_button_cancel"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginLeft="16dp"
+                                    android:layout_marginBottom="8dp"
+                                    android:focusable="false"
+                                    android:text="@string/refuse"
+                                    android:textColor="@color/black"
+                                    android:textSize="10sp"
+                                    android:layout_alignParentBottom="true"
+                                    android:layout_alignParentLeft="true" >
+                                </TextView>
+
+                                <TextView
+                                    android:id="@+id/send_button_ok"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginRight="8dp"
+                                    android:layout_marginBottom="8dp"
+                                    android:layout_alignParentBottom="true"
+                                    android:layout_alignParentRight="true"
+                                    android:focusable="false"
+                                    android:text="@string/accept"
+                                    android:textColor="@color/chat_send_remind_ok"
+                                    android:textSize="10sp" >
+                                </TextView>
+
+                            </RelativeLayout>
+
+                        </LinearLayout>
 
                         <TextView
                             android:id="@+id/chat_send_content"
@@ -75,10 +154,12 @@
                             android:minHeight="50dp"
                             android:text="有大吗。。。"
                             android:textColor="#000"
-                            android:textSize="18sp" />
-                    </LinearLayout>
+                            android:textSize="14sp"
+                            android:layout_alignParentRight="true"
+                            android:background="@drawable/chat_right_bg" />
+                    </RelativeLayout>
 
-                    <LinearLayout
+                    <!-- <LinearLayout
                         android:id="@+id/send_button_panel"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -105,7 +186,7 @@
                             android:textColor="@color/black"
                             android:visibility="gone" >
                         </Button>
-                    </LinearLayout>
+                    </LinearLayout> -->
                 </LinearLayout>
 
                 <ImageView
@@ -126,5 +207,13 @@
                 android:textSize="12sp" />
         </LinearLayout>
     </RelativeLayout>
+    <TextView
+        android:id="@+id/chat_send_remind_state"
+        style="@style/chat_remind_state_style"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="您的好友已经接受任务"
+        android:layout_marginBottom="10dp"
+        android:visibility="gone" />
 
 </LinearLayout>

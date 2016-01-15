@@ -30,6 +30,7 @@ import com.remind.dao.impl.PeopelDaoImpl;
 import com.remind.entity.MessageIndexEntity;
 import com.remind.entity.PeopelEntity;
 import com.remind.util.AppUtil;
+import com.remind.util.Utils;
 import com.remind.view.RoleDetailImageView;
 
 /**
@@ -168,13 +169,8 @@ public class EditPeopelActivity extends BaseActivity implements OnClickListener 
 	 * 设置头像
 	 */
 	private void setupImg() {
-		
-		try {
-			// 如果头像是软件自带的图片
-			int id = Integer.valueOf(imgPath);
-			imgView.setImageResource(id);
-			imgView.init();
-		} catch (Exception e) {
+		int id = Utils.getResoureIdbyName(this, imgPath);
+		if (0 == id) {
 			// 如果头像是用户上传的图片
 			
 			// 显示图片
@@ -192,6 +188,10 @@ public class EditPeopelActivity extends BaseActivity implements OnClickListener 
 			}
 
 			imgView.setImageDrawable(AppUtil.bitmapToDrawable(bm));
+			imgView.init();
+		} else {
+			// 如果头像是软件自带的图片
+			imgView.setImageResource(id);
 			imgView.init();
 		}
 	}

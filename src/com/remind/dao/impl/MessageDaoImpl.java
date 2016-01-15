@@ -119,6 +119,17 @@ public class MessageDaoImpl implements MessageDao {
 		mCursor = db.rawQuery(sql, null);
 		return mCursor;
 	}
+	
+	@Override
+	public synchronized Cursor queryByOtherTypeId(String id) {
+		SQLiteDatabase db = mDBHelper.getWritableDatabase();
+		String sql = "select * from " + MessageMsg.TABLENAME + " where "
+				 + MessageMsg.OTHER_TYPE_ID
+				+ " = " + id + " order by " + MessageMsg.TIME + " asc ";
+		Cursor mCursor = null;
+		mCursor = db.rawQuery(sql, null);
+		return mCursor;
+	}
 
 	@Override
 	public int getCount(String recieveNum) {
