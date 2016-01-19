@@ -379,6 +379,36 @@ public class AddRemindActivity extends AbActivity implements OnClickListener {
 			break;
 		case R.id.select_type_btn:
 			// 选择形式
+//			new AlertDialog.Builder(this).setTitle("是否上传")
+//			.setPositiveButton("OK",  new DialogInterface.OnClickListener() {
+//
+//				@Override
+//				public void onClick(DialogInterface dialog, int which) {
+//					Upload.upload(AddRemindActivity.this, "test.jpg",
+//							new CompleteListener() {
+//						@Override
+//						public void result(boolean isComplete, String result, String error) {
+//							// do something...
+////							System.out.println("isComplete:"+isComplete+";result:"+result+";error:"+error);
+//							Log.e("Upload_CompleteListener", "isComplete:"+isComplete+";result:"+result+";error:"+error);
+//						}
+//					},
+//					new ProgressListener() {
+//						@Override
+//						public void transferred(long transferedBytes, long totalBytes) {
+//							// do something...
+////							System.out.println("trans:" + transferedBytes + "; total:" + totalBytes);
+//							Log.e("Upload_ProgressListener", "trans:" + transferedBytes + "; total:" + totalBytes);
+//						}
+//					});
+//				}
+//			})
+//			.setNegativeButton("取消", new DialogInterface.OnClickListener() {
+//
+//				@Override
+//				public void onClick(DialogInterface dialog, int which) {
+//				}
+//			}).create().show();
 			break;
 		case R.id.select_more_btn:
 			// 更多
