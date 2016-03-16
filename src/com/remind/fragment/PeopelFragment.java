@@ -23,6 +23,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.help.remind.R;
+import com.remind.activity.AddPeopleActivity;
 import com.remind.activity.ContactsActivity;
 import com.remind.activity.EditPeopelActivity;
 import com.remind.adapter.PeopelAdapter;
@@ -117,7 +118,7 @@ public class PeopelFragment extends Fragment{
 			@Override
 			public void onClick(View v) {
 				// 打开搜索页面
-				
+				startActivity(new Intent(getActivity(), AddPeopleActivity.class));
 			}
 		});
 	}

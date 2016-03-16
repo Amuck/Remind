@@ -14,6 +14,7 @@ import org.apache.http.params.CoreConnectionPNames;
 import android.content.res.AssetManager;
 
 import com.google.gson.Gson;
+import com.remind.global.AppConstant;
 import com.remind.util.Utils;
 
 public class HttpClient {
@@ -23,7 +24,7 @@ public class HttpClient {
 //	\"password\":\"123456\"," +
 //			"\"nick\":\"123\"," +
 //			"\"avatar\":\"http://sdfsdf.1.pig\"}" -v
-	public static String TYPE_NOTIFICATION = "notificatin";
+	public static String TYPE_NOTIFICATION = "notification";
 	public static String REGIST_MID = "socket_regist";
 	public static String ip = "101.200.200.49";
 	public static String port = "8008";
@@ -49,11 +50,20 @@ public class HttpClient {
 		public String friend_id;
 		public String state;
 		public String friend_alias;
+		public String msg;
 	}
 	
 	public static class Login {
 		public String mobile;
 		public String password;
+	}
+	
+	public static class Message {
+		public String type;
+		public String mid;
+		public String from_id;
+		public String to;
+		public String content;
 	}
 	
 	/**
@@ -67,6 +77,34 @@ public class HttpClient {
 		login.mobile = mobile;
 		login.password = pwd;
 		return login;
+	}
+	
+	/**
+	 * @param mid			标记id
+	 * @param to			对方id
+	 * @param content		发送内容
+	 * @return
+	 */
+	public static Message sendMsg1(String mid, String to, String content) {
+		Message message = new Message();
+		message.type = "message";
+		message.mid = mid;
+		message.from_id = AppConstant.FROM_ID;
+//		message.to = to;
+		message.to = "81a95d871f661e13bc64fe5868592b2292dd1fc2";
+		message.content = content;
+		return message;
+	}
+	
+	public static Message sendMsg2(String mid, String to, String content) {
+		Message message = new Message();
+		message.type = "message";
+		message.mid = mid;
+		message.from_id = AppConstant.FROM_ID;
+//		message.to = to;
+		message.to = "bfa3e1dd3865915333079226c19120097c437ee5";
+		message.content = content;
+		return message;
 	}
 	
 	public static Login loginUser1() {

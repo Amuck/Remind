@@ -7,13 +7,16 @@ import java.util.Date;
 import java.util.List;
 
 import android.content.BroadcastReceiver;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.ServiceConnection;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
+import android.os.IBinder;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
@@ -43,6 +46,7 @@ import com.remind.entity.PeopelEntity;
 import com.remind.entity.RemindEntity;
 import com.remind.global.AppConstant;
 import com.remind.sevice.BackService;
+import com.remind.sevice.IBackService;
 import com.remind.sp.WeatherSp;
 import com.remind.util.AppUtil;
 import com.remind.util.DataBaseParser;
@@ -127,6 +131,33 @@ public class HomeActivity extends BaseActivity implements OnClickListener {
 	
 	private LocalBroadcastManager mLocalBroadcastManager;
 	
+	private Intent mServiceIntent;
+	
+	private IBackService iBackService;
+	
+	private ServiceConnection conn = new ServiceConnection() {
+
+		@Override
+		public void onServiceDisconnected(ComponentName name) {
+			iBackService = null;
+
+		}
+
+		@Override
+		public void onServiceConnected(ComponentName name, IBinder service) {
+			iBackService = IBackService.Stub.asInterface(service);
+			if (RemindApplication.iBackService == null) {
+				RemindApplication.iBackService = iBackService;
+			} else {
+				iBackService = RemindApplication.iBackService;
+			}
+		}
+	};
+	
+	/**
+	 * 是否需要解除绑定
+	 */
+	private boolean isNeedUnbind = false;
 	/**
 	 * @author ChenLong
 	 *
@@ -201,6 +232,8 @@ public class HomeActivity extends BaseActivity implements OnClickListener {
 		remindDao = new RemindDaoImpl(this);
 		peopelDao = new PeopelDaoImpl(this);
 		today = dateFormat.format(new Date());
+		
+		mServiceIntent = new Intent(this, BackService.class);
 
 		mLocalBroadcastManager = LocalBroadcastManager.getInstance(this);
 		mReciver = new MessageBackReciver();
@@ -367,11 +400,21 @@ public class HomeActivity extends BaseActivity implements OnClickListener {
 	protected void onStart() {
 		super.onStart();
 		mLocalBroadcastManager.registerReceiver(mReciver, mIntentFilter);
+		if (RemindApplication.iBackService == null) {
+			bindService(mServiceIntent, conn, BIND_AUTO_CREATE);
+			RemindApplication.iBackService = iBackService;
+			isNeedUnbind = true;
+		} else {
+			isNeedUnbind = false;
+		}
 	}
 
 	@Override
 	protected void onStop() {
 		super.onStop();
+		if (isNeedUnbind) {
+			unbindService(conn);
+		}
 		mLocalBroadcastManager.unregisterReceiver(mReciver);
 		mLocationClient.stop();
 		((RemindApplication) getApplication()).cancelRequest();

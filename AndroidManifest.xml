@@ -65,6 +65,14 @@
             android:configChanges="orientation|keyboardHidden|screenSize" >
         </activity>
         <activity
+            android:name="com.remind.activity.AddPeopleActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize" >
+        </activity>
+        <activity
+            android:name="com.remind.activity.MainActivity1"
+            android:configChanges="orientation|keyboardHidden|screenSize" >
+        </activity>
+        <activity
             android:name="com.remind.activity.EditPeopelActivity"
             android:configChanges="orientation|keyboardHidden|screenSize" >
         </activity>

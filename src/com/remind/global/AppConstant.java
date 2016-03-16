@@ -40,4 +40,13 @@ public class AppConstant {
 	 * 错误日志保存路径
 	 */
 	public static final String ERROR_PATH = "/log";
+	
+	/**
+	 * 登陆用户手机号
+	 */
+	public static String USER_ID = "";
+	/**
+	 * 登陆用户id
+	 */
+	public static String FROM_ID = "";
 }

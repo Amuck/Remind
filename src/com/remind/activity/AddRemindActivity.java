@@ -573,7 +573,14 @@ public class AddRemindActivity extends AbActivity implements OnClickListener {
 
 					@Override
 					public void onClick(DialogInterface dialog, int which) {
-						alertDialog.dismiss();
+//						alertDialog.dismiss();
+					}
+				}).setPositiveButton("添加联系人", new DialogInterface.OnClickListener() {
+
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						startActivity(new Intent(AddRemindActivity.this, MainActivity1.class));
+//						alertDialog.dismiss();
 					}
 				}).create();
 

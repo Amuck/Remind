@@ -82,4 +82,6 @@
     <string name="login_success">登录成功！</string>
     <string name="fail_info">失败,请确认后重试。</string>
     <string name="net_null">请打开网络</string>
+    <!-- 添加用户 -->
+    <string name="add_people">添加用户</string>
 </resources>

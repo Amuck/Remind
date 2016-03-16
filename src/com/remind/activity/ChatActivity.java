@@ -11,6 +11,7 @@ import android.database.Cursor;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
+import android.os.RemoteException;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
@@ -39,6 +40,7 @@ import android.widget.Toast;
 import com.help.remind.R;
 import com.remind.adapter.ChatAdapter;
 import com.remind.adapter.ChatAdapter.ContentClickListener;
+import com.remind.application.RemindApplication;
 import com.remind.dao.MessageDao;
 import com.remind.dao.MessageIndexDao;
 import com.remind.dao.PeopelDao;
@@ -52,6 +54,7 @@ import com.remind.entity.MessageIndexEntity;
 import com.remind.entity.PeopelEntity;
 import com.remind.entity.RemindEntity;
 import com.remind.global.AppConstant;
+import com.remind.http.HttpClient;
 import com.remind.record.SoundMeter;
 import com.remind.util.AppUtil;
 import com.remind.util.DataBaseParser;
@@ -420,12 +423,24 @@ public class ChatActivity extends BaseActivity implements OnClickListener, OnScr
 		userMessageEntity.setMsgPath("");
 		userMessageEntity.setSendState(MessageEntity.SENDING);
 		// 插入数据库
-		messageDao.insert(userMessageEntity);
+		long mid = messageDao.insert(userMessageEntity);
 //		messageIndexDao.update(messageIndexEntity);
 		// 添加到listview中显示，通过线程发送
 //		datas.add(userMessageEntity.clone());
 //		chatAdapter.notifyDataSetChanged();
 		chatAdapter.getNewMsg(userMessageEntity.clone(), chatList);
+		
+//		String param = HttpClient.getJsonForPost(HttpClient.sendMsg1(mid + "", num, msg));
+		String param = HttpClient.getJsonForPost(HttpClient.sendMsg1(mid + "", "13716022538", msg));
+		try {
+			boolean isSend = RemindApplication.iBackService.sendMessage(param);//Send Content by socket
+			Toast.makeText(this, isSend ? "success" : "fail",
+					Toast.LENGTH_SHORT).show();
+//			mEditText.setText("");
+		} catch (RemoteException e) {
+			e.printStackTrace();
+		}
+		
 		// listview滚动到底部
 //		chatList.setSelection(ListView.FOCUS_DOWN);
 		// 清除编辑框内容

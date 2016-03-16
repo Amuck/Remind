@@ -22,6 +22,7 @@ import com.baidu.location.BDLocation;
 import com.baidu.location.BDLocationListener;
 import com.baidu.location.LocationClient;
 import com.help.remind.R;
+import com.remind.sevice.IBackService;
 import com.remind.sevice.WeatherGetRequest;
 import com.remind.sp.WeatherSp;
 import com.remind.util.AppUtil;
@@ -635,4 +636,6 @@ public class RemindApplication extends Application {
 				mWeatherIconFlg = WEATHER_FINE;
 			}
 	}
+	
+	public static IBackService iBackService = null;
 }

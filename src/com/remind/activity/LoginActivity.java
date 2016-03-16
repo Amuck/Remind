@@ -29,6 +29,7 @@ import com.remind.application.RemindApplication;
 import com.remind.dao.PeopelDao;
 import com.remind.dao.impl.PeopelDaoImpl;
 import com.remind.entity.PeopelEntity;
+import com.remind.global.AppConstant;
 import com.remind.http.HttpClient;
 import com.remind.sevice.BackService;
 import com.remind.sevice.IBackService;
@@ -92,7 +93,7 @@ public class LoginActivity extends BaseActivity implements OnClickListener {
 	/**
 	 * 是否注册service
 	 */
-	private boolean isRegistService = false;
+//	private boolean isRegistService = false;
 
 	private Intent mServiceIntent;
 	
@@ -188,9 +189,9 @@ public class LoginActivity extends BaseActivity implements OnClickListener {
 	@Override
 	protected void onStop() {
 		super.onStop();
-		if (isRegistService) {
-			unbindService(conn);
-		}
+//		if (isRegistService) {
+//			unbindService(conn);
+//		}
 	}
 
 	private void init() {
@@ -373,6 +374,7 @@ public class LoginActivity extends BaseActivity implements OnClickListener {
 						String own_info = jsonObject.getString("own_info");
 						JSONObject own_infojsonObject = new JSONObject(own_info);
 						from_id = own_infojsonObject.getString("id");
+						AppConstant.FROM_ID = from_id;
 						// 昵称
 						String nick = own_infojsonObject.getString("nick");
 						// 头像路径
@@ -380,6 +382,7 @@ public class LoginActivity extends BaseActivity implements OnClickListener {
 						
 						// 插入数据库
 						String num = et_user_mobile.getEditableText().toString();
+						AppConstant.USER_ID = num;
 						PeopelEntity peopelEntity = new PeopelEntity();
 						peopelEntity.setNum(num);
 						peopelEntity.setName(nick);
@@ -430,9 +433,9 @@ public class LoginActivity extends BaseActivity implements OnClickListener {
 	 * @return		注册service是否成功
 	 */
 	private boolean startLongLink() {
-		isRegistService = true;
+//		isRegistService = true;
 		// 打开长连接
-		bindService(mServiceIntent, conn, BIND_AUTO_CREATE);
+//		bindService(mServiceIntent, conn, BIND_AUTO_CREATE);
 		// 注册socket
 		String content = HttpClient.getJsonForPost(HttpClient.getSocketRegist(HttpClient.TYPE_NOTIFICATION, 
 				HttpClient.REGIST_MID, "", "", from_id));
@@ -440,7 +443,7 @@ public class LoginActivity extends BaseActivity implements OnClickListener {
 		boolean isSend = false;
 		try {
 			Thread.sleep(100);
-			isSend = iBackService.sendMessage(content);
+			isSend = RemindApplication.iBackService.sendMessage(content);
 		} catch (RemoteException e) {
 			e.printStackTrace();
 		} catch (InterruptedException e) {

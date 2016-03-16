@@ -36,7 +36,8 @@ public class BackService extends Service {
 
 	private LocalBroadcastManager mLocalBroadcastManager;
 
-	private WeakReference<Socket> mSocket;
+//	private WeakReference<Socket> mSocket;
+	private Socket msocket;
 
 	// For heart Beat
 	private Handler mHandler = new Handler();
@@ -50,7 +51,7 @@ public class BackService extends Service {
 				if (!isSuccess) {
 					mHandler.removeCallbacks(heartBeatRunnable);
 					mReadThread.release();
-					releaseLastSocket(mSocket);
+					releaseLastSocket(msocket);
 					new InitSocketThread().start();
 				} else {
 					Log.e(TAG, "bit success");
@@ -83,10 +84,10 @@ public class BackService extends Service {
 	}
 	
 	public void isClose() {
-		if (null == mSocket || null == mSocket.get()) {
+		if (null == msocket) {
 			return ;
 		}
-		Socket soc = mSocket.get();
+		Socket soc = msocket;
 		try {
 
 			soc.sendUrgentData(0xFF);
@@ -113,10 +114,10 @@ public class BackService extends Service {
     }
 	
 	public boolean sendMsg(String msg) {
-		if (null == mSocket || null == mSocket.get()) {
+		if (null == msocket) {
 			return false;
 		}
-		Socket soc = mSocket.get();
+		Socket soc = msocket;
 		try {
 			if (!soc.isClosed() && !soc.isOutputShutdown()) {
 //				out = getOutPutStrem(soc);
@@ -182,13 +183,13 @@ public class BackService extends Service {
 
 	private void initSocket() {//初始化Socket
 		try {
-			Socket so = new Socket(HOST, PORT);
+			msocket = new Socket(HOST, PORT);
 //			Socket so = new Socket();
 //			SocketAddress address = new InetSocketAddress(HOST, PORT);
 //			so.connect(address, 8000);
 //			so.setKeepAlive(true);
-			mSocket = new WeakReference<Socket>(so);
-			mReadThread = new ReadThread(so);
+//			mSocket = new WeakReference<Socket>(so);
+			mReadThread = new ReadThread(msocket);
 			mReadThread.start();
 			mHandler.postDelayed(heartBeatRunnable, HEART_BEAT_RATE);//初始化成功后，就准备发送心跳包
 //			boolean isSuccess = sendMsg("{}");
@@ -204,10 +205,10 @@ public class BackService extends Service {
 		}
 	}
 
-	private void releaseLastSocket(WeakReference<Socket> mSocket) {
+	private void releaseLastSocket(Socket mSocket) {
 		try {
 			if (null != mSocket) {
-				Socket sk = mSocket.get();
+				Socket sk = mSocket;
 				if (!sk.isClosed()) {
 					sk.close();
 				}
@@ -217,6 +218,18 @@ public class BackService extends Service {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+//		try {
+//			if (null != mSocket) {
+//				Socket sk = mSocket.get();
+//				if (!sk.isClosed()) {
+//					sk.close();
+//				}
+//				sk = null;
+//				mSocket = null;
+//			}
+//		} catch (IOException e) {
+//			e.printStackTrace();
+//		}
 	}
 
 	class InitSocketThread extends Thread {
@@ -229,22 +242,23 @@ public class BackService extends Service {
 
 	// Thread to read content from Socket
 	class ReadThread extends Thread {
-		private WeakReference<Socket> mWeakSocket;
+		private Socket mWeakSocket;
+//		private WeakReference<Socket> mWeakSocket;
 		private boolean isStart = true;
 
 		public ReadThread(Socket socket) {
-			mWeakSocket = new WeakReference<Socket>(socket);
+			mWeakSocket = socket;
 		}
 
 		public void release() {
 			isStart = false;
-			releaseLastSocket(mWeakSocket);
+			releaseLastSocket(msocket);
 		}
 
 		@Override
 		public void run() {
 			super.run();
-			Socket socket = mWeakSocket.get();
+			Socket socket = mWeakSocket;
 			if (null != socket) {
 				try {
 					InputStream is = socket.getInputStream();
@@ -275,4 +289,52 @@ public class BackService extends Service {
 		}
 	}
 
+	// Thread to read content from Socket
+//		class ReadThread extends Thread {
+//			private Socket mWeakSocket;
+////			private WeakReference<Socket> mWeakSocket;
+//			private boolean isStart = true;
+//
+//			public ReadThread(Socket socket) {
+//				mWeakSocket = socket;
+//			}
+//
+//			public void release() {
+//				isStart = false;
+//				releaseLastSocket(mWeakSocket);
+//			}
+//
+//			@Override
+//			public void run() {
+//				super.run();
+//				Socket socket = mWeakSocket;
+//				if (null != socket) {
+//					try {
+//						InputStream is = socket.getInputStream();
+//						byte[] buffer = new byte[1024 * 4];
+//						int length = 0;
+//						while (!socket.isClosed() && !socket.isInputShutdown()
+//								&& isStart && ((length = is.read(buffer)) != -1)) {
+//							if (length > 0) {
+//								String message = new String(Arrays.copyOf(buffer,
+//										length)).trim();
+//								Log.e(TAG, message);
+//								//收到服务器过来的消息，就通过Broadcast发送出去
+//								if(message.equals(HEART_BEAT_MSG)){//处理心跳回复
+//									Intent intent=new Intent(HEART_BEAT_ACTION);
+//									mLocalBroadcastManager.sendBroadcast(intent);
+//								}else{
+//									//其他消息回复
+//									Intent intent=new Intent(MESSAGE_ACTION);
+//									intent.putExtra("message", message);
+//									mLocalBroadcastManager.sendBroadcast(intent);
+//								}
+//							}
+//						}
+//					} catch (IOException e) {
+//						e.printStackTrace();
+//					}
+//				}
+//			}
+//		}
 }
