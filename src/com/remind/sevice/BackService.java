@@ -23,13 +23,14 @@ import com.remind.util.ByteUtil;
 
 public class BackService extends Service {
 	private static final String TAG = "BackService";
-	private static final long HEART_BEAT_RATE = 60 * 1000;
+	private static final long HEART_BEAT_RATE = 10 * 1000;
 
 	public static final String HOST = "101.200.200.49";//"172.22.51.98";// "192.168.1.21";//
 	public static final int PORT = 80;//9800;
 	
 	public static final String MESSAGE_ACTION="org.feng.message_ACTION";
 	public static final String HEART_BEAT_ACTION="org.feng.heart_beat_ACTION";
+	public static final String HEART_BEAT_MSG="{}";
 	
 	private ReadThread mReadThread;
 
@@ -44,7 +45,7 @@ public class BackService extends Service {
 		@Override
 		public void run() {
 			if (System.currentTimeMillis() - sendTime >= HEART_BEAT_RATE) {
-				boolean isSuccess = sendMsg("{}");//就发送一个\r\n过去 如果发送失败，就重新初始化一个socket
+				boolean isSuccess = sendMsg(HEART_BEAT_MSG);//就发送一个\r\n过去 如果发送失败，就重新初始化一个socket
 //				isClose();
 				if (!isSuccess) {
 					mHandler.removeCallbacks(heartBeatRunnable);
@@ -122,15 +123,16 @@ public class BackService extends Service {
 				OutputStream out = soc.getOutputStream();
 //				String message = msg + "\r\n";
 				String message = msg;
-				if ("{}".equals(msg)) {
-//					message = msg;
-					out.write(ByteUtil.toBytes(msg.getBytes("UTF-8"), 1));
-				} else {
-					JSONObject jsonObject = new JSONObject();
-					jsonObject.put("content", msg);
-					msg = jsonObject.toString();
-					out.write(ByteUtil.toBytes(msg.getBytes("UTF-8"), 1));
-				}
+				out.write(ByteUtil.toBytes(message.getBytes("UTF-8"), 1));
+//				if ("{}".equals(msg)) {
+////					message = msg;
+//					out.write(ByteUtil.toBytes(msg.getBytes("UTF-8"), 1));
+//				} else {
+//					JSONObject jsonObject = new JSONObject();
+//					jsonObject.put("content", msg);
+//					msg = jsonObject.toString();
+//					out.write(ByteUtil.toBytes(msg.getBytes("UTF-8"), 1));
+//				}
 //				byte[] bs = message.getBytes("utf-8");
 //				byte[] temp = getAllByte(bs);
 //				int i = 0;
@@ -255,7 +257,7 @@ public class BackService extends Service {
 									length)).trim();
 							Log.e(TAG, message);
 							//收到服务器过来的消息，就通过Broadcast发送出去
-							if(message.equals("ok")){//处理心跳回复
+							if(message.equals(HEART_BEAT_MSG)){//处理心跳回复
 								Intent intent=new Intent(HEART_BEAT_ACTION);
 								mLocalBroadcastManager.sendBroadcast(intent);
 							}else{
