@@ -67,6 +67,19 @@ public class HttpClient {
 	}
 	
 	/**
+	 * @author ChenLong
+	 *
+	 *	收到消息的回馈信息
+	 */
+	public static class MessageFeedBack {
+		public String type;
+		public String mid;
+//		public String from_id;
+//		public String to;
+//		public String content;
+	}
+	
+	/**
 	 * 获取登陆的json数据
 	 * @param mobile
 	 * @param pwd
@@ -77,6 +90,18 @@ public class HttpClient {
 		login.mobile = mobile;
 		login.password = pwd;
 		return login;
+	}
+	
+	/**
+	 * @param mid			标记id
+	 * @param type			类型
+	 * @return
+	 */
+	public static MessageFeedBack msgFeedBack(String mid, String type) {
+		MessageFeedBack back = new MessageFeedBack();
+		back.type = type;
+		back.mid = mid;
+		return back;
 	}
 	
 	/**

@@ -6,6 +6,9 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
@@ -17,6 +20,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.IBinder;
+import android.os.RemoteException;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
@@ -45,6 +49,7 @@ import com.remind.dao.impl.RemindDaoImpl;
 import com.remind.entity.PeopelEntity;
 import com.remind.entity.RemindEntity;
 import com.remind.global.AppConstant;
+import com.remind.http.HttpClient;
 import com.remind.sevice.BackService;
 import com.remind.sevice.IBackService;
 import com.remind.sp.WeatherSp;
@@ -185,6 +190,28 @@ public class HomeActivity extends BaseActivity implements OnClickListener {
 			} else {
 				String message = intent.getStringExtra("message");
 //				tv.setText(message);
+				JSONObject jsonObject;
+				try {
+					jsonObject = new JSONObject(message.substring(message.indexOf("{"), message.length()));
+					String type = jsonObject.getString("type");
+					if ("message".equals(type)) {
+						// 收到短消息，需要回馈
+						type = "message_ack";
+						String mid = jsonObject.getString("mid");
+						String param = HttpClient.getJsonForPost(HttpClient.msgFeedBack(mid, type));
+						boolean isSuccess = RemindApplication.iBackService.sendMessage(param);
+						if (isSuccess) {
+							Toast.makeText(HomeActivity.this, "回馈成功", Toast.LENGTH_SHORT).show();
+						} else {
+							Toast.makeText(HomeActivity.this, "回馈fail", Toast.LENGTH_SHORT).show();
+						}
+					}
+				} catch (JSONException e) {
+					e.printStackTrace();
+				} catch (RemoteException e) {
+					e.printStackTrace();
+				}
+				
 				Toast.makeText(HomeActivity.this, message, Toast.LENGTH_SHORT).show();
 			}
 		};
