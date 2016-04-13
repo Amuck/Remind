@@ -78,7 +78,8 @@
         </activity>
         <activity
             android:name="com.remind.activity.ContactsActivity"
-            android:configChanges="orientation|keyboardHidden|screenSize" >
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:theme="@android:style/Theme.Light" >
         </activity>
         <activity
             android:name="com.remind.activity.AddRemindActivity"
@@ -116,12 +117,18 @@
                 <action android:name="android.alarm.remind.action" />
             </intent-filter>
         </receiver>
+        <receiver
+            android:name="com.remind.receiver.MessageReceiver">
+            <intent-filter>
+                <action android:name="com.remind.message_ACTION" />
+                <action android:name="com.remind.heart_beat_ACTION" />
+            </intent-filter>
+        </receiver>
         <receiver android:name="com.remind.receiver.BootReceiver" >
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
         </receiver>
-
         <service
             android:name="com.baidu.location.f"
             android:enabled="true"

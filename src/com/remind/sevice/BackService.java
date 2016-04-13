@@ -20,6 +20,8 @@ import android.os.RemoteException;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
+import com.remind.application.RemindApplication;
+import com.remind.global.AppConstant;
 import com.remind.http.HttpClient;
 import com.remind.util.ByteUtil;
 
@@ -30,8 +32,8 @@ public class BackService extends Service {
 	public static final String HOST = "101.200.200.49";//"172.22.51.98";// "192.168.1.21";//
 	public static final int PORT = 80;//9800;
 	
-	public static final String MESSAGE_ACTION="org.feng.message_ACTION";
-	public static final String HEART_BEAT_ACTION="org.feng.heart_beat_ACTION";
+	public static final String MESSAGE_ACTION="com.remind.message_ACTION";
+	public static final String HEART_BEAT_ACTION="com.remind.heart_beat_ACTION";
 	public static final String HEART_BEAT_MSG="{}";
 	
 	private ReadThread mReadThread;
@@ -54,9 +56,10 @@ public class BackService extends Service {
 					mHandler.removeCallbacks(heartBeatRunnable);
 					mReadThread.release();
 					releaseLastSocket(msocket);
+					Log.e(TAG, "bit fail");
 					new InitSocketThread().start();
 				} else {
-					Log.e(TAG, "bit success");
+					Log.e(TAG, "bit success" + RemindApplication.iBackService + " socket : " + msocket);
 //					UIHelper.toastAsync(BackService.this, "bit success");
 				}
 			}
@@ -186,6 +189,9 @@ public class BackService extends Service {
 	private void initSocket() {//初始化Socket
 		try {
 			msocket = new Socket(HOST, PORT);
+			if (AppConstant.FROM_ID != null && AppConstant.FROM_ID.length() > 0) {
+				RemindApplication.startLongLink();
+			}
 //			Socket so = new Socket();
 //			SocketAddress address = new InetSocketAddress(HOST, PORT);
 //			so.connect(address, 8000);
@@ -275,12 +281,12 @@ public class BackService extends Service {
 							//收到服务器过来的消息，就通过Broadcast发送出去
 							if(message.equals(HEART_BEAT_MSG)){//处理心跳回复
 								Intent intent=new Intent(HEART_BEAT_ACTION);
-								mLocalBroadcastManager.sendBroadcast(intent);
+								sendBroadcast(intent);
 							}else{
 								//其他消息回复
 								Intent intent=new Intent(MESSAGE_ACTION);
 								intent.putExtra("message", message);
-								mLocalBroadcastManager.sendBroadcast(intent);
+								sendBroadcast(intent);
 							}
 						}
 					}

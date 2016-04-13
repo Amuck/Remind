@@ -118,7 +118,9 @@ public class PeopelFragment extends Fragment{
 			@Override
 			public void onClick(View v) {
 				// 打开搜索页面
-				startActivity(new Intent(getActivity(), AddPeopleActivity.class));
+//				startActivity(new Intent(getActivity(), AddPeopleActivity.class));
+				Intent intent = new Intent(getActivity(), AddPeopleActivity.class);
+				startActivityForResult(intent, ADD_PEOPEL);
 			}
 		});
 	}

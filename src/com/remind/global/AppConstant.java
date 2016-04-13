@@ -44,7 +44,7 @@ public class AppConstant {
 	/**
 	 * 登陆用户手机号
 	 */
-	public static String USER_ID = "";
+	public static String USER_NUM = "";
 	/**
 	 * 登陆用户id
 	 */

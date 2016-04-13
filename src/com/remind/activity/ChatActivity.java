@@ -252,7 +252,7 @@ public class ChatActivity extends BaseActivity implements OnClickListener, OnScr
 					// 发送消息
 					sendMsg();
 					// TODO 测试接受
-					newMsg();
+//					newMsg();
 				}
 				return false;
 			}
@@ -432,6 +432,9 @@ public class ChatActivity extends BaseActivity implements OnClickListener, OnScr
 		
 //		String param = HttpClient.getJsonForPost(HttpClient.sendMsg1(mid + "", num, msg));
 		String param = HttpClient.getJsonForPost(HttpClient.sendMsg1(mid + "", "13716022538", msg));
+		if (AppConstant.USER_NUM.equals("13716022538")) {
+			param = HttpClient.getJsonForPost(HttpClient.sendMsg2(mid + "", "13716022537", msg));
+		}
 		try {
 			boolean isSend = RemindApplication.iBackService.sendMessage(param);//Send Content by socket
 			Toast.makeText(this, isSend ? "success" : "fail",
@@ -489,7 +492,7 @@ public class ChatActivity extends BaseActivity implements OnClickListener, OnScr
 			// 发送消息
 			sendMsg();
 			// TODO 测试接受
-			newMsg();
+//			newMsg();
 			break;
 		case R.id.add_remind:
 			// 添加提醒

@@ -8,6 +8,7 @@ import android.app.Service;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
+import android.os.RemoteException;
 import android.os.Vibrator;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -22,6 +23,8 @@ import com.baidu.location.BDLocation;
 import com.baidu.location.BDLocationListener;
 import com.baidu.location.LocationClient;
 import com.help.remind.R;
+import com.remind.global.AppConstant;
+import com.remind.http.HttpClient;
 import com.remind.sevice.IBackService;
 import com.remind.sevice.WeatherGetRequest;
 import com.remind.sp.WeatherSp;
@@ -638,4 +641,29 @@ public class RemindApplication extends Application {
 	}
 	
 	public static IBackService iBackService = null;
+	
+	/**
+	 * 开启长连接并注册socket
+	 * @return		注册service是否成功
+	 */
+	public static boolean startLongLink() {
+//		isRegistService = true;
+		// 打开长连接
+//		bindService(mServiceIntent, conn, BIND_AUTO_CREATE);
+		// 注册socket
+		String content = HttpClient.getJsonForPost(HttpClient.getSocketRegist(HttpClient.TYPE_NOTIFICATION, 
+				HttpClient.REGIST_MID, "", "", AppConstant.FROM_ID));
+		
+		boolean isSend = false;
+		try {
+			Thread.sleep(100);
+			isSend = RemindApplication.iBackService.sendMessage(content);
+		} catch (RemoteException e) {
+			e.printStackTrace();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		
+		return isSend;
+	}
 }

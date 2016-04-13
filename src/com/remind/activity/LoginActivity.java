@@ -208,12 +208,7 @@ public class LoginActivity extends BaseActivity implements OnClickListener {
 		mServiceIntent = new Intent(this, BackService.class);
 		
 		// 是否记住用户名
-		String name = MySharedPreferencesLoginType.getString(
-				getApplicationContext(), MySharedPreferencesLoginType.USERNAME);
-		if (!TextUtils.isEmpty(name)) {
-			login_remember.setChecked(true);
-			et_user_mobile.setText(name);
-		}
+		
 		et_user_mobile.setOnTouchListener(new OnTouchListener() {
 
 			@Override
@@ -279,6 +274,13 @@ public class LoginActivity extends BaseActivity implements OnClickListener {
 					}
 				});
 		btn_login.setOnClickListener(this);
+		
+		String name = MySharedPreferencesLoginType.getString(
+				getApplicationContext(), MySharedPreferencesLoginType.USERNAME);
+		if (!TextUtils.isEmpty(name)) {
+			login_remember.setChecked(true);
+			et_user_mobile.setText(name);
+		}
 	}
 
 	public void onClick(View v) {
@@ -382,7 +384,7 @@ public class LoginActivity extends BaseActivity implements OnClickListener {
 						
 						// 插入数据库
 						String num = et_user_mobile.getEditableText().toString();
-						AppConstant.USER_ID = num;
+						AppConstant.USER_NUM = num;
 						PeopelEntity peopelEntity = new PeopelEntity();
 						peopelEntity.setNum(num);
 						peopelEntity.setName(nick);
@@ -405,7 +407,7 @@ public class LoginActivity extends BaseActivity implements OnClickListener {
 					}
 					
 					// 打开socket长连接
-					boolean isSend = startLongLink();
+					boolean isSend = RemindApplication.startLongLink();
 					
 					if (isSend) {
 						// 成功
@@ -432,24 +434,24 @@ public class LoginActivity extends BaseActivity implements OnClickListener {
 	 * 开启长连接并注册socket
 	 * @return		注册service是否成功
 	 */
-	private boolean startLongLink() {
-//		isRegistService = true;
-		// 打开长连接
-//		bindService(mServiceIntent, conn, BIND_AUTO_CREATE);
-		// 注册socket
-		String content = HttpClient.getJsonForPost(HttpClient.getSocketRegist(HttpClient.TYPE_NOTIFICATION, 
-				HttpClient.REGIST_MID, "", "", from_id));
-		
-		boolean isSend = false;
-		try {
-			Thread.sleep(100);
-			isSend = RemindApplication.iBackService.sendMessage(content);
-		} catch (RemoteException e) {
-			e.printStackTrace();
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
-		
-		return isSend;
-	}
+//	private boolean startLongLink() {
+////		isRegistService = true;
+//		// 打开长连接
+////		bindService(mServiceIntent, conn, BIND_AUTO_CREATE);
+//		// 注册socket
+//		String content = HttpClient.getJsonForPost(HttpClient.getSocketRegist(HttpClient.TYPE_NOTIFICATION, 
+//				HttpClient.REGIST_MID, "", "", from_id));
+//		
+//		boolean isSend = false;
+//		try {
+//			Thread.sleep(100);
+//			isSend = RemindApplication.iBackService.sendMessage(content);
+//		} catch (RemoteException e) {
+//			e.printStackTrace();
+//		} catch (InterruptedException e) {
+//			e.printStackTrace();
+//		}
+//		
+//		return isSend;
+//	}
 }

@@ -176,8 +176,9 @@ public class ContactsActivity extends ListActivity {
 	private void addPersonIntoDB(int position) {
 		Date date = new Date();
 		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		String num = mContactsNumber.get(position).replaceAll("-", "").replaceAll(" ", "");
 		PeopelEntity entity = new PeopelEntity(mContactsName.get(position),
-				mContactsName.get(position), mContactsNumber.get(position),
+				mContactsName.get(position), num,
 				format.format(date), format.format(date),
 				mContactsUri.get(position), PeopelEntity.NORMAL,
 				PeopelEntity.VALIDATE);

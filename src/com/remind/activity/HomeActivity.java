@@ -426,7 +426,7 @@ public class HomeActivity extends BaseActivity implements OnClickListener {
 	@Override
 	protected void onStart() {
 		super.onStart();
-		mLocalBroadcastManager.registerReceiver(mReciver, mIntentFilter);
+//		mLocalBroadcastManager.registerReceiver(mReciver, mIntentFilter);
 		if (RemindApplication.iBackService == null) {
 			bindService(mServiceIntent, conn, BIND_AUTO_CREATE);
 			RemindApplication.iBackService = iBackService;
@@ -442,7 +442,7 @@ public class HomeActivity extends BaseActivity implements OnClickListener {
 		if (isNeedUnbind) {
 			unbindService(conn);
 		}
-		mLocalBroadcastManager.unregisterReceiver(mReciver);
+//		mLocalBroadcastManager.unregisterReceiver(mReciver);
 		mLocationClient.stop();
 		((RemindApplication) getApplication()).cancelRequest();
 	}
