@@ -41,6 +41,22 @@ public class MessageEntity implements Cloneable{
 	 * 用户接受的消息
 	 */
 	public final static String TYPE_RECIEVE = "1";
+	/**
+	 * 用户反馈成功
+	 */
+	public final static String FEED_SUCCESS = "feed_success";
+	/**
+	 * 用户反馈失败
+	 */
+	public final static String FEED_FAIL = "feed_fail";
+	/**
+	 * 用户反馈最初
+	 */
+	public final static String FEED_DEFAULT = "feed_default";
+	
+	/**
+	 * id
+	 */
 	private String id;
 	
 	/**
@@ -99,6 +115,10 @@ public class MessageEntity implements Cloneable{
 	 */
 	private String msgPath;
 	/**
+	 * 收到的消息是否反馈成功，成功：{@link #FEED_SUCCESS}；失败：{@link #FEED_FAIL}；初始：{@link #FEED_DEFAULT}
+	 */
+	private String feed = MessageEntity.FEED_DEFAULT;
+	/**
 	 * 预留字段
 	 */
 	private String z1;
@@ -129,11 +149,13 @@ public class MessageEntity implements Cloneable{
 	 * @param messageIndex	消息索引
 	 * @param isComing		发送方，用户发送：TYPE_SEND，用户接收：TYPE_RECIEVE
 	 * @param content		消息内容
+	 * @param feed			收到的消息是否反馈成功
 	 */
 	public MessageEntity(String id, String recieveName, String recieveNum,
 			String sendName, String sendNum, String time, String sendState,
 			String isDelete, String msgType, String otherTypeId,
-			String msgPath, String messageIndex, String isComing, String content) {
+			String msgPath, String messageIndex, String isComing, String content, 
+			String feed) {
 		super();
 		this.id = id;
 		this.recieveName = recieveName;
@@ -149,6 +171,7 @@ public class MessageEntity implements Cloneable{
 		this.messageIndex = messageIndex;
 		this.isComing = isComing;
 		this.content = content;
+		this.feed = feed;
 	}
 
 	public String getId() {
@@ -261,6 +284,14 @@ public class MessageEntity implements Cloneable{
 
 	public void setMsgPath(String msgPath) {
 		this.msgPath = msgPath;
+	}
+
+	public String getFeed() {
+		return feed;
+	}
+
+	public void setFeed(String feed) {
+		this.feed = feed;
 	}
 
 	@Override

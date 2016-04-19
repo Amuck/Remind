@@ -46,6 +46,7 @@ public class MessageDaoImpl implements MessageDao {
 		values.put(MessageMsg.MSG_TYPE, entity.getMsgType());
 		values.put(MessageMsg.MSG_PATH, entity.getMsgPath());
 		values.put(MessageMsg.OTHER_TYPE_ID, entity.getOtherTypeId());
+		values.put(MessageMsg.IS_FEED, entity.getFeed());
 
 		return db.insert(MessageMsg.TABLENAME, null, values);
 	}
@@ -95,6 +96,7 @@ public class MessageDaoImpl implements MessageDao {
 		sb.append(MessageMsg.SEND_NAME + "	= '" + entity.getSendName() + "',");
 		sb.append(MessageMsg.SEND_NUM + "	= '" + entity.getSendNum() + "',");
 		sb.append(MessageMsg.IS_COMING + "	= '" + entity.getIsComing() + "',");
+		sb.append(MessageMsg.IS_FEED + "	= '" + entity.getFeed() + "',");
 
 		sb.append(MessageMsg.RECIEVE_NAME + "	= '" + entity.getRecieveName()
 				+ "',");

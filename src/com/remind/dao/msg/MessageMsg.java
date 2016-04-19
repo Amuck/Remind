@@ -72,6 +72,10 @@ public class MessageMsg {
 	 */
 	public static final String IS_COMING = "isComing";
 	/**
+	 * 收到的消息是否反馈成功，成功：feed_success；失败：feed_fail；初始：feed_default
+	 */
+	public static final String IS_FEED = "isfeed";
+	/**
 	 * 预留字段
 	 */
 	public static final String Z1 = "z1";

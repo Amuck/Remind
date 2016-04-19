@@ -17,6 +17,9 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
+import android.os.RemoteException;
 import android.provider.ContactsContract;
 import android.provider.ContactsContract.CommonDataKinds.Phone;
 import android.provider.ContactsContract.CommonDataKinds.Photo;
@@ -30,11 +33,14 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.help.remind.R;
+import com.remind.application.RemindApplication;
 import com.remind.dao.PeopelDao;
 import com.remind.dao.impl.PeopelDaoImpl;
 import com.remind.entity.PeopelEntity;
+import com.remind.http.HttpClient;
 import com.remind.util.AppUtil;
 
 /**
@@ -80,6 +86,25 @@ public class ContactsActivity extends ListActivity {
 
 	private AlertDialog alertDialog;
 
+	private Handler handler = new Handler(){
+		public void handleMessage(android.os.Message msg) {
+			switch (msg.what) {
+			case 0:
+				String s = (String) msg.obj;
+				Toast.makeText(ContactsActivity.this, s,
+						Toast.LENGTH_SHORT).show();
+				
+				//返回上一个界面
+				setResult(RESULT_OK);
+				finish();
+				break;
+
+			default:
+				break;
+			}
+		};
+	};
+	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		mContext = this;
@@ -110,6 +135,20 @@ public class ContactsActivity extends ListActivity {
 		});
 
 		super.onCreate(savedInstanceState);
+	}
+	
+	private void friend(final String params) {
+		new Thread(new Runnable() {
+			
+			@Override
+			public void run() {
+				String s = HttpClient.post(HttpClient.url + HttpClient.friend, params);
+				Message msg = handler.obtainMessage();
+				msg.what = 0;
+				msg.obj = s;
+				handler.sendMessage(msg);
+			}
+		}).start();
 	}
 
 	/**
@@ -154,14 +193,16 @@ public class ContactsActivity extends ListActivity {
 								AppUtil.showToast(mContext, "发送成功");
 							}
 
+							String param = HttpClient.getJsonForPost(HttpClient.friendUser(phone_number));
+							friend(param);
 							// 添加联系人
-							addPersonIntoDB(position);
+//							addPersonIntoDB(position);
 
 							alertDialog.dismiss();
 
 							//返回上一个界面
-							setResult(RESULT_OK);
-							finish();
+//							setResult(RESULT_OK);
+//							finish();
 						}
 					}).create();
 		}

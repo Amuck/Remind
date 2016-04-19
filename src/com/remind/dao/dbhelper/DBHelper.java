@@ -207,6 +207,8 @@ public class DBHelper extends SQLiteOpenHelper {
 		messageSql.append(" text,");
 		messageSql.append(MessageMsg.IS_COMING);
 		messageSql.append(" varchar(2),");
+		messageSql.append(MessageMsg.IS_FEED);
+		messageSql.append(" varchar(2),");
 		messageSql.append(MessageMsg.MSG_TYPE);
 		messageSql.append(" varchar(2),");
 		messageSql.append(MessageMsg.OTHER_TYPE_ID);

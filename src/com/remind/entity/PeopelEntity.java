@@ -34,6 +34,10 @@ public class PeopelEntity implements Serializable{
 	 */
 	public final static int FRIEND = 2;
 	/**
+	 * 已拒绝的好友
+	 */
+	public final static int REFUSE = 3;
+	/**
 	 * 联系人名称
 	 */
 	private String name;

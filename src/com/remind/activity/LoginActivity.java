@@ -141,7 +141,7 @@ public class LoginActivity extends BaseActivity implements OnClickListener {
 				
 				break;
 			case LOGIN_SUCCESS:
-				RemindApplication.IS_LOGIN = true;
+//				RemindApplication.IS_LOGIN = true;
 				// 成功
 				hideProgess();
 				// 是否记住用户名
@@ -155,8 +155,8 @@ public class LoginActivity extends BaseActivity implements OnClickListener {
 							getApplicationContext(), "", "");
 				}
 
-				Toast.makeText(LoginActivity.this, "登陆成功",
-						Toast.LENGTH_SHORT).show();
+//				Toast.makeText(LoginActivity.this, "登陆成功",
+//						Toast.LENGTH_SHORT).show();
 				
 				finish();
 				break;

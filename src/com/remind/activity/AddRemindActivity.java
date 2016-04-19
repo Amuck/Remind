@@ -41,6 +41,7 @@ import com.remind.dao.impl.RemindDaoImpl;
 import com.remind.entity.MessageEntity;
 import com.remind.entity.PeopelEntity;
 import com.remind.entity.RemindEntity;
+import com.remind.global.AppConstant;
 import com.remind.http.HttpClient;
 import com.remind.util.AppUtil;
 import com.remind.util.DataBaseParser;
@@ -477,7 +478,7 @@ public class AddRemindActivity extends AbActivity implements OnClickListener {
 		messageEntity = new MessageEntity("", targetPeopel.getName(), targetPeopel.getNum(), 
 				user.getNickName(), user.getNum(), AppUtil.getNowTime(), 
 				MessageEntity.SENDING, MessageEntity.NORMAL, MessageEntity.TYPE_REMIND, 
-				remindId + "", "", targetPeopel.getNum(), MessageEntity.TYPE_SEND, remindEntity.getContent());
+				remindId + "", "", targetPeopel.getNum(), MessageEntity.TYPE_SEND, remindEntity.getContent(), MessageEntity.FEED_DEFAULT);
 		msgId = messageDao.insert(messageEntity);
 		
 		if (isForSelf) {
@@ -522,7 +523,7 @@ public class AddRemindActivity extends AbActivity implements OnClickListener {
 		if (cursor != null && cursor.getCount() > 0) {
 			
 		} else {
-			myself = new PeopelEntity("自己", "自己", AppUtil.getPhoneNumber(AddRemindActivity.this), "", "", "", PeopelEntity.NORMAL, PeopelEntity.FRIEND);
+			myself = new PeopelEntity("自己", "自己", AppConstant.USER_NUM, "", "", "", PeopelEntity.NORMAL, PeopelEntity.FRIEND);
 			peopelDao.insertPeopel(myself);
 		}
 		cursor.close();

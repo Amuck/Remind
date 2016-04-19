@@ -6,12 +6,17 @@ import java.util.Collections;
 import java.util.List;
 
 import android.app.Activity;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
+import android.os.Message;
 import android.os.RemoteException;
+import android.support.v4.content.LocalBroadcastManager;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
@@ -55,6 +60,7 @@ import com.remind.entity.PeopelEntity;
 import com.remind.entity.RemindEntity;
 import com.remind.global.AppConstant;
 import com.remind.http.HttpClient;
+import com.remind.receiver.MessageReceiver;
 import com.remind.record.SoundMeter;
 import com.remind.util.AppUtil;
 import com.remind.util.DataBaseParser;
@@ -69,6 +75,10 @@ public class ChatActivity extends BaseActivity implements OnClickListener, OnScr
 	 * 添加一个提醒
 	 */
 	public final static int ADD_REMIND = 3002;
+	/**
+	 * 刷新界面
+	 */
+	private final static int REFRESH_UI = 3003;
 	/**
 	 * 聊天信息
 	 */
@@ -170,8 +180,27 @@ public class ChatActivity extends BaseActivity implements OnClickListener, OnScr
 	private boolean isShosrt = false;
 	private String voiceName;
 	private long startVoiceT, endVoiceT;
-	private Handler mHandler = new Handler();
+	private Handler mHandler = new Handler() {
+		@Override
+		public void handleMessage(Message msg) {
+			switch (msg.what) {
+			case REFRESH_UI:
+				Bundle bundle = msg.getData();
+				String mid = (String) bundle.get("mid");
+				String code = (String) bundle.get("code");
+				getBackAndRefreshData(mid, code);
+				break;
+
+			default:
+				break;
+			}
+			super.handleMessage(msg);
+		}
+	};
 	
+	private LocalBroadcastManager mLocalBroadcastManager;
+	private MessageBackReciver mReciver;
+	private IntentFilter mIntentFilter;
 	/**
 	 * 接收人num
 	 */
@@ -189,6 +218,11 @@ public class ChatActivity extends BaseActivity implements OnClickListener, OnScr
 		remindDao = new RemindDaoImpl(this);
 		peopelDao = new PeopelDaoImpl(this);
 
+		mLocalBroadcastManager = LocalBroadcastManager.getInstance(this);
+		mReciver = new MessageBackReciver();
+		mIntentFilter = new IntentFilter();
+		mIntentFilter.addAction(MessageReceiver.MESSAGE_BACK_ACTION);
+		
 		Intent intent = getIntent();
 		num = intent.getStringExtra("num");
 		if (null == num || num.length() <= 0) {
@@ -321,14 +355,14 @@ public class ChatActivity extends BaseActivity implements OnClickListener, OnScr
 				user.getNum(), AppUtil.getNowTime(), 
 				MessageEntity.SEND_SUCCESS, MessageEntity.NORMAL, 
 				MessageEntity.TYPE_TEXT, "", "", peopelEntity.getNum(),
-				MessageEntity.TYPE_SEND, "");
+				MessageEntity.TYPE_SEND, "", MessageEntity.FEED_DEFAULT);
 		
 		contactMessageEntity = new MessageEntity("", user.getName(),
 				user.getNum(), peopelEntity.getName(), 
 				peopelEntity.getNum(), AppUtil.getNowTime(), 
 				MessageEntity.SEND_SUCCESS, MessageEntity.NORMAL, 
 				MessageEntity.TYPE_TEXT, "", "", peopelEntity.getNum(),
-				MessageEntity.TYPE_RECIEVE, "");
+				MessageEntity.TYPE_RECIEVE, "", MessageEntity.FEED_DEFAULT);
 	}
 	
 	/**
@@ -830,6 +864,75 @@ public class ChatActivity extends BaseActivity implements OnClickListener, OnScr
 			default:
 				volume.setImageResource(R.drawable.amp7);
 				break;
+			}
+		}
+		
+		/**
+		 * @author ChenLong
+		 *
+		 *	推送消息发送过来
+		 */
+		class MessageBackReciver extends BroadcastReceiver {
+
+			public MessageBackReciver() {
+			}
+
+			@Override
+			public void onReceive(Context context, Intent intent) {
+				String action = intent.getAction();
+				if (action.equals(MessageReceiver.MESSAGE_BACK_ACTION)) {
+					//  收到反馈后修改界面显示
+					String mid = intent.getStringExtra("mid");
+					String code = intent.getStringExtra("code");
+					Message message = mHandler.obtainMessage();
+					Bundle data = new Bundle();
+					data.putString("mid", mid);
+					data.putString("code", code);
+					message.setData(data);
+					mHandler.sendEmptyMessage(REFRESH_UI);
+				}
+			};
+		}
+		
+		@Override
+		protected void onStart() {
+			super.onStart();
+			mLocalBroadcastManager.registerReceiver(mReciver, mIntentFilter);
+		}
+		
+		@Override
+		protected void onStop() {
+			mLocalBroadcastManager.unregisterReceiver(mReciver);
+			super.onStop();
+		}
+		
+		/**
+		 * 获取了反馈之后，修改数据，刷新画面
+		 */
+		private void getBackAndRefreshData(String mid, String code) {
+			boolean isFind = false;
+			int findIndex = 0;
+			// 寻找所发送的消息
+			for (int i = datas.size() - 1; i >= 0; i--) {
+				MessageEntity temp = datas.get(i);
+				if (temp.getId().equals(mid)) {
+					if ("200".equals(code)) {
+						temp.setSendState(MessageEntity.SEND_SUCCESS);
+					} else {
+						temp.setSendState(MessageEntity.SEND_FAIL);
+					}
+					isFind = true;
+					findIndex = i;
+					break;
+				}
+			}
+			// 如果所修改界面在可见范围内，则刷新画面
+			if (isFind) {
+				int firstPosition = chatList.getFirstVisiblePosition();
+				int lastPosition = chatList.getLastVisiblePosition();
+				if (findIndex >= firstPosition && findIndex <= lastPosition) {
+					chatAdapter.notifyDataSetChanged();
+				}
 			}
 		}
 }

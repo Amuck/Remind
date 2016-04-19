@@ -130,12 +130,6 @@ public class HomeActivity extends BaseActivity implements OnClickListener {
 	private String today;
 	private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 	
-	private MessageBackReciver mReciver;
-
-	private IntentFilter mIntentFilter;
-	
-	private LocalBroadcastManager mLocalBroadcastManager;
-	
 	private Intent mServiceIntent;
 	
 	private IBackService iBackService;
@@ -163,59 +157,7 @@ public class HomeActivity extends BaseActivity implements OnClickListener {
 	 * 是否需要解除绑定
 	 */
 	private boolean isNeedUnbind = false;
-	/**
-	 * @author ChenLong
-	 *
-	 *	推送消息发送过来
-	 */
-	class MessageBackReciver extends BroadcastReceiver {
-//		private WeakReference<TextView> textView;
-
-		public MessageBackReciver() {
-//			textView = new WeakReference<TextView>(tv);
-		}
-//		public MessageBackReciver(TextView tv) {
-//			textView = new WeakReference<TextView>(tv);
-//		}
-
-		@Override
-		public void onReceive(Context context, Intent intent) {
-			String action = intent.getAction();
-//			TextView tv = textView.get();
-			if (action.equals(BackService.HEART_BEAT_ACTION)) {
-//				if (null != tv) {
-//					tv.setText("Get a heart heat");
-//				}
-				Toast.makeText(HomeActivity.this, "Get a heart heat", Toast.LENGTH_SHORT).show();
-			} else {
-				String message = intent.getStringExtra("message");
-//				tv.setText(message);
-				JSONObject jsonObject;
-				try {
-					jsonObject = new JSONObject(message.substring(message.indexOf("{"), message.length()));
-					String type = jsonObject.getString("type");
-					if ("message".equals(type)) {
-						// 收到短消息，需要回馈
-						type = "message_ack";
-						String mid = jsonObject.getString("mid");
-						String param = HttpClient.getJsonForPost(HttpClient.msgFeedBack(mid, type));
-						boolean isSuccess = RemindApplication.iBackService.sendMessage(param);
-						if (isSuccess) {
-							Toast.makeText(HomeActivity.this, "回馈成功", Toast.LENGTH_SHORT).show();
-						} else {
-							Toast.makeText(HomeActivity.this, "回馈fail", Toast.LENGTH_SHORT).show();
-						}
-					}
-				} catch (JSONException e) {
-					e.printStackTrace();
-				} catch (RemoteException e) {
-					e.printStackTrace();
-				}
-				
-				Toast.makeText(HomeActivity.this, message, Toast.LENGTH_SHORT).show();
-			}
-		};
-	}
+	
 
 	private Handler handler = new Handler() {
 		public void handleMessage(android.os.Message msg) {
@@ -262,12 +204,6 @@ public class HomeActivity extends BaseActivity implements OnClickListener {
 		
 		mServiceIntent = new Intent(this, BackService.class);
 
-		mLocalBroadcastManager = LocalBroadcastManager.getInstance(this);
-		mReciver = new MessageBackReciver();
-		mIntentFilter = new IntentFilter();
-		mIntentFilter.addAction(BackService.HEART_BEAT_ACTION);
-		mIntentFilter.addAction(BackService.MESSAGE_ACTION);
-		
 		initWeather();
 		getLocationAndWeather();
 		setUpView();
@@ -426,9 +362,15 @@ public class HomeActivity extends BaseActivity implements OnClickListener {
 	@Override
 	protected void onStart() {
 		super.onStart();
-//		mLocalBroadcastManager.registerReceiver(mReciver, mIntentFilter);
 		if (RemindApplication.iBackService == null) {
-			bindService(mServiceIntent, conn, BIND_AUTO_CREATE);
+			ComponentName cn = startService(mServiceIntent);
+			if (cn != null) {
+				bindService(mServiceIntent, conn, BIND_AUTO_CREATE);
+			} else {
+				RemindApplication.IS_LOGIN = false;
+				showToast("登陆失败，请重新登陆");
+				return;
+			}
 			RemindApplication.iBackService = iBackService;
 			isNeedUnbind = true;
 		} else {
@@ -442,7 +384,6 @@ public class HomeActivity extends BaseActivity implements OnClickListener {
 		if (isNeedUnbind) {
 			unbindService(conn);
 		}
-//		mLocalBroadcastManager.unregisterReceiver(mReciver);
 		mLocationClient.stop();
 		((RemindApplication) getApplication()).cancelRequest();
 	}
@@ -463,7 +404,7 @@ public class HomeActivity extends BaseActivity implements OnClickListener {
 				startActivity(new Intent(HomeActivity.this, LoginActivity.class));
 			} else {
 				// 已登录，跳转用户信息
-				Cursor cursor = peopelDao.queryOwner();
+				Cursor cursor = peopelDao.queryPeopelByNum(AppConstant.USER_NUM);
 				ArrayList<PeopelEntity> lists = DataBaseParser.getPeoPelDetail(cursor);
 				cursor.close();
 				Intent i = new Intent(HomeActivity.this, EditPeopelActivity.class);

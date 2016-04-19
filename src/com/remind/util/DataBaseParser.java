@@ -130,8 +130,9 @@ public class DataBaseParser {
 			String msgPath = mCursor.getString(mCursor.getColumnIndex(MessageMsg.MSG_PATH));
 			String isComing = mCursor.getString(mCursor.getColumnIndex(MessageMsg.IS_COMING));
 			String content = mCursor.getString(mCursor.getColumnIndex(MessageMsg.CONTENT));
+			String feed = mCursor.getString(mCursor.getColumnIndex(MessageMsg.IS_FEED));
 			
-			MessageEntity entity = new MessageEntity(id, recieveName, recieveNum, sendName, sendNum, time, sendState, isDelete, msgType, otherTypeId, msgPath, msgIndex, isComing, content);
+			MessageEntity entity = new MessageEntity(id, recieveName, recieveNum, sendName, sendNum, time, sendState, isDelete, msgType, otherTypeId, msgPath, msgIndex, isComing, content, feed);
 			lists.add(entity);
 		}
 		return lists;

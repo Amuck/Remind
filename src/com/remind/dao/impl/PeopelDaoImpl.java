@@ -146,7 +146,7 @@ public class PeopelDaoImpl implements PeopelDao {
 	public Cursor queryOwner() {
 		SQLiteDatabase db = mDBHelper.getWritableDatabase();
 		String sql = "select * from " + PeopelMsg.TABLENAME + " where "
-				+ PeopelMsg.ISDELETE + " = 0 and " + PeopelMsg.ID + " = '" + 1 + "'";
+				+ PeopelMsg.ISDELETE + " = 0 order by " + PeopelMsg.ID + ";";
 		Cursor mCursor = null;
 		mCursor = db.rawQuery(sql, null);
 		return mCursor;

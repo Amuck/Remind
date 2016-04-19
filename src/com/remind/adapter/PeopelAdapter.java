@@ -5,6 +5,9 @@ import java.util.List;
 
 import android.content.Context;
 import android.content.res.Resources;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -12,12 +15,14 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.help.remind.R;
 import com.remind.asyn.ImageLoader;
 import com.remind.dao.PeopelDao;
 import com.remind.dao.impl.PeopelDaoImpl;
 import com.remind.entity.PeopelEntity;
+import com.remind.http.HttpClient;
 import com.remind.util.AppUtil;
 import com.remind.view.FixButton;
 import com.remind.view.RoundImageView;
@@ -28,6 +33,28 @@ public class PeopelAdapter extends BaseAdapter {
 	public ImageLoader imageLoader;
 	private ViewHolder viewHolder;
 	private PeopelDao peopelDao;
+	
+	private Handler handler = new Handler(){
+		public void handleMessage(android.os.Message msg) {
+			switch (msg.what) {
+			case 0:
+				String s = (String) msg.obj;
+				Toast.makeText(context, s,
+						Toast.LENGTH_SHORT).show();
+				
+				// 点击接受后的处理
+				Bundle bundle = msg.getData();
+				PeopelEntity entity = (PeopelEntity) bundle.getSerializable("PeopelEntity");
+				entity.setStatus(PeopelEntity.FRIEND);
+				peopelDao.updatePeopel(entity);
+				notifyDataSetChanged();
+				break;
+
+			default:
+				break;
+			}
+		};
+	};
 
 	public PeopelAdapter(Context context, List<PeopelEntity> datas) {
 		this.context = context;
@@ -96,12 +123,31 @@ public class PeopelAdapter extends BaseAdapter {
 			@Override
 			public void onClick(View v) {
 				// TODO 发送添加好友
-				// 点击接受后的处理
-				entity.setStatus(PeopelEntity.FRIEND);
-				peopelDao.updatePeopel(entity);
-				notifyDataSetChanged();
+				String param = HttpClient.getJsonForPost(HttpClient.agreeFriend(entity.getNum(), "1"));
+				agreeFriend(param, entity);
+//				// 点击接受后的处理
+//				entity.setStatus(PeopelEntity.FRIEND);
+//				peopelDao.updatePeopel(entity);
+//				notifyDataSetChanged();
 			}
 		});
+	}
+	
+	private void agreeFriend(final String params, final PeopelEntity entity) {
+		new Thread(new Runnable() {
+			
+			@Override
+			public void run() {
+				String s = HttpClient.post(HttpClient.url + HttpClient.agree_friend, params);
+				Message msg = handler.obtainMessage();
+				msg.what = 0;
+				msg.obj = s;
+				Bundle bundle = new Bundle();
+				bundle.putSerializable("PeopelEntity", entity);
+				msg.setData(bundle);
+				handler.sendMessage(msg);
+			}
+		}).start();
 	}
 	
 	/**

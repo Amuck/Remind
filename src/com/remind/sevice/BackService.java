@@ -4,14 +4,11 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.lang.ref.WeakReference;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.Arrays;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
+import android.app.Notification;
 import android.app.Service;
 import android.content.Intent;
 import android.os.Handler;
@@ -22,7 +19,6 @@ import android.util.Log;
 
 import com.remind.application.RemindApplication;
 import com.remind.global.AppConstant;
-import com.remind.http.HttpClient;
 import com.remind.util.ByteUtil;
 
 public class BackService extends Service {
@@ -59,6 +55,7 @@ public class BackService extends Service {
 					Log.e(TAG, "bit fail");
 					new InitSocketThread().start();
 				} else {
+//					isClose();
 					Log.e(TAG, "bit success" + RemindApplication.iBackService + " socket : " + msocket);
 //					UIHelper.toastAsync(BackService.this, "bit success");
 				}
@@ -86,6 +83,16 @@ public class BackService extends Service {
 		super.onCreate();
 		new InitSocketThread().start();
 		mLocalBroadcastManager=LocalBroadcastManager.getInstance(this);
+		Notification notification = new Notification();
+
+		startForeground(1, notification);
+//		Notification notification = new Notification(R.drawable.ic_launcher, "服务开启", System.currentTimeMillis());
+//        notification.flags|= Notification.FLAG_NO_CLEAR;  
+//        notification.flags=Notification.FLAG_ONGOING_EVENT;
+//        Intent notificationIntent = new Intent(this, MainActivity.class);
+//        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0);
+//        notification.setLatestEventInfo(this, "service", "测试防止服务被任务管理器所杀", pendingIntent);     
+//        startForeground(1, notification);
 	}
 	
 	public void isClose() {
@@ -345,4 +352,10 @@ public class BackService extends Service {
 //				}
 //			}
 //		}
+	
+	@Override
+	public void onDestroy() {
+//		Log.e(TAG, "onDestroy---------");
+		super.onDestroy();
+	}
 }

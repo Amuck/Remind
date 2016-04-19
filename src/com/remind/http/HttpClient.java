@@ -34,6 +34,7 @@ public class HttpClient {
 	public static String create_notify = "/notice/create";
 	public static String login = "/user/login";
 	public static String friend = "/user/friend";
+	public static String agree_friend = "/user/agree_friend";
 	
 	public HttpClient() {
 	}
@@ -51,6 +52,15 @@ public class HttpClient {
 		public String state;
 		public String friend_alias;
 		public String msg;
+		public String friends;
+	}
+	
+	public static class AgreeFriend {
+		public String user_id;
+		public String friend_id;
+		public String state;
+		public String friend_alias;
+		public String friends;
 	}
 	
 	public static class Login {
@@ -181,6 +191,24 @@ public class HttpClient {
 		return userInfo;
 	}
 	
+	public static Friend agreeFriend(String friendNum, String state) {
+		Friend friend = new Friend();
+		friend.user_id = AppConstant.FROM_ID;
+		friend.friend_id = friendNum;
+		friend.state = state;
+		friend.friend_alias = "123";
+		return friend;
+	}
+	public static Friend friendUser(String friendNum) {
+		Friend friend = new Friend();
+		friend.user_id = AppConstant.FROM_ID;
+		friend.friend_id = friendNum;
+		friend.state = "1";
+		friend.friend_alias = "123";
+		friend.msg = friend.friend_alias + "请求加您为好友。";
+		return friend;
+	}
+	
 	public static Friend friendUser1() {
 		Friend friend = new Friend();
 		friend.user_id = "13716022538";
@@ -198,6 +226,8 @@ public class HttpClient {
 		friend.friend_alias = "123";
 		return friend;
 	}
+	
+	
 	/**
 	 * @return
 	 */
