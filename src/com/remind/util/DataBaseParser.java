@@ -32,10 +32,11 @@ public class DataBaseParser {
 			String addTime = mCursor.getString(mCursor.getColumnIndex(PeopelMsg.ADDTIME));
 			String updateTime = mCursor.getString(mCursor.getColumnIndex(PeopelMsg.UPDATETIME));
 			String isDelete = mCursor.getString(mCursor.getColumnIndex(PeopelMsg.ISDELETE));
+			String friendId = mCursor.getString(mCursor.getColumnIndex(PeopelMsg.FRIEND_ID));
 			int status = mCursor.getInt(mCursor.getColumnIndex(PeopelMsg.STATUS));
 			
 			PeopelEntity entity = new PeopelEntity(name, nickName, num, addTime, 
-					updateTime, imgPath, isDelete, status);
+					updateTime, imgPath, isDelete, status, friendId);
 			lists.add(entity);
 		}
 		return lists;

@@ -35,4 +35,16 @@ public interface MessageDao {
 	 * @return
 	 */
 	public Cursor queryByOtherTypeId(String id);
+	/**
+	 * 通过id查询数据
+	 * @param id
+	 * @return
+	 */
+	public Cursor queryById(String id);
+	/**
+	 * 更改消息反馈状态
+	 * @param msgId
+	 * @param feed
+	 */
+	public void updateFeedState(long msgId, String feed);
 }

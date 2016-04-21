@@ -49,7 +49,7 @@ public class HttpClient {
 	public static class Friend {
 		public String user_id;
 		public String friend_id;
-		public String state;
+		public int state;
 		public String friend_alias;
 		public String msg;
 		public String friends;
@@ -191,10 +191,10 @@ public class HttpClient {
 		return userInfo;
 	}
 	
-	public static Friend agreeFriend(String friendNum, String state) {
+	public static Friend agreeFriend(String friendNum, int state, String friendId) {
 		Friend friend = new Friend();
 		friend.user_id = AppConstant.FROM_ID;
-		friend.friend_id = friendNum;
+		friend.friend_id = friendId;
 		friend.state = state;
 		friend.friend_alias = "123";
 		return friend;
@@ -203,7 +203,7 @@ public class HttpClient {
 		Friend friend = new Friend();
 		friend.user_id = AppConstant.FROM_ID;
 		friend.friend_id = friendNum;
-		friend.state = "1";
+		friend.state = 1;
 		friend.friend_alias = "123";
 		friend.msg = friend.friend_alias + "请求加您为好友。";
 		return friend;
@@ -213,7 +213,7 @@ public class HttpClient {
 		Friend friend = new Friend();
 		friend.user_id = "13716022538";
 		friend.friend_id = "13716022537";
-		friend.state = "1";
+		friend.state = 1;
 		friend.friend_alias = "123";
 		return friend;
 	}
@@ -222,7 +222,7 @@ public class HttpClient {
 		Friend friend = new Friend();
 		friend.user_id = "13716022537";
 		friend.friend_id = "13716022538";
-		friend.state = "1";
+		friend.state = 1;
 		friend.friend_alias = "123";
 		return friend;
 	}
@@ -397,7 +397,8 @@ public class HttpClient {
 			client.getParams().setParameter(CoreConnectionPNames.SO_TIMEOUT, 20000);
 			HttpResponse response = client.execute(request);
 			int code = response.getStatusLine().getStatusCode();
-			System.out.println("postCode= " + code);
+			sb.append(code);
+			sb.append("|");
 			// 若状态值为200，则ok
 			if (code == HttpStatus.SC_OK) {
 				//从服务器获得输入流

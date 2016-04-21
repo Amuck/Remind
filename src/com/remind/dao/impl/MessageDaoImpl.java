@@ -75,6 +75,19 @@ public class MessageDaoImpl implements MessageDao {
 	}
 	
 	@Override
+	public synchronized void updateFeedState(long msgId, String feed) {
+		SQLiteDatabase db = mDBHelper.getWritableDatabase();
+		StringBuffer sb = new StringBuffer();
+		sb.append("update " + MessageMsg.TABLENAME + " set ");
+		sb.append(MessageMsg.IS_FEED + "	= '" + feed + "' ");
+		sb.append(" where " + MessageMsg.ID + " = '" + msgId + "'");
+		String sql = sb.toString();
+
+		Log.d(TAG, sql);
+		db.execSQL(sql);
+	}
+	
+	@Override
 	public synchronized void update(MessageEntity entity) {
 		if (null == entity) {
 			return;
@@ -109,6 +122,17 @@ public class MessageDaoImpl implements MessageDao {
 
 		Log.d(TAG, sql);
 		db.execSQL(sql);
+	}
+	
+	@Override
+	public synchronized Cursor queryById(String id) {
+		SQLiteDatabase db = mDBHelper.getWritableDatabase();
+		String sql = "select * from " + MessageMsg.TABLENAME + " where "
+				+ MessageMsg.ID
+				+ " = '" + id + "' ;";
+		Cursor mCursor = null;
+		mCursor = db.rawQuery(sql, null);
+		return mCursor;
 	}
 
 	@Override

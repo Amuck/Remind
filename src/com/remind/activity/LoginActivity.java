@@ -1,6 +1,5 @@
 package com.remind.activity;
 
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.content.ComponentName;
@@ -11,7 +10,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
-import android.os.RemoteException;
 import android.text.TextUtils;
 import android.view.MotionEvent;
 import android.view.View;
@@ -120,6 +118,7 @@ public class LoginActivity extends BaseActivity implements OnClickListener {
 			switch (msg.what) {
 			case HTTP_OVER:
 				String s = (String) msg.obj;
+				s = s.split("|")[1];
 				if (TextUtils.isEmpty(s) || s.length() < 10) {
 					// 失败
 					hideProgess();
@@ -330,14 +329,14 @@ public class LoginActivity extends BaseActivity implements OnClickListener {
 				public void run() {
 					String s = HttpClient.post(
 							HttpClient.url + HttpClient.register, params);
-					
 					try {
+						s = s.split("\\|")[1];
 						JSONObject jsonObject = new JSONObject(s);
 //						String own_info = jsonObject.getString("own_info");
 //						JSONObject own_infojsonObject = new JSONObject(own_info);
 						from_id = jsonObject.getString("id");
 						
-					} catch (JSONException e) {
+					} catch (Exception e) {
 						e.printStackTrace();
 						
 						handler.sendEmptyMessage(LOGIN_FAIL);
@@ -372,6 +371,7 @@ public class LoginActivity extends BaseActivity implements OnClickListener {
 							params);
 					
 					try {
+						s = s.split("\\|")[1];
 						JSONObject jsonObject = new JSONObject(s);
 						String own_info = jsonObject.getString("own_info");
 						JSONObject own_infojsonObject = new JSONObject(own_info);

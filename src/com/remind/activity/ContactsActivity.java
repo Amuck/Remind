@@ -222,7 +222,7 @@ public class ContactsActivity extends ListActivity {
 				mContactsName.get(position), num,
 				format.format(date), format.format(date),
 				mContactsUri.get(position), PeopelEntity.NORMAL,
-				PeopelEntity.VALIDATE);
+				PeopelEntity.VALIDATE, "");
 		peopelDao.insertPeopel(entity);
 	}
 

@@ -39,15 +39,27 @@ public class PeopelAdapter extends BaseAdapter {
 			switch (msg.what) {
 			case 0:
 				String s = (String) msg.obj;
-				Toast.makeText(context, s,
-						Toast.LENGTH_SHORT).show();
+				if (null == s || !s.contains("\\")) {
+					Toast.makeText(context, "网络连接失败，请确认后重试.",
+							Toast.LENGTH_SHORT).show();
+				}
 				
-				// 点击接受后的处理
-				Bundle bundle = msg.getData();
-				PeopelEntity entity = (PeopelEntity) bundle.getSerializable("PeopelEntity");
-				entity.setStatus(PeopelEntity.FRIEND);
-				peopelDao.updatePeopel(entity);
-				notifyDataSetChanged();
+				String[] ss = s.split("\\|");
+				if (!ss[0].equals("200")) {
+					// 失败
+					Toast.makeText(context, "失败，请重试",
+							Toast.LENGTH_SHORT).show();
+				} else {
+					// 成功
+					// 点击接受后的处理
+					Bundle bundle = msg.getData();
+					PeopelEntity entity = (PeopelEntity) bundle.getSerializable("PeopelEntity");
+					entity.setStatus(PeopelEntity.FRIEND);
+					peopelDao.updatePeopel(entity);
+					notifyDataSetChanged();
+				}
+				
+
 				break;
 
 			default:
@@ -123,7 +135,7 @@ public class PeopelAdapter extends BaseAdapter {
 			@Override
 			public void onClick(View v) {
 				// TODO 发送添加好友
-				String param = HttpClient.getJsonForPost(HttpClient.agreeFriend(entity.getNum(), "1"));
+				String param = HttpClient.getJsonForPost(HttpClient.agreeFriend(entity.getNum(), 1, entity.getFriendId()));
 				agreeFriend(param, entity);
 //				// 点击接受后的处理
 //				entity.setStatus(PeopelEntity.FRIEND);
@@ -170,6 +182,10 @@ public class PeopelAdapter extends BaseAdapter {
 			break;
 		case PeopelEntity.FRIEND:
 			statusBtn.setText(resources.getString(R.string.friend));
+			statusBtn.setEnabled(false);
+			break;
+		case PeopelEntity.REFUSE:
+			statusBtn.setText(resources.getString(R.string.refuse));
 			statusBtn.setEnabled(false);
 			break;
 		default:

@@ -34,6 +34,7 @@ public class PeopelDaoImpl implements PeopelDao {
 		values.put(PeopelMsg.NICKNAME, entity.getNickName());
 		values.put(PeopelMsg.NUM, entity.getNum());
 		values.put(PeopelMsg.UPDATETIME, entity.getUpdateTime());
+		values.put(PeopelMsg.FRIEND_ID, entity.getFriendId());
 		values.put(PeopelMsg.ISDELETE, entity.getIsDelete());
 		values.put(PeopelMsg.IMGPATH, entity.getImgPath());
 		values.put(PeopelMsg.STATUS, entity.getStatus());
@@ -56,6 +57,7 @@ public class PeopelDaoImpl implements PeopelDao {
 			values.put(PeopelMsg.NICKNAME, entity.getNickName());
 			values.put(PeopelMsg.NUM, entity.getNum());
 			values.put(PeopelMsg.UPDATETIME, entity.getUpdateTime());
+			values.put(PeopelMsg.FRIEND_ID, entity.getFriendId());
 			values.put(PeopelMsg.ISDELETE, entity.getIsDelete());
 			values.put(PeopelMsg.STATUS, entity.getStatus());
 			values.put(PeopelMsg.IMGPATH, entity.getImgPath());
@@ -87,6 +89,7 @@ public class PeopelDaoImpl implements PeopelDao {
 		sb.append(PeopelMsg.ADDTIME + "	= '" + entity.getAddTime() + "',");
 		sb.append(PeopelMsg.NICKNAME + "	= '" + entity.getNickName() + "',");
 		sb.append(PeopelMsg.IMGPATH + "	= '" + entity.getImgPath() + "',");
+		sb.append(PeopelMsg.FRIEND_ID + "	= '" + entity.getFriendId() + "',");
 		sb.append(PeopelMsg.UPDATETIME + "	= '" + entity.getUpdateTime() + "',");
 		sb.append(PeopelMsg.ISDELETE + "	= '" + entity.getIsDelete() + "',");
 		sb.append(PeopelMsg.STATUS + "	= '" + entity.getStatus() + "' ");
@@ -111,6 +114,7 @@ public class PeopelDaoImpl implements PeopelDao {
 		sb.append(PeopelMsg.ADDTIME + "	= '" + entity.getAddTime() + "',");
 		sb.append(PeopelMsg.NICKNAME + "	= '" + entity.getNickName() + "',");
 		sb.append(PeopelMsg.IMGPATH + "	= '" + entity.getImgPath() + "',");
+		sb.append(PeopelMsg.FRIEND_ID + "	= '" + entity.getFriendId() + "',");
 		sb.append(PeopelMsg.UPDATETIME + "	= '" + entity.getUpdateTime() + "',");
 		sb.append(PeopelMsg.ISDELETE + "	= '" + entity.getIsDelete() + "',");
 		sb.append(PeopelMsg.STATUS + "	= '" + entity.getStatus() + "' ");
@@ -166,6 +170,14 @@ public class PeopelDaoImpl implements PeopelDao {
 		}
 		mCursor.close();
 		return imgPath;
+	}
+
+	@Override
+	public void realDeleteByNum(String num) {
+		SQLiteDatabase db = mDBHelper.getWritableDatabase();
+		String sql = "delete from " + PeopelMsg.TABLENAME + " where "
+				+ PeopelMsg.NUM + " = '" + num + "'; ";
+		db.execSQL(sql);
 	}
 
 }

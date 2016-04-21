@@ -72,6 +72,11 @@ public class PeopelEntity implements Serializable{
 	 * {@link #FRIEND}：已添加的好友
 	 */
 	private int status;
+	
+	/**
+	 * 用户id
+	 */
+	private String friendId;
 	/**
 	 * 预留字段
 	 */
@@ -107,10 +112,13 @@ public class PeopelEntity implements Serializable{
 	 * @param status
 	 *            好友状态，{@link #VALIDATE}：等待对方验证 {@link #ACCEPT}：等待用户接受
 	 *            {@link #FRIEND}：已添加的好友
+	 *
+	 * @param friendId		用户id
+	 * 
 	 */
 	public PeopelEntity(String name, String nickName, String num,
 			String addTime, String updateTime, String imgPath, 
-			String isDelete, int status) {
+			String isDelete, int status, String friendId) {
 		super();
 		this.name = name;
 		this.nickName = nickName;
@@ -120,6 +128,7 @@ public class PeopelEntity implements Serializable{
 		this.imgPath = imgPath;
 		this.isDelete = isDelete;
 		this.status = status;
+		this.friendId = friendId;
 	}
 
 	public String getName() {
@@ -200,6 +209,14 @@ public class PeopelEntity implements Serializable{
 	 */
 	public void setStatus(int status) {
 		this.status = status;
+	}
+
+	public String getFriendId() {
+		return friendId;
+	}
+
+	public void setFriendId(String friendId) {
+		this.friendId = friendId;
 	}
 
 	public String getZ1() {

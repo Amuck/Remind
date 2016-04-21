@@ -18,9 +18,7 @@ import com.help.remind.R;
 import com.remind.dao.PeopelDao;
 import com.remind.dao.impl.PeopelDaoImpl;
 import com.remind.entity.PeopelEntity;
-import com.remind.global.AppConstant;
 import com.remind.http.HttpClient;
-import com.remind.http.HttpClient.Friend;
 import com.remind.util.AppUtil;
 import com.remind.view.ClearEditText;
 
@@ -35,13 +33,32 @@ public class AddPeopleActivity extends AbActivity implements OnClickListener {
 		public void handleMessage(android.os.Message msg) {
 			switch (msg.what) {
 			case 0:
+				removeProgressDialog();
 				String s = (String) msg.obj;
-				Toast.makeText(AddPeopleActivity.this, s,
-						Toast.LENGTH_SHORT).show();
+				if (null == s || !s.contains("\\")) {
+					Toast.makeText(AddPeopleActivity.this, "网络连接失败，请确认后重试.",
+							Toast.LENGTH_SHORT).show();
+				}
 				
-				//返回上一个界面
-				setResult(RESULT_OK);
-				finish();
+				String[] ss = s.split("\\|");
+				if (ss[0].equals("200")) {
+					// 成功
+					Toast.makeText(AddPeopleActivity.this, "发送成功，等待对方验证.",
+							Toast.LENGTH_SHORT).show();
+					//返回上一个界面
+					setResult(RESULT_OK);
+					finish();
+				} else if (ss[0].equals("402")) {
+					// 失败, 已发送过请求或者已经是好友
+					Toast.makeText(AddPeopleActivity.this, "您已给对方发送过好友请求，或对方已是您好友。",
+							Toast.LENGTH_SHORT).show();
+				} else {
+					// 失败
+					Toast.makeText(AddPeopleActivity.this, "发送失败请重试.",
+							Toast.LENGTH_SHORT).show();
+				}
+				
+				
 				break;
 
 			default:
@@ -50,7 +67,6 @@ public class AddPeopleActivity extends AbActivity implements OnClickListener {
 		};
 	};
 
-	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -139,13 +155,13 @@ public class AddPeopleActivity extends AbActivity implements OnClickListener {
 								// smsManager.sendTextMessage(phone_number,
 								// null, sms_content, null, null);
 								// }
-								AppUtil.showToast(AddPeopleActivity.this, "发送成功");
+//								AppUtil.showToast(AddPeopleActivity.this, "发送成功");
 							}
 
 							// 添加联系人
 							addPersonIntoDB(friend);
 
-							String params = HttpClient.getJsonForPost(friendUser(friend));
+							String params = HttpClient.getJsonForPost(HttpClient.friendUser(phone_number));
 							friend(params);
 							
 							alertDialog.dismiss();
@@ -171,17 +187,20 @@ public class AddPeopleActivity extends AbActivity implements OnClickListener {
 				"", friend,
 				format.format(date), format.format(date),
 				"", PeopelEntity.NORMAL,
-				PeopelEntity.VALIDATE);
+				PeopelEntity.VALIDATE,"");
 		peopelDao.insertPeopel(entity);
 	}
 
 	private void friend(final String params) {
+		showProgressDialog();
+		mProgressDialog.setCanceledOnTouchOutside(false);
+		
 		new Thread(new Runnable() {
 			
 			@Override
 			public void run() {
 				String s = HttpClient.post(HttpClient.url + HttpClient.friend, params);
-				Message msg = new Message();
+				Message msg = handler.obtainMessage();
 				msg.what = 0;
 				msg.obj = s;
 				handler.sendMessage(msg);
@@ -189,13 +208,4 @@ public class AddPeopleActivity extends AbActivity implements OnClickListener {
 		}).start();
 	}
 	
-	private Friend friendUser(String friendId) {
-		Friend friend = new Friend();
-		friend.user_id = AppConstant.FROM_ID;
-		friend.friend_id = friendId;
-		friend.state = "1";
-		friend.friend_alias = "123";
-		friend.msg = AppConstant.USER_NUM + "请求加你为好友";
-		return friend;
-	}
 }

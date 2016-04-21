@@ -50,6 +50,11 @@ public class PeopelMsg {
 	 */
 	public static final String STATUS = "status";
 	/**
+	 * 用户id
+	 * 
+	 */
+	public static final String FRIEND_ID = "friend_id";
+	/**
 	 * 预留字段
 	 */
 	public static final String Z1 = "z1";

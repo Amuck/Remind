@@ -205,6 +205,8 @@ public class ChatActivity extends BaseActivity implements OnClickListener, OnScr
 	 * 接收人num
 	 */
 	private String num;
+	
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -458,6 +460,7 @@ public class ChatActivity extends BaseActivity implements OnClickListener, OnScr
 		userMessageEntity.setSendState(MessageEntity.SENDING);
 		// 插入数据库
 		long mid = messageDao.insert(userMessageEntity);
+		userMessageEntity.setId(String.valueOf(mid));
 //		messageIndexDao.update(messageIndexEntity);
 		// 添加到listview中显示，通过线程发送
 //		datas.add(userMessageEntity.clone());
@@ -469,15 +472,26 @@ public class ChatActivity extends BaseActivity implements OnClickListener, OnScr
 		if (AppConstant.USER_NUM.equals("13716022538")) {
 			param = HttpClient.getJsonForPost(HttpClient.sendMsg2(mid + "", "13716022537", msg));
 		}
+		String state = MessageEntity.SEND_FAIL;
 		try {
 			boolean isSend = RemindApplication.iBackService.sendMessage(param);//Send Content by socket
 			Toast.makeText(this, isSend ? "success" : "fail",
 					Toast.LENGTH_SHORT).show();
-//			mEditText.setText("");
+			if (isSend) {
+				// success
+				state = MessageEntity.SEND_SUCCESS;
+			} else {
+				// fail
+				state = MessageEntity.SEND_FAIL;
+			}
 		} catch (RemoteException e) {
+			state = MessageEntity.SEND_FAIL;
+			e.printStackTrace();
+		} catch (Exception e){
+			state = MessageEntity.SEND_FAIL;
 			e.printStackTrace();
 		}
-		
+		messageDao.updateSendState(mid, state);
 		// listview滚动到底部
 //		chatList.setSelection(ListView.FOCUS_DOWN);
 		// 清除编辑框内容
@@ -885,11 +899,12 @@ public class ChatActivity extends BaseActivity implements OnClickListener, OnScr
 					String mid = intent.getStringExtra("mid");
 					String code = intent.getStringExtra("code");
 					Message message = mHandler.obtainMessage();
+					message.what = REFRESH_UI;
 					Bundle data = new Bundle();
 					data.putString("mid", mid);
 					data.putString("code", code);
 					message.setData(data);
-					mHandler.sendEmptyMessage(REFRESH_UI);
+					mHandler.sendMessage(message);
 				}
 			};
 		}
@@ -897,12 +912,12 @@ public class ChatActivity extends BaseActivity implements OnClickListener, OnScr
 		@Override
 		protected void onStart() {
 			super.onStart();
-			mLocalBroadcastManager.registerReceiver(mReciver, mIntentFilter);
+			registerReceiver(mReciver, mIntentFilter);
 		}
 		
 		@Override
 		protected void onStop() {
-			mLocalBroadcastManager.unregisterReceiver(mReciver);
+			unregisterReceiver(mReciver);
 			super.onStop();
 		}
 		

@@ -59,6 +59,8 @@ public class DBHelper extends SQLiteOpenHelper {
 		peopelSql.append(" text,");
 		peopelSql.append(PeopelMsg.IMGPATH);
 		peopelSql.append(" text,");
+		peopelSql.append(PeopelMsg.FRIEND_ID);
+		peopelSql.append(" text,");
 		peopelSql.append(PeopelMsg.ADDTIME);
 		peopelSql.append(" varchar(30),");
 		peopelSql.append(PeopelMsg.UPDATETIME);

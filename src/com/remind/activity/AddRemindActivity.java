@@ -203,7 +203,8 @@ public class AddRemindActivity extends AbActivity implements OnClickListener {
 			switch (msg.what) {
 			case HTTP_OVER:
 				String s = (String) msg.obj;
-				if (TextUtils.isEmpty(s) || s.length() < 10) {
+				String[] ss = s.split("\\|");
+				if (!ss[0].equals("200")) {
 					// 失败
 					removeProgressDialog();
 					Toast.makeText(AddRemindActivity.this, "失败，请重试",
@@ -479,7 +480,6 @@ public class AddRemindActivity extends AbActivity implements OnClickListener {
 				user.getNickName(), user.getNum(), AppUtil.getNowTime(), 
 				MessageEntity.SENDING, MessageEntity.NORMAL, MessageEntity.TYPE_REMIND, 
 				remindId + "", "", targetPeopel.getNum(), MessageEntity.TYPE_SEND, remindEntity.getContent(), MessageEntity.FEED_DEFAULT);
-		msgId = messageDao.insert(messageEntity);
 		
 		if (isForSelf) {
 			// TODO 测试为自己添加任务, addSelf()需要去掉，isForSelf需要重新取值，将当前currentPeopel.getNum()与AppUtil.getPhoneNumber(this)比较，相同则为true
@@ -489,6 +489,9 @@ public class AddRemindActivity extends AbActivity implements OnClickListener {
 		} else {
 			// 为别人添加任务
 			if (NetWorkUtil.isAvailable(AddRemindActivity.this)) {
+				// 插入数据库
+				msgId = messageDao.insert(messageEntity);
+				
 				showProgressDialog();
 				new Thread(new Runnable() {
 
@@ -507,7 +510,7 @@ public class AddRemindActivity extends AbActivity implements OnClickListener {
 			} else {
 				showToast(getResources().getString(R.string.net_null));
 				// 更新发送状态
-				messageDao.updateSendState(msgId, MessageEntity.SEND_FAIL);
+//				messageDao.updateSendState(msgId, MessageEntity.SEND_FAIL);
 			}
 		}
 		
@@ -523,7 +526,7 @@ public class AddRemindActivity extends AbActivity implements OnClickListener {
 		if (cursor != null && cursor.getCount() > 0) {
 			
 		} else {
-			myself = new PeopelEntity("自己", "自己", AppConstant.USER_NUM, "", "", "", PeopelEntity.NORMAL, PeopelEntity.FRIEND);
+			myself = new PeopelEntity("自己", "自己", AppConstant.USER_NUM, "", "", "", PeopelEntity.NORMAL, PeopelEntity.FRIEND, AppConstant.FROM_ID);
 			peopelDao.insertPeopel(myself);
 		}
 		cursor.close();
@@ -548,7 +551,7 @@ public class AddRemindActivity extends AbActivity implements OnClickListener {
 			@Override
 			public void onClick(View v) {
 				isForSelf = true;
-				targetPeopel = new PeopelEntity("自己", "自己", AppUtil.getPhoneNumber(AddRemindActivity.this), "", "", "", PeopelEntity.NORMAL, PeopelEntity.FRIEND);
+				targetPeopel = new PeopelEntity("自己", "自己", AppUtil.getPhoneNumber(AddRemindActivity.this), "", "", "", PeopelEntity.NORMAL, PeopelEntity.FRIEND, AppConstant.FROM_ID);
 //				selectPeopelTxt.setText(getName(currentPeopel));
 				alertDialog.dismiss();
 			}

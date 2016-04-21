@@ -24,6 +24,11 @@ public interface PeopelDao {
 	 */
 	public void deletePeopelByNum(String num);
 	/**
+	 * 从数据库中删除数据
+	 * @param num
+	 */
+	public void realDeleteByNum(String num);
+	/**
 	 * 更新联系人信息
 	 * @param entity
 	 */

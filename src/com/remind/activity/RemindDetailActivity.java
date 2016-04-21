@@ -34,6 +34,7 @@ import com.remind.dao.impl.PeopelDaoImpl;
 import com.remind.dao.impl.RemindDaoImpl;
 import com.remind.entity.PeopelEntity;
 import com.remind.entity.RemindEntity;
+import com.remind.global.AppConstant;
 import com.remind.util.AppUtil;
 import com.remind.util.DataBaseParser;
 
@@ -285,7 +286,7 @@ public class RemindDetailActivity extends AbActivity implements OnClickListener 
 			@Override
 			public void onClick(View v) {
 				isForSelf = true;
-				currentPeopel = new PeopelEntity("自己", "自己", getPhoneNumber(), "", "", "", PeopelEntity.NORMAL, PeopelEntity.FRIEND);
+				currentPeopel = new PeopelEntity("自己", "自己", getPhoneNumber(), "", "", "", PeopelEntity.NORMAL, PeopelEntity.FRIEND, AppConstant.FROM_ID);
 				selectPeopelTxt.setText(getName(currentPeopel));
 				alertDialog.dismiss();
 			}

@@ -4,23 +4,33 @@ import java.util.ArrayList;
 import java.util.List;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.BroadcastReceiver;
 import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.pm.ResolveInfo;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.LocalBroadcastManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.AdapterView.OnItemLongClickListener;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.help.remind.R;
 import com.remind.activity.AddPeopleActivity;
@@ -30,6 +40,8 @@ import com.remind.adapter.PeopelAdapter;
 import com.remind.dao.PeopelDao;
 import com.remind.dao.impl.PeopelDaoImpl;
 import com.remind.entity.PeopelEntity;
+import com.remind.http.HttpClient;
+import com.remind.receiver.MessageReceiver;
 import com.remind.util.DataBaseParser;
 
 /**
@@ -37,7 +49,11 @@ import com.remind.util.DataBaseParser;
  *
  *	联系人界面
  */
-public class PeopelFragment extends Fragment{
+public class PeopelFragment extends Fragment implements OnClickListener{
+	/**
+	 * 刷新界面
+	 */
+	private final static int REFRESH_UI = 3003;
 	/**
 	 * 添加联系人
 	 */
@@ -79,6 +95,56 @@ public class PeopelFragment extends Fragment{
 	 * 联系人数据库
 	 */
 	private PeopelDao peopelDao;
+	
+	/**
+	 * 删除添加信息的对话框
+	 */
+	private AlertDialog alertDialog = null;
+	/**
+	 * 现在选择的好友信息
+	 */
+	private PeopelEntity currentPeople = null;
+	
+	private LocalBroadcastManager mLocalBroadcastManager;
+	private MessageBackReciver mReciver;
+	private IntentFilter mIntentFilter;
+	
+	private Handler handler = new Handler(){
+		public void handleMessage(android.os.Message msg) {
+			switch (msg.what) {
+			case 0:
+				String s = (String) msg.obj;
+				if (null == s || !s.contains("\\")) {
+					Toast.makeText(getActivity(), "网络连接失败，请确认后重试.",
+							Toast.LENGTH_SHORT).show();
+				}
+				
+				String[] ss = s.split("\\|");
+				if (!ss[0].equals("200")) {
+					// 失败
+					Toast.makeText(getActivity(), "拒绝好友失败，请重试.",
+							Toast.LENGTH_SHORT).show();
+				} else {
+					// 成功
+					peopelDao.realDeleteByNum(currentPeople.getNum());
+					datas.remove(currentPeople);
+					peopelAdapter.notifyDataSetChanged();
+				}
+				
+
+				break;
+				
+			case REFRESH_UI:
+				Bundle bundle = msg.getData();
+				String pn = (String) bundle.get("pn");
+				String state = (String) bundle.get("state");
+				getBackAndRefreshData(pn, state);
+				break;
+			default:
+				break;
+			}
+		};
+	};
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -97,6 +163,12 @@ public class PeopelFragment extends Fragment{
 	}
 
 	private void setupView(View view) {
+		mLocalBroadcastManager = LocalBroadcastManager.getInstance(getActivity());
+		mReciver = new MessageBackReciver();
+		mIntentFilter = new IntentFilter();
+		mIntentFilter.addAction(MessageReceiver.PEOPLE_STATE_CHANGE_ACTION);
+		mIntentFilter.addAction(MessageReceiver.PEOPLE_ADD_ACTION);
+		
 		searchBtn = (ImageButton) view.findViewById(R.id.title_search);
 		addPeopelBtn = (ImageButton) view.findViewById(R.id.title_add);
 		peopelEmpty = (TextView) view.findViewById(R.id.peopel_empty_text);
@@ -161,8 +233,44 @@ public class PeopelFragment extends Fragment{
 				startActivityForResult(intent, EDIT_PEOPEL);
 			}
 		});
+		
+		peopelList.setOnItemLongClickListener(new OnItemLongClickListener() {
+
+			@Override
+			public boolean onItemLongClick(AdapterView<?> parent, View view,
+					int position, long id) {
+				currentPeople = datas.get(position);
+				showDleteDlg();
+				return true;
+			}
+		});
 
 		changeEmptyTextVisibale();
+	}
+	
+	/**
+	 * 显示删除/拒绝的对话框
+	 */
+	private void showDleteDlg() {
+		if (null == alertDialog) {
+			View view = LayoutInflater.from(getActivity()).inflate(R.layout.dialog_del_people, null);
+			Button delete = (Button) view.findViewById(R.id.delete);
+			Button refuse = (Button) view.findViewById(R.id.refuse);
+			Button cancel = (Button) view.findViewById(R.id.cancel);
+			if (currentPeople.getStatus() == PeopelEntity.ACCEPT) {
+				// 等待用户接受， 可以拒绝
+				refuse.setVisibility(View.VISIBLE);
+			} else {
+				refuse.setVisibility(View.GONE);
+			}
+			
+			delete.setOnClickListener(this);
+			refuse.setOnClickListener(this);
+			cancel.setOnClickListener(this);
+			
+			alertDialog = new AlertDialog.Builder(getActivity()).setView(view).create();
+		}
+		alertDialog.show();
 	}
 
 	/**
@@ -260,5 +368,123 @@ public class PeopelFragment extends Fragment{
 			startActivity(intent);
 		}
 	}
+	
+	private void refuseFriend(final String params, final PeopelEntity entity) {
+		new Thread(new Runnable() {
+			
+			@Override
+			public void run() {
+				String s = HttpClient.post(HttpClient.url + HttpClient.agree_friend, params);
+				Message msg = handler.obtainMessage();
+				msg.what = 0;
+				msg.obj = s;
+				Bundle bundle = new Bundle();
+				bundle.putSerializable("PeopelEntity", entity);
+				msg.setData(bundle);
+				handler.sendMessage(msg);
+			}
+		}).start();
+	}
 
+	@Override
+	public void onClick(View v) {
+		switch (v.getId()) {
+		case R.id.delete:
+			// 删除
+			peopelDao.deletePeopelByNum(currentPeople.getNum());
+			datas.remove(currentPeople);
+			peopelAdapter.notifyDataSetChanged();
+			alertDialog.dismiss();
+			break;
+		case R.id.refuse:
+			// 拒绝
+			String param = HttpClient.getJsonForPost(HttpClient.agreeFriend(currentPeople.getNum(), 0, currentPeople.getFriendId()));
+			refuseFriend(param, currentPeople);
+			alertDialog.dismiss();
+			break;
+		case R.id.cancel:
+			// 取消 
+			alertDialog.dismiss();
+			break;
+
+		default:
+			break;
+		}
+	}
+
+	@Override
+	public void onResume() {
+		super.onResume();
+		getActivity().registerReceiver(mReciver, mIntentFilter);
+	}
+	
+	@Override
+	public void onPause() {
+		getActivity().unregisterReceiver(mReciver);
+		super.onPause();
+	}
+	
+	/**
+	 * @author ChenLong
+	 *
+	 *	推送消息发送过来
+	 */
+	class MessageBackReciver extends BroadcastReceiver {
+
+		public MessageBackReciver() {
+		}
+
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			String action = intent.getAction();
+			if (action.equals(MessageReceiver.PEOPLE_STATE_CHANGE_ACTION)) {
+				//  收到反馈后修改界面显示
+				String pn = intent.getStringExtra("pn");
+				String state = intent.getStringExtra("state");
+				Message message = handler.obtainMessage();
+				message.what = REFRESH_UI;
+				Bundle data = new Bundle();
+				data.putString("pn", pn);
+				data.putString("state", state);
+				message.setData(data);
+				handler.sendMessage(message);
+			} else if (action.equals(MessageReceiver.PEOPLE_ADD_ACTION)) {
+				// 收到添加好友请求修改页面
+				PeopelEntity entity = (PeopelEntity) intent.getSerializableExtra("PeopelEntity");
+				datas.add(entity);
+				peopelAdapter.notifyDataSetChanged();
+			}
+		};
+	}
+	/**
+	 * 获取了反馈之后，修改数据，刷新画面
+	 */
+	private void getBackAndRefreshData(String pn, String state) {
+		boolean isFind = false;
+		int findIndex = 0;
+		// 寻找改变状态的好友
+		for (int i = datas.size() - 1; i >= 0; i--) {
+			PeopelEntity temp = datas.get(i);
+			if (temp.getNum().equals(pn)) {
+				if ("1".equals(state)) {
+					// 同意
+					temp.setStatus(PeopelEntity.FRIEND);
+				} else if ("0".equals(state)){
+					// 不同意
+					temp.setStatus(PeopelEntity.REFUSE);
+				}
+				isFind = true;
+				findIndex = i;
+				break;
+			}
+		}
+		// 如果所修改界面在可见范围内，则刷新画面
+		if (isFind) {
+			int firstPosition = peopelList.getFirstVisiblePosition();
+			int lastPosition = peopelList.getLastVisiblePosition();
+			if (findIndex >= firstPosition && findIndex <= lastPosition) {
+				peopelAdapter.notifyDataSetChanged();
+			}
+		}
+	}
 }
