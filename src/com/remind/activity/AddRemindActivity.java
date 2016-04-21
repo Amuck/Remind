@@ -209,8 +209,6 @@ public class AddRemindActivity extends AbActivity implements OnClickListener {
 					removeProgressDialog();
 					Toast.makeText(AddRemindActivity.this, "失败，请重试",
 							Toast.LENGTH_SHORT).show();
-					// 更新发送状态
-					messageDao.updateSendState(msgId, MessageEntity.SEND_FAIL);
 				} else {
 					// 成功
 					handler.sendEmptyMessage(NOTIFY_SUCCESS);
@@ -219,8 +217,12 @@ public class AddRemindActivity extends AbActivity implements OnClickListener {
 				break;
 			case NOTIFY_SUCCESS:
 				// 成功
-				// 更新发送状态
-				messageDao.updateSendState(msgId, MessageEntity.SEND_SUCCESS);
+				// 加入到remind数据库
+				remindId = remindDao.insertRemind(remindEntity);
+				// 插入数据库
+				messageEntity.setOtherTypeId(String.valueOf(remindId));
+				messageEntity.setSendState(MessageEntity.SEND_SUCCESS);
+				msgId = messageDao.insert(messageEntity);
 				Intent intent = new Intent(AddRemindActivity.this, ChatActivity.class);
 				remindEntity.setId(remindId + "");
 				intent.putExtra("remind", remindEntity);
@@ -473,13 +475,12 @@ public class AddRemindActivity extends AbActivity implements OnClickListener {
 			// 如果为别人，设置为我发起的提醒
 			remindEntity.setRemindState(RemindEntity.LAUNCH);
 		}
-		// 加入到remind数据库
-		remindId = remindDao.insertRemind(remindEntity);
+
 		// 加入到message数据库
 		messageEntity = new MessageEntity("", targetPeopel.getName(), targetPeopel.getNum(), 
-				user.getNickName(), user.getNum(), AppUtil.getNowTime(), 
+				user.getNickName(), AppConstant.USER_NUM, AppUtil.getNowTime(), 
 				MessageEntity.SENDING, MessageEntity.NORMAL, MessageEntity.TYPE_REMIND, 
-				remindId + "", "", targetPeopel.getNum(), MessageEntity.TYPE_SEND, remindEntity.getContent(), MessageEntity.FEED_DEFAULT);
+				"", "", targetPeopel.getNum(), MessageEntity.TYPE_SEND, remindEntity.getContent(), MessageEntity.FEED_DEFAULT);
 		
 		if (isForSelf) {
 			// TODO 测试为自己添加任务, addSelf()需要去掉，isForSelf需要重新取值，将当前currentPeopel.getNum()与AppUtil.getPhoneNumber(this)比较，相同则为true
@@ -489,15 +490,17 @@ public class AddRemindActivity extends AbActivity implements OnClickListener {
 		} else {
 			// 为别人添加任务
 			if (NetWorkUtil.isAvailable(AddRemindActivity.this)) {
-				// 插入数据库
-				msgId = messageDao.insert(messageEntity);
 				
 				showProgressDialog();
 				new Thread(new Runnable() {
 
 					@Override
 					public void run() {
-						String params = HttpClient.getCreateNofiJsonForPost(remindEntity.getTargetNum(), remindEntity.getOwnerNum(), remindEntity.getTitle(), remindEntity.getIsPreview() + "", remindEntity.getRemindTime(), remindEntity.getRepeatType());
+						String params = HttpClient.getCreateNofiJsonForPost(
+								targetPeopel.getFriendId(), AppConstant.FROM_ID, 
+								remindEntity.getTitle(), remindEntity.getIsPreview() + "", 
+								remindEntity.getRemindTime(), remindEntity.getRepeatType(),
+								AppConstant.USER_NUM, remindEntity.getNickName(), remindEntity.getContent());
 						String s = HttpClient.post(
 								HttpClient.url + HttpClient.create_notify, params);
 						

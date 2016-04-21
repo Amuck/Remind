@@ -15,10 +15,13 @@ import android.widget.Toast;
 import com.remind.application.RemindApplication;
 import com.remind.dao.impl.MessageDaoImpl;
 import com.remind.dao.impl.PeopelDaoImpl;
+import com.remind.dao.impl.RemindDaoImpl;
 import com.remind.entity.MessageEntity;
 import com.remind.entity.PeopelEntity;
+import com.remind.entity.RemindEntity;
 import com.remind.http.HttpClient;
 import com.remind.sevice.BackService;
+import com.remind.util.AppUtil;
 import com.remind.util.DataBaseParser;
 
 /**
@@ -43,6 +46,7 @@ public class MessageReceiver extends BroadcastReceiver {
 	private JSONObject jsonObject;
 	private MessageDaoImpl messageDaoImpl;
 	private PeopelDaoImpl peopelDao;
+	private RemindDaoImpl remindDaoImpl;
 
 	public MessageReceiver() {
 	}
@@ -57,6 +61,7 @@ public class MessageReceiver extends BroadcastReceiver {
 					.show();
 		} else {
 			messageDaoImpl = new MessageDaoImpl(context);
+			remindDaoImpl = new RemindDaoImpl(context);
 			peopelDao = new PeopelDaoImpl(context);
 			String message = intent.getStringExtra("message");
 
@@ -87,7 +92,13 @@ public class MessageReceiver extends BroadcastReceiver {
 					registBack();
 				} else if ("system".equals(type)) {
 					// 系统消息
-					addFriend();
+					if (jsonObject.has("notice_id")) {
+						// 闹钟
+						notice();
+					} else {
+						// 好友
+						addFriend();
+					}
 				}
 			} catch (JSONException e) {
 				e.printStackTrace();
@@ -169,12 +180,58 @@ public class MessageReceiver extends BroadcastReceiver {
 			}
 		}
 	}
+	
+	private void notice() throws RemoteException, JSONException {
+		getMsg();
+		
+		String notice_id = jsonObject.getString("notice_id");
+		String content = jsonObject.getString("content");
+		JSONObject contentObj = new JSONObject(content);
+		int type = contentObj.getInt("type");
+		switch (type) {
+		case 3:
+			// 收到闹钟
+			JSONObject dataObj = new JSONObject(contentObj.getString("data"));
+//			String owner_id = dataObj.getString("owner_id");
+			String noticeContent = dataObj.getString("content");
+			JSONObject noticeObj = new JSONObject(noticeContent);
+			String isPrev = noticeObj.getString("isPrev");
+			String time = noticeObj.getString("time");
+			String title = noticeObj.getString("title");
+			String repeatType = noticeObj.getString("type");
+			String userNum = noticeObj.getString("userNum");
+			String userNick = noticeObj.getString("userNick");
+			String noticeString = noticeObj.getString("noticeContent");
+			
+			RemindEntity remindEntity = new RemindEntity("", notice_id,
+					userNum, userNick,
+					userNick, AppUtil.getNowTime(),
+					"", noticeString, time
+					, time, title, repeatType, Integer.valueOf(isPrev));
+			remindEntity.setRemindState(RemindEntity.NEW);
+			
+			long remindId = remindDaoImpl.insertRemind(remindEntity);
+			
+			MessageEntity messageEntity = new MessageEntity("", "", "", 
+					userNick, userNum, AppUtil.getNowTime(), 
+					MessageEntity.SEND_SUCCESS, MessageEntity.NORMAL, 
+					MessageEntity.TYPE_REMIND, 
+					String.valueOf(remindId), "", 
+					userNum, MessageEntity.TYPE_RECIEVE, 
+					remindEntity.getContent(), MessageEntity.FEED_DEFAULT);
+			
+			messageDaoImpl.insert(messageEntity);
+			break;
+		case 4:
+			// 收到是否同意闹钟
+			break;
+
+		default:
+			break;
+		}
+	}
 
 	private void addFriend() throws JSONException, RemoteException {
-		// �{"type":"system","mid":1461049368685,
-		// "content":{"friend_id":"13716022538","nick":"123",
-		// "avatar":"http://sdfsdf.1.pig","pn":"13716022538",
-		// "msg":[230,183,187,229,138,160,229,165,189,229,143,139]}}
 		getMsg();
 		// 处理系统消息
 		String content = jsonObject.getString("content");

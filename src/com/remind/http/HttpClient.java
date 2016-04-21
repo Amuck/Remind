@@ -255,13 +255,13 @@ public class HttpClient {
 		public Content content;
 		public String owner_id;
 		
-		@Override
-		public String toString() {
-			String result = "{\"user_id\":\"" + this.user_id + "\"," +
-					"\"content\":" + this.content.toString() + "," +
-					"\"owner_id\":\"" + this.owner_id + "\"}";
-			return result;
-		}
+//		@Override
+//		public String toString() {
+//			String result = "{\"user_id\":\"" + this.user_id + "\"," +
+//					"\"content\":" + this.content.toString() + "," +
+//					"\"owner_id\":\"" + this.owner_id + "\"}";
+//			return result;
+//		}
 	}
 	
 	static class Content {
@@ -269,18 +269,21 @@ public class HttpClient {
 		public String type;
 		public String time;
 		public String isPrev;
+		public String userNum;
+		public String userNick;
+		public String noticeContent;
 		
-		@Override
-		public String toString() {
-			String result = "[{\"title\":\"" + this.title + "\"}," +
-					"{\"type\":\"" + this.type + "\"}," +
-					"{\"time\":\"" + this.time + "\"}," +
-//					"{\"isPrev\":" + this.isPrev + "}," +
-//					"{\"time\":" + this.title + "}," +
-					"{\"isPrev\":\"" + this.isPrev + "\"}]";
-			
-			return result;
-		}
+//		@Override
+//		public String toString() {
+//			String result = "[{\"title\":\"" + this.title + "\"}," +
+//					"{\"type\":\"" + this.type + "\"}," +
+//					"{\"time\":\"" + this.time + "\"}," +
+////					"{\"isPrev\":" + this.isPrev + "}," +
+////					"{\"time\":" + this.title + "}," +
+//					"{\"isPrev\":\"" + this.isPrev + "\"}]";
+//			
+//			return result;
+//		}
 	}
 	
 	static class SocketRegist {
@@ -322,16 +325,19 @@ public class HttpClient {
 	/**
 	 * 获取提醒内容json
 	 * 
-	 * @param user_id		使用者号码
-	 * @param owner_id		拥有者号码
+	 * @param user_id		登陆用户id
+	 * @param owner_id		接收者id
 	 * @param title			标题
 	 * @param isPrev		是否可以预览
 	 * @param time			提醒时间
 	 * @param type			重复响铃类型
+	 * @param userNum		登陆用户手机号
+	 * @param userNick		登陆用户昵称
+	 * @param noticeContent		提醒内容
 	 * @return
 	 */
 	public static String getCreateNofiJsonForPost(String user_id, String owner_id, String title, String isPrev,
-			String time, String type) {
+			String time, String type, String userNum, String userNick, String noticeContent) {
 		Gson gson = new Gson();
 		String result = "";
 		Notify notify = new Notify();
@@ -342,11 +348,15 @@ public class HttpClient {
 		content.isPrev = isPrev;
 		content.time = time;
 		content.type = type;
+		content.userNum = userNum;
+		content.userNick = userNick;
+		content.noticeContent = noticeContent;
 		notify.content = content;
 //		JSONArray jsonObject = new JSONArray();
 //		jsonObject.
 		result = gson.toJson(notify);
-		return notify.toString();
+//		return notify.toString();
+		return result;
 	}
 	
 	/**
