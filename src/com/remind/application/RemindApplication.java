@@ -12,7 +12,6 @@ import android.os.RemoteException;
 import android.os.Vibrator;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.android.volley.RequestQueue;
 import com.android.volley.Response.ErrorListener;
@@ -175,8 +174,8 @@ public class RemindApplication extends Application {
 		public void handleMessage(Message msg) {
 			switch (msg.what) {
 			case GET_INFO_ERROR:
-				Toast.makeText(getApplicationContext(), "获取天气失败",
-						Toast.LENGTH_SHORT).show();
+//				Toast.makeText(getApplicationContext(), "获取天气失败",
+//						Toast.LENGTH_SHORT).show();
 				break;
 			case GET_INFO_OK:
 				getWeatherByCode();

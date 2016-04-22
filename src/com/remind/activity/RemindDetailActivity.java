@@ -37,6 +37,8 @@ import com.remind.entity.RemindEntity;
 import com.remind.global.AppConstant;
 import com.remind.util.AppUtil;
 import com.remind.util.DataBaseParser;
+import com.remind.view.SwitchButton;
+import com.remind.view.SwitchButton.OnSwitchListener;
 
 /**
  * @author ChenLong
@@ -48,23 +50,23 @@ public class RemindDetailActivity extends AbActivity implements OnClickListener 
 	/**
 	 * 选择联系人按钮
 	 */
-	private Button selectPeopelBtn;
+	private TextView selectPeopelBtn;
 	/**
 	 * 选择日期按钮
 	 */
-	private Button selectDateBtn;
+	private TextView selectDateBtn;
 	/**
 	 * 选择时间按钮
 	 */
-	private Button selectTimeBtn;
+	private TextView selectTimeBtn;
 	/**
 	 * 确定按钮
 	 */
-	private Button okBtn;
+//	private Button okBtn;
 	/**
 	 * 取消按钮
 	 */
-	private Button cancelBtn;
+//	private Button cancelBtn;
 	/**
 	 * 选择联系人姓名
 	 */
@@ -80,11 +82,11 @@ public class RemindDetailActivity extends AbActivity implements OnClickListener 
 	/**
 	 * 提醒内容
 	 */
-	private EditText contentEidt;
+//	private EditText contentEidt;
 	/**
 	 * 提醒标题
 	 */
-	private EditText titleEidt;
+//	private EditText titleEidt;
 
 	/**
 	 * 选择联系人对话框
@@ -105,7 +107,11 @@ public class RemindDetailActivity extends AbActivity implements OnClickListener 
 	 * 时间选择
 	 */
 	private View mTimeView = null;
-	
+	private LinearLayout prevPanel;
+	/**
+	 * 选择是否预览按钮
+	 */
+	private SwitchButton switchButton;
 	/**
 	 * 是否是给自己的
 	 */
@@ -128,11 +134,11 @@ public class RemindDetailActivity extends AbActivity implements OnClickListener 
 	}
 
 	private void setUpView() {
-		okBtn = (Button) findViewById(R.id.title_ok);
-		cancelBtn = (Button) findViewById(R.id.title_cancel);
-		selectPeopelBtn = (Button) findViewById(R.id.select_peopel_btn);
-		selectDateBtn = (Button) findViewById(R.id.select_date_btn);
-		selectTimeBtn = (Button) findViewById(R.id.select_time_btn);
+//		okBtn = (Button) findViewById(R.id.title_ok);
+//		cancelBtn = (Button) findViewById(R.id.title_cancel);
+		selectPeopelBtn = (TextView) findViewById(R.id.select_peopel_btn);
+		selectDateBtn = (TextView) findViewById(R.id.select_date_btn);
+		selectTimeBtn = (TextView) findViewById(R.id.select_time_btn);
 
 		selectPeopelTxt = (TextView) findViewById(R.id.select_peopel_text);
 		selectDateTxt = (TextView) findViewById(R.id.select_date_text);
@@ -143,7 +149,17 @@ public class RemindDetailActivity extends AbActivity implements OnClickListener 
 
 		mDateView = mInflater.inflate(R.layout.choose_three, null);
 		mTimeView = mInflater.inflate(R.layout.choose_two, null);
-
+		prevPanel = (LinearLayout) findViewById(R.id.select_preview_panel);
+		prevPanel.setVisibility(View.GONE);
+		switchButton = (SwitchButton) findViewById(R.id.select_preview_btn);
+		switchButton.setImageResource(R.drawable.preview_bord, R.drawable.preview_btn);
+//		switchButton.setOnSwitchStateListener(new OnSwitchListener() {
+//			
+//			@Override
+//			public void onSwitched(boolean state) {
+////				isPreview = state ? 1 : 0;
+//			}
+//		});
 //		selectDateTxt.setOnClickListener(new OnClickListener() {
 //
 //			@Override
@@ -165,18 +181,18 @@ public class RemindDetailActivity extends AbActivity implements OnClickListener 
 //		initWheelDate(mDateView, selectDateTxt);
 //		initWheelTime(mTimeView, selectTimeTxt);
 
-		okBtn.setOnClickListener(this);
+//		okBtn.setOnClickListener(this);
 //		cancelBtn.setOnClickListener(this);
 //		selectPeopelBtn.setOnClickListener(this);
 //		selectDateBtn.setOnClickListener(this);
 //		selectTimeBtn.setOnClickListener(this);
 		
 		selectPeopelBtn.setVisibility(View.INVISIBLE);
-		cancelBtn.setVisibility(View.INVISIBLE);
-		contentEidt.setEnabled(false);
-		contentEidt.setFocusable(false);
-		titleEidt.setEnabled(false);
-		titleEidt.setFocusable(false);
+//		cancelBtn.setVisibility(View.INVISIBLE);
+//		contentEidt.setEnabled(false);
+//		contentEidt.setFocusable(false);
+//		titleEidt.setEnabled(false);
+//		titleEidt.setFocusable(false);
 		
 		Intent intent = getIntent();
 		Object obj = intent.getSerializableExtra("remind");
@@ -190,8 +206,8 @@ public class RemindDetailActivity extends AbActivity implements OnClickListener 
 				selectTimeTxt.setText(date.split(" ")[1]);
 			}
 			
-			contentEidt.setText(entity.getContent());
-			titleEidt.setText(entity.getTitle());
+//			contentEidt.setText(entity.getContent());
+//			titleEidt.setText(entity.getTitle());
 		} else {
 			AppUtil.showToast(this, "提醒信息有误，请重新选择");
 		}

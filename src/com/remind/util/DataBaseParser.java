@@ -56,6 +56,8 @@ public class DataBaseParser {
 			String targetNum = mCursor.getString(mCursor.getColumnIndex(RemindMsg.TARGET_NUM));
 			String targetName = mCursor.getString(mCursor.getColumnIndex(RemindMsg.TARGET_NAME));
 			String targetNick = mCursor.getString(mCursor.getColumnIndex(RemindMsg.NICK_NAME));
+			String noticeId = mCursor.getString(mCursor.getColumnIndex(RemindMsg.NOTICE_ID));
+			String ownerId = mCursor.getString(mCursor.getColumnIndex(RemindMsg.OWNER_ID));
 			String addTime = mCursor.getString(mCursor.getColumnIndex(RemindMsg.ADD_TIME));
 			String lastEditTime = mCursor.getString(mCursor.getColumnIndex(RemindMsg.REMIND_TIME_MILI));
 			String content = mCursor.getString(mCursor.getColumnIndex(RemindMsg.CONTENT));
@@ -77,7 +79,7 @@ public class DataBaseParser {
 					targetName, targetNick, addTime, lastEditTime, title, 
 					content, limitTime, remindTime, audioPath, videoPath, 
 					imgPath, remindMethod, remindState, launchState, isDelete, repeatType,
-					isPreview, remindCount);
+					isPreview, remindCount, noticeId, ownerId);
 			lists.add(entity);
 		}
 		return lists;

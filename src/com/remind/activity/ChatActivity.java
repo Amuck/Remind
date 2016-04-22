@@ -80,6 +80,10 @@ public class ChatActivity extends BaseActivity implements OnClickListener, OnScr
 	 */
 	private final static int REFRESH_UI = 3003;
 	/**
+	 * 刷新提醒的状态
+	 */
+	private final static int REFRESH_NOTICE = 3004;
+	/**
 	 * 聊天信息
 	 */
 	private ListView chatList;
@@ -190,6 +194,12 @@ public class ChatActivity extends BaseActivity implements OnClickListener, OnScr
 				String code = (String) bundle.get("code");
 				getBackAndRefreshData(mid, code);
 				break;
+			case REFRESH_NOTICE:
+				bundle = msg.getData();
+				String noticeId = (String) bundle.get("noticeId");
+				int state = bundle.getInt("state");
+				getNoticeBackAndRefreshData(state, noticeId);
+				break;
 
 			default:
 				break;
@@ -224,6 +234,8 @@ public class ChatActivity extends BaseActivity implements OnClickListener, OnScr
 		mReciver = new MessageBackReciver();
 		mIntentFilter = new IntentFilter();
 		mIntentFilter.addAction(MessageReceiver.MESSAGE_BACK_ACTION);
+		mIntentFilter.addAction(MessageReceiver.GET_MESSAGE_ACTION);
+		mIntentFilter.addAction(MessageReceiver.NOTICE_STATE_ACTION);
 		
 		Intent intent = getIntent();
 		num = intent.getStringExtra("num");
@@ -397,10 +409,14 @@ public class ChatActivity extends BaseActivity implements OnClickListener, OnScr
 					Cursor cursor = remindDao.queryRemind(entity);
 					entity = DataBaseParser.getRemindDetail(cursor).get(0);
 					cursor.close();
-					// 提醒类型，打开提醒
-					Intent intent = new Intent(ChatActivity.this, RemindDetailActivity.class);
-					intent.putExtra("remind", entity);
-					startActivity(intent);
+					if (entity.getIsPreview() == RemindEntity.CAN_PREV) {
+						// 提醒类型，打开提醒
+						Intent intent = new Intent(ChatActivity.this, RemindDetailActivity.class);
+						intent.putExtra("remind", entity);
+						startActivity(intent);
+					} else {
+						AppUtil.showToast(ChatActivity.this, "这条提醒无法预览.");
+					}
 				}
 			}
 			
@@ -546,6 +562,7 @@ public class ChatActivity extends BaseActivity implements OnClickListener, OnScr
 			// 添加提醒
 			// 添加提醒
 			Intent intent = new Intent(ChatActivity.this, AddRemindActivity.class);
+			intent.putExtra("targetPeopel", peopelEntity);
 			startActivityForResult(intent, ADD_REMIND);
 			break;
 		case R.id.title_info:
@@ -905,6 +922,23 @@ public class ChatActivity extends BaseActivity implements OnClickListener, OnScr
 					data.putString("code", code);
 					message.setData(data);
 					mHandler.sendMessage(message);
+				} else if (action.equals(MessageReceiver.GET_MESSAGE_ACTION)) {
+					// 收到好友发送的消息/提醒
+					MessageEntity messageEntity = (MessageEntity) intent.getSerializableExtra("messageEntity");
+					datas.add(messageEntity);
+					chatAdapter.notifyDataSetChanged();
+				} else if(action.equals(MessageReceiver.NOTICE_STATE_ACTION)) {
+					// 收到接受/拒绝提醒
+//					String noticeId = intent.getStringExtra("noticeId");
+//					int state = intent.getIntExtra("state", RemindEntity.LAUNCH_WAIT);
+//					Message message = mHandler.obtainMessage();
+//					message.what = REFRESH_NOTICE;
+//					Bundle data = new Bundle();
+//					data.putString("noticeId", noticeId);
+//					data.putInt("state", state);
+//					message.setData(data);
+//					mHandler.sendMessage(message);
+					chatAdapter.notifyDataSetChanged();
 				}
 			};
 		}
@@ -949,5 +983,37 @@ public class ChatActivity extends BaseActivity implements OnClickListener, OnScr
 					chatAdapter.notifyDataSetChanged();
 				}
 			}
+		}
+		
+		/**
+		 * 获取了提醒的反馈之后，修改数据，刷新画面
+		 */
+		private void getNoticeBackAndRefreshData(int state, String noticeId) {
+			boolean isFind = false;
+			int findIndex = 0;
+			Cursor cursor = remindDao.queryRemindByNoticeId(noticeId);
+			RemindEntity remindEntity = DataBaseParser.getRemindDetail(cursor).get(0);
+			cursor.close();
+			
+			if (null != remindEntity) {
+				// 寻找所发送的消息
+				for (int i = datas.size() - 1; i >= 0; i--) {
+					MessageEntity temp = datas.get(i);
+					if (temp.getOtherTypeId().equals(remindEntity.getId())) {
+						isFind = true;
+						findIndex = i;
+						break;
+					}
+				}
+				// 如果所修改界面在可见范围内，则刷新画面
+				if (isFind) {
+					int firstPosition = chatList.getFirstVisiblePosition();
+					int lastPosition = chatList.getLastVisiblePosition();
+					if (findIndex >= firstPosition && findIndex <= lastPosition) {
+						chatAdapter.notifyDataSetChanged();
+					}
+				}
+			}
+			
 		}
 }

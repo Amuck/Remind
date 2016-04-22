@@ -129,10 +129,13 @@ public class EditPeopelActivity extends BaseActivity implements OnClickListener 
 			return;
 		}
 
-		initView();
+		initView(intent.getBooleanExtra("user", false));
 	}
 
-	private void initView() {
+	/**
+	 * @param isUser		是否是查看登陆用户信息
+	 */
+	private void initView(boolean isUser) {
 		name = (TextView) findViewById(R.id.peopel_name_edit);
 		num = (TextView) findViewById(R.id.peopel_num_edit);
 		nickNameEdit = (EditText) findViewById(R.id.peopel_nick_edit);
@@ -142,6 +145,10 @@ public class EditPeopelActivity extends BaseActivity implements OnClickListener 
 		okBtn = (Button) findViewById(R.id.title_ok);
 		cancelBtn = (Button) findViewById(R.id.title_cancel);
 		sendMsg = (Button) findViewById(R.id.send_msg_btn);
+		
+		if (isUser) {
+			sendMsg.setVisibility(View.GONE);
+		}
 		
 		imgPath = peopelEntity.getImgPath();
 

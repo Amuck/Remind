@@ -96,6 +96,10 @@ public class DBHelper extends SQLiteOpenHelper {
 		remindSql.append(" text,");
 		remindSql.append(RemindMsg.TARGET_NUM);
 		remindSql.append(" text,");
+		remindSql.append(RemindMsg.NOTICE_ID);
+		remindSql.append(" text,");
+		remindSql.append(RemindMsg.OWNER_ID);
+		remindSql.append(" text,");
 		remindSql.append(RemindMsg.TARGET_NAME);
 		remindSql.append(" text,");
 		remindSql.append(RemindMsg.NICK_NAME);

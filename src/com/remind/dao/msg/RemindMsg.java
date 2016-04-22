@@ -33,6 +33,14 @@ public class RemindMsg {
 	 */
 	public static final String NICK_NAME = "nickName";
 	/**
+	 * 提醒的id
+	 */
+	public static final String NOTICE_ID = "notice_id";
+	/**
+	 * 发送者的id
+	 */
+	public static final String OWNER_ID = "owner_id";
+	/**
 	 * 添加时间
 	 */
 	public static final String ADD_TIME = "addTime";

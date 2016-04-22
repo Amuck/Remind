@@ -4,6 +4,9 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -203,6 +206,11 @@ public class AddRemindActivity extends AbActivity implements OnClickListener {
 			switch (msg.what) {
 			case HTTP_OVER:
 				String s = (String) msg.obj;
+				if (null == s || !s.contains("|")) {
+					Toast.makeText(AddRemindActivity.this, "网络连接失败，请确认后重试.",
+							Toast.LENGTH_SHORT).show();
+				}
+				
 				String[] ss = s.split("\\|");
 				if (!ss[0].equals("200")) {
 					// 失败
@@ -211,6 +219,13 @@ public class AddRemindActivity extends AbActivity implements OnClickListener {
 							Toast.LENGTH_SHORT).show();
 				} else {
 					// 成功
+					JSONObject jsonObject;
+					try {
+						jsonObject = new JSONObject(ss[1]);
+						remindEntity.setNoticeId(jsonObject.getString("id"));
+					} catch (JSONException e) {
+						e.printStackTrace();
+					}
 					handler.sendEmptyMessage(NOTIFY_SUCCESS);
 				}
 				
@@ -330,6 +345,13 @@ public class AddRemindActivity extends AbActivity implements OnClickListener {
 			user = addSelf();
 		} else {
 			user = entities.get(0);
+		}
+		
+		PeopelEntity entity = (PeopelEntity) getIntent().getSerializableExtra("targetPeopel");
+		if (null != entity) {
+			targetPeopel = entity;
+			selectPeopelBtn.setText(getName(entity));
+			selectPeopelBtn.setBackgroundResource(R.drawable.right_board);
 		}
 	}
 
@@ -466,7 +488,7 @@ public class AddRemindActivity extends AbActivity implements OnClickListener {
 				targetPeopel.getNickName(), AppUtil.getNowTime(),
 				remindTimeMili, "一起去吃饭吧", remindTime
 				, remindTime, selectTitleBtn
-						.getText().toString(), repeatType, isPreview);
+						.getText().toString(), repeatType, isPreview, "", "");
 		
 		if (isForSelf) {
 			// 如果为自己，设置为已接受的提醒
@@ -487,6 +509,9 @@ public class AddRemindActivity extends AbActivity implements OnClickListener {
 			AppUtil.setAlarm(this, remindEntity.getRemindTime(), (int) remindId);
 			
 			handler.sendEmptyMessage(NOTIFY_SUCCESS);
+		} else if(TextUtils.isEmpty(targetPeopel.getFriendId())) {
+			// 未添加好友
+			showToast("TA还不是您的好友，请等待对方验证通过后再尝试。");
 		} else {
 			// 为别人添加任务
 			if (NetWorkUtil.isAvailable(AddRemindActivity.this)) {

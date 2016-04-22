@@ -35,6 +35,7 @@ public class HttpClient {
 	public static String login = "/user/login";
 	public static String friend = "/user/friend";
 	public static String agree_friend = "/user/agree_friend";
+	public static String agree_notice = "/notice/agree";
 	
 	public HttpClient() {
 	}
@@ -74,6 +75,13 @@ public class HttpClient {
 		public String from_id;
 		public String to;
 		public String content;
+	}
+	
+	public static class AgreeNotice {
+		public String notice_id;
+		public String alias;
+		public String owner_id;
+		public int state;
 	}
 	
 	/**
@@ -199,6 +207,16 @@ public class HttpClient {
 		friend.friend_alias = "123";
 		return friend;
 	}
+
+	public static AgreeNotice agreeNotice(String notice_id, int state, String alias, String owner_id) {
+		AgreeNotice notice = new AgreeNotice();
+		notice.notice_id = notice_id;
+		notice.state = state;
+		notice.alias = alias;
+		notice.owner_id = owner_id;
+		return notice;
+	}
+	
 	public static Friend friendUser(String friendNum) {
 		Friend friend = new Friend();
 		friend.user_id = AppConstant.FROM_ID;

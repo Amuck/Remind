@@ -42,6 +42,15 @@ public class MessageReceiver extends BroadcastReceiver {
 	 * 添加好友
 	 */
 	public static final String PEOPLE_ADD_ACTION = "com.remind.people_add";
+	/**
+	 * 获得消息/提醒
+	 */
+	public static final String GET_MESSAGE_ACTION = "com.remind.get_msg";
+	/**
+	 * 改变提醒状态
+	 */
+	public static final String NOTICE_STATE_ACTION = "com.remind.notice_state";
+	
 	private Context context;
 	private JSONObject jsonObject;
 	private MessageDaoImpl messageDaoImpl;
@@ -71,19 +80,7 @@ public class MessageReceiver extends BroadcastReceiver {
 				String type = jsonObject.getString("type");
 				if ("message".equals(type)) {
 					// 收到短消息，需要回馈
-					String mid = jsonObject.getString("mid");
-					String feed = MessageEntity.FEED_FAIL;
-					try {
-						feed = getMsg();
-					} catch (Exception e) {
-						feed = MessageEntity.FEED_FAIL;
-					}
-					// 更新数据库
-//					Cursor cursor = messageDaoImpl.queryById(mid);
-//					MessageEntity entity = DataBaseParser.getMessage(cursor).get(0);
-//					cursor.close();
-//					entity.setFeed(feed);
-//					messageDaoImpl.updateFeedState(Long.valueOf(mid), feed);
+					getMsg();
 				} else if ("message_ack".equals(type)) {
 					// 发送消息的反馈
 					getBack();
@@ -91,14 +88,7 @@ public class MessageReceiver extends BroadcastReceiver {
 					// socket注册
 					registBack();
 				} else if ("system".equals(type)) {
-					// 系统消息
-					if (jsonObject.has("notice_id")) {
-						// 闹钟
-						notice();
-					} else {
-						// 好友
-						addFriend();
-					}
+					system();
 				}
 			} catch (JSONException e) {
 				e.printStackTrace();
@@ -117,7 +107,7 @@ public class MessageReceiver extends BroadcastReceiver {
 	 * @throws JSONException
 	 * @throws RemoteException
 	 */
-	private String getMsg() throws JSONException, RemoteException {
+	private String feedBack() throws JSONException, RemoteException {
 		String type = "message_ack";
 		String mid = jsonObject.getString("mid");
 		String param = HttpClient.getJsonForPost(HttpClient.msgFeedBack(mid,
@@ -134,9 +124,41 @@ public class MessageReceiver extends BroadcastReceiver {
 		
 		return feed;
 	}
+	
+	/**
+	 * 收到朋友发过来的消息
+	 * @throws JSONException 
+	 * @throws RemoteException 
+	 */
+	private void getMsg() throws RemoteException, JSONException {
+		String feed = feedBack();
+		
+		String content = jsonObject.getString("content");
+		String from_id = jsonObject.getString("from_id");
+		// 获取发送人信息
+		Cursor cursor = peopelDao.queryPeopelByFriendId(from_id);
+		PeopelEntity entity = DataBaseParser.getPeoPelDetail(cursor).get(0);
+		cursor.close();
+		
+		if (null != entity) {
+			MessageEntity messageEntity = new MessageEntity("", "", "", 
+					entity.getNickName(), entity.getNum(), AppUtil.getNowTime(), 
+					MessageEntity.SEND_SUCCESS, MessageEntity.NORMAL, 
+					MessageEntity.TYPE_TEXT, 
+					"", "", 
+					entity.getNum(), MessageEntity.TYPE_RECIEVE, 
+					content, feed);
+			// 插入数据库
+			messageDaoImpl.insert(messageEntity);
+			// 通知UI界面
+			Intent intent = new Intent(GET_MESSAGE_ACTION);
+			intent.putExtra("messageEntity", messageEntity);
+			context.sendBroadcast(intent);
+		}
+	}
 
 	/**
-	 * 获得发送消息的反馈
+	 * 获得发送消息的反馈, 发送成功/失败
 	 * 
 	 * @param type
 	 * @throws JSONException
@@ -181,18 +203,78 @@ public class MessageReceiver extends BroadcastReceiver {
 		}
 	}
 	
-	private void notice() throws RemoteException, JSONException {
-		getMsg();
+	/**
+	 * 处理系统消息
+	 * @throws RemoteException
+	 * @throws JSONException
+	 */
+	private void system() throws RemoteException, JSONException {
+		feedBack();
 		
-		String notice_id = jsonObject.getString("notice_id");
 		String content = jsonObject.getString("content");
+		String friend_id = "";
+		String pn = "";
+		PeopelEntity entity = null;
+		int state = 0;
+		String nick = "";
+		String avatar = "";
+
 		JSONObject contentObj = new JSONObject(content);
 		int type = contentObj.getInt("type");
+		JSONObject dataObj = new JSONObject(contentObj.getString("data"));
+		Intent intent = new Intent();
 		switch (type) {
+		case 1:
+			// 添加好友
+			// 收到添加好友请求
+			friend_id = dataObj.getString("friend_id");
+			nick = dataObj.getString("nick");
+			avatar = dataObj.getString("avatar");
+			pn = dataObj.getString("pn");
+			entity = new PeopelEntity(nick, nick,
+					pn, "", "", avatar, PeopelEntity.NORMAL,
+					PeopelEntity.ACCEPT, friend_id);
+			peopelDao.insertPeopel(entity);
+			// 通知UI刷新页面
+			intent.setAction(PEOPLE_ADD_ACTION);
+			intent.putExtra("PeopelEntity", entity);
+			context.sendBroadcast(intent);
+			break;
+		case 2:
+			// 同意添加好友
+			friend_id = dataObj.getString("friend_id");
+			String stateString = dataObj.getString("state");
+			nick = dataObj.getString("nick");
+			avatar = dataObj.getString("avatar");
+			pn = dataObj.getString("pn");
+			Cursor cursor = peopelDao.queryPeopelByNum(pn);
+			ArrayList<PeopelEntity> lists = DataBaseParser
+					.getPeoPelDetail(cursor);
+			cursor.close();
+			entity = lists.get(0);
+			if ("1".equals(stateString)) {
+				// 同意
+				entity.setStatus(PeopelEntity.FRIEND);
+			} else {
+				entity.setStatus(PeopelEntity.REFUSE);
+			}
+			
+			entity.setName(nick);
+			entity.setNickName(nick);
+			entity.setImgPath(avatar);
+			entity.setFriendId(friend_id);
+			peopelDao.updatePeopel(entity);
+			
+			// 通知UI刷新页面
+			intent.setAction(PEOPLE_STATE_CHANGE_ACTION);
+			intent.putExtra("pn", pn);
+			intent.putExtra("state", stateString);
+			context.sendBroadcast(intent);
+			break;
 		case 3:
 			// 收到闹钟
-			JSONObject dataObj = new JSONObject(contentObj.getString("data"));
-//			String owner_id = dataObj.getString("owner_id");
+			String notice_id = jsonObject.getString("notice_id");
+			String owner_id = dataObj.getString("owner_id");
 			String noticeContent = dataObj.getString("content");
 			JSONObject noticeObj = new JSONObject(noticeContent);
 			String isPrev = noticeObj.getString("isPrev");
@@ -203,11 +285,12 @@ public class MessageReceiver extends BroadcastReceiver {
 			String userNick = noticeObj.getString("userNick");
 			String noticeString = noticeObj.getString("noticeContent");
 			
-			RemindEntity remindEntity = new RemindEntity("", notice_id,
+			RemindEntity remindEntity = new RemindEntity("", "",
 					userNum, userNick,
 					userNick, AppUtil.getNowTime(),
 					"", noticeString, time
-					, time, title, repeatType, Integer.valueOf(isPrev));
+					, time, title, repeatType, Integer.valueOf(isPrev),
+					notice_id, owner_id);
 			remindEntity.setRemindState(RemindEntity.NEW);
 			
 			long remindId = remindDaoImpl.insertRemind(remindEntity);
@@ -221,9 +304,29 @@ public class MessageReceiver extends BroadcastReceiver {
 					remindEntity.getContent(), MessageEntity.FEED_DEFAULT);
 			
 			messageDaoImpl.insert(messageEntity);
+			
+			// 通知UI界面
+			intent.setAction(GET_MESSAGE_ACTION);
+			intent.putExtra("messageEntity", messageEntity);
+			context.sendBroadcast(intent);
 			break;
 		case 4:
 			// 收到是否同意闹钟
+			String noticeId = dataObj.getString("notice_id");
+			state = dataObj.getInt("state");
+			if (state == 0) {
+				// 拒绝
+				state = RemindEntity.REFUSE;
+			} else {
+				state = RemindEntity.ACCEPT;
+			}
+			// 更新数据库
+			remindDaoImpl.updateByNoticeId(noticeId, state);
+			// 通知UI界面
+			intent.setAction(NOTICE_STATE_ACTION);
+			intent.putExtra("noticeId", noticeId);
+			intent.putExtra("state", state);
+			context.sendBroadcast(intent);
 			break;
 
 		default:
@@ -231,57 +334,4 @@ public class MessageReceiver extends BroadcastReceiver {
 		}
 	}
 
-	private void addFriend() throws JSONException, RemoteException {
-		getMsg();
-		// 处理系统消息
-		String content = jsonObject.getString("content");
-		JSONObject contentObj = new JSONObject(content);
-		if (contentObj.has("data")) {
-			JSONObject dataObj = new JSONObject(contentObj.getString("data"));
-			if (dataObj.has("friend_id")) {
-				if (dataObj.has("state")) {
-					// 同意添加好友
-					String friend_id = dataObj.getString("friend_id");
-					String state = dataObj.getString("state");
-					String pn = dataObj.getString("pn");
-					Cursor cursor = peopelDao.queryPeopelByNum(pn);
-					ArrayList<PeopelEntity> lists = DataBaseParser
-							.getPeoPelDetail(cursor);
-					cursor.close();
-					PeopelEntity entity = lists.get(0);
-					if ("1".equals(state)) {
-						// 同意
-						entity.setStatus(PeopelEntity.FRIEND);
-					} else {
-						entity.setStatus(PeopelEntity.REFUSE);
-					}
-					entity.setFriendId(friend_id);
-					peopelDao.updatePeopel(entity);
-					
-					// 通知UI刷新页面
-					Intent intent = new Intent(PEOPLE_STATE_CHANGE_ACTION);
-					intent.putExtra("pn", pn);
-					intent.putExtra("state", state);
-					context.sendBroadcast(intent);
-				} else {
-					// 收到添加好友请求
-					String friend_id = dataObj.getString("friend_id");
-					String nick = dataObj.getString("nick");
-					String avatar = dataObj.getString("avatar");
-					String pn = dataObj.getString("pn");
-					PeopelEntity entity = new PeopelEntity(nick, nick,
-							pn, "", "", avatar, PeopelEntity.NORMAL,
-							PeopelEntity.ACCEPT, friend_id);
-					peopelDao.insertPeopel(entity);
-					// 通知UI刷新页面
-					Intent intent = new Intent(PEOPLE_ADD_ACTION);
-					intent.putExtra("PeopelEntity", entity);
-//					intent.putExtra("state", state);
-					context.sendBroadcast(intent);
-				}
-			} else {
-
-			}
-		}
-	}
 }

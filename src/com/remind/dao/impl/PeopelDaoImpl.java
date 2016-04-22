@@ -145,6 +145,16 @@ public class PeopelDaoImpl implements PeopelDao {
 		mCursor = db.rawQuery(sql, null);
 		return mCursor;
 	}
+	
+	@Override
+	public Cursor queryPeopelByFriendId(String friendId) {
+		SQLiteDatabase db = mDBHelper.getWritableDatabase();
+		String sql = "select * from " + PeopelMsg.TABLENAME + " where "
+				+ PeopelMsg.ISDELETE + " = 0 and " + PeopelMsg.FRIEND_ID + " = '" + friendId + "'";
+		Cursor mCursor = null;
+		mCursor = db.rawQuery(sql, null);
+		return mCursor;
+	}
 
 	@Override
 	public Cursor queryOwner() {

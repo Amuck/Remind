@@ -39,6 +39,12 @@ public interface RemindDao {
 	 */
 	public Cursor queryRemind();
 	/**
+	 * 通过noticeid查询 
+	 * @param noticeId
+	 * @return
+	 */
+	public Cursor queryRemindByNoticeId(String noticeId);
+	/**
 	 * 查询所有提醒,提醒时间当天时间排在最前面，其他按提醒时间排序
 	 * @param today				当天时间
 	 * @param startPosition		开始位置
@@ -109,4 +115,10 @@ public interface RemindDao {
 	 * @return
 	 */
 	public Cursor queryRemindInChat(RemindEntity entity);
+	/**
+	 * 通过noticeId改成状态
+	 * @param noticeId
+	 * @return
+	 */
+	public void updateByNoticeId(String noticeId, int state);
 }

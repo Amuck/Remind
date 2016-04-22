@@ -10,6 +10,7 @@ import android.util.Log;
 
 import com.remind.dao.RemindDao;
 import com.remind.dao.dbhelper.DBHelper;
+import com.remind.dao.msg.PeopelMsg;
 import com.remind.dao.msg.RemindMsg;
 import com.remind.entity.RemindEntity;
 
@@ -32,6 +33,8 @@ public class RemindDaoImpl implements RemindDao {
 		values.put(RemindMsg.OWNER_NUM, entity.getOwnerNum());
 		values.put(RemindMsg.TARGET_NUM, entity.getTargetNum());
 		values.put(RemindMsg.TARGET_NAME, entity.getTargetName());
+		values.put(RemindMsg.NOTICE_ID, entity.getNoticeId());
+		values.put(RemindMsg.OWNER_ID, entity.getOwnerId());
 		values.put(RemindMsg.NICK_NAME, entity.getNickName());
 		values.put(RemindMsg.ADD_TIME, entity.getAddTime());
 		values.put(RemindMsg.REMIND_TIME_MILI, entity.getRemindTimeMiLi());
@@ -74,6 +77,8 @@ public class RemindDaoImpl implements RemindDao {
 			values.put(RemindMsg.OWNER_NUM, entity.getOwnerNum());
 			values.put(RemindMsg.TARGET_NUM, entity.getTargetNum());
 			values.put(RemindMsg.TARGET_NAME, entity.getTargetName());
+			values.put(RemindMsg.NOTICE_ID, entity.getNoticeId());
+			values.put(RemindMsg.OWNER_ID, entity.getOwnerId());
 			values.put(RemindMsg.NICK_NAME, entity.getNickName());
 			values.put(RemindMsg.ADD_TIME, entity.getAddTime());
 			values.put(RemindMsg.REMIND_TIME_MILI, entity.getRemindTimeMiLi());
@@ -129,6 +134,8 @@ public class RemindDaoImpl implements RemindDao {
 		sb.append(RemindMsg.TARGET_NUM + "	= '" + entity.getTargetNum() + "',");
 		sb.append(RemindMsg.TARGET_NAME + "	= '" + entity.getTargetName() + "',");
 		sb.append(RemindMsg.NICK_NAME + "	= '" + entity.getNickName() + "',");
+		sb.append(RemindMsg.NOTICE_ID + "	= '" + entity.getNoticeId() + "',");
+		sb.append(RemindMsg.OWNER_ID + "	= '" + entity.getOwnerId() + "',");
 		sb.append(RemindMsg.ADD_TIME + "	= '" + entity.getAddTime() + "',");
 		sb.append(RemindMsg.REMIND_TIME_MILI + "	= '" + entity.getRemindTimeMiLi() + "',");
 		sb.append(RemindMsg.CONTENT + "	= '" + entity.getContent() + "',");
@@ -480,6 +487,29 @@ public class RemindDaoImpl implements RemindDao {
 		sb.append(";");
 		String sql = sb.toString();
 		Cursor mCursor = db.rawQuery(sql, null);
+		return mCursor;
+	}
+
+	@Override
+	public void updateByNoticeId(String noticeId, int state) {
+		SQLiteDatabase db = mDBHelper.getWritableDatabase();
+		StringBuffer sb = new StringBuffer();
+		sb.append("update " + RemindMsg.TABLENAME + " set ");
+		sb.append(RemindMsg.REMIND_STATE + "	= '" + state + "' ");
+		sb.append(" where " + RemindMsg.NOTICE_ID + " = '" + noticeId + "'");
+		String sql = sb.toString();
+
+		Log.d(TAG, sql);
+		db.execSQL(sql);
+	}
+
+	@Override
+	public Cursor queryRemindByNoticeId(String noticeId) {
+		SQLiteDatabase db = mDBHelper.getWritableDatabase();
+		String sql = "select * from " + RemindMsg.TABLENAME + " where "
+				+ RemindMsg.IS_DELETE + " = 0 and " + RemindMsg.NOTICE_ID + " = '" + noticeId + "'";
+		Cursor mCursor = null;
+		mCursor = db.rawQuery(sql, null);
 		return mCursor;
 	}
 }

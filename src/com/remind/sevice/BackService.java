@@ -23,7 +23,7 @@ import com.remind.util.ByteUtil;
 
 public class BackService extends Service {
 	private static final String TAG = "BackService";
-	private static final long HEART_BEAT_RATE = 20 * 1000;
+	private static final long HEART_BEAT_RATE = 30 * 1000;
 
 	public static final String HOST = "101.200.200.49";//"172.22.51.98";// "192.168.1.21";//
 	public static final int PORT = 80;//9800;

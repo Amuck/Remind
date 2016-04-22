@@ -46,6 +46,10 @@ public class AppConstant {
 	 */
 	public static String USER_NUM = "";
 	/**
+	 * 登陆用户昵称
+	 */
+	public static String USER_NAME = "";
+	/**
 	 * 登陆用户id
 	 */
 	public static String FROM_ID = "";

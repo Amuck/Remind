@@ -409,12 +409,18 @@ public class HomeActivity extends BaseActivity implements OnClickListener {
 				cursor.close();
 				Intent i = new Intent(HomeActivity.this, EditPeopelActivity.class);
 				i.putExtra("peopel", lists.get(0));
+				i.putExtra("user", true);
 				startActivity(i);
 			}
 			break;
 		case R.id.more_btn:
 			// 添加提醒
-			startActivity(new Intent(HomeActivity.this, AddRemindActivity.class));
+			if (!RemindApplication.IS_LOGIN) {
+				// 未登录
+				Toast.makeText(HomeActivity.this, "请先登陆。", Toast.LENGTH_LONG).show();
+			} else {
+				startActivity(new Intent(HomeActivity.this, AddRemindActivity.class));
+			}
 			break;
 		default:
 			break;

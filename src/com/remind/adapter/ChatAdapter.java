@@ -6,16 +6,19 @@ import android.content.Context;
 import android.database.Cursor;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnCompletionListener;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnLongClickListener;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.help.remind.R;
 import com.remind.asyn.ImageLoader;
@@ -25,11 +28,17 @@ import com.remind.dao.impl.PeopelDaoImpl;
 import com.remind.dao.impl.RemindDaoImpl;
 import com.remind.entity.MessageEntity;
 import com.remind.entity.RemindEntity;
+import com.remind.http.HttpClient;
+import com.remind.util.AppUtil;
 import com.remind.util.DataBaseParser;
 import com.remind.util.Utils;
 import com.remind.view.RoleDetailImageView;
 
 public class ChatAdapter extends BaseAdapter {
+	/**
+	 * 刷新界面
+	 */
+	private final static int REFRESH_UI = 3003;
 	/**
 	 * @author ChenLong
 	 *
@@ -55,6 +64,50 @@ public class ChatAdapter extends BaseAdapter {
 	
 	private ContentClickListener contentClickListener = null;
 	private MediaPlayer mMediaPlayer = new MediaPlayer();
+	
+	private Handler handler = new Handler(){
+		public void handleMessage(android.os.Message msg) {
+			switch (msg.what) {
+			case REFRESH_UI:
+				String s = (String) msg.obj;
+				if (null == s || !s.contains("|")) {
+					Toast.makeText(context, "网络连接失败，请确认后重试.",
+							Toast.LENGTH_SHORT).show();
+				}
+				
+				String[] ss = s.split("\\|");
+				if (!ss[0].equals("200")) {
+					// 失败
+					Toast.makeText(context, "失败，请重试",
+							Toast.LENGTH_SHORT).show();
+				} else {
+					// 成功
+					// 点击接受后的处理
+					Bundle bundle = msg.getData();
+					int state = bundle.getInt("state");
+					RemindEntity entity = (RemindEntity) bundle.getSerializable("RemindEntity");
+					if (state == 0) {
+						// 不同意
+						state = RemindEntity.REFUSE;
+					} else {
+						// 同意
+						state = RemindEntity.ACCEPT;
+					}
+					entity.setRemindState(state);
+					remindDao.updateRemind(entity);
+					notifyDataSetChanged();
+					// 启动闹钟
+					AppUtil.setAlarm(context, entity.getRemindTime(), Integer.valueOf(entity.getId()));
+				}
+				
+
+				break;
+
+			default:
+				break;
+			}
+		};
+	};
 
 	public ChatAdapter(Context context, List<MessageEntity> datas) {
 		this.context = context;
@@ -265,9 +318,9 @@ public class ChatAdapter extends BaseAdapter {
 					@Override
 					public void onClick(View v) {
 						// 拒绝
-						entity.setRemindState(RemindEntity.REFUSE);
-						remindDao.updateRemind(entity);
-						changeButtonState("任务已拒绝", viewHolder);
+						agreeNotice(entity, 0);
+//						Toast.makeText(context, "拒绝",
+//								Toast.LENGTH_SHORT).show();
 					}
 				});
 				viewHolder.ok.setOnClickListener(new OnClickListener() {
@@ -275,9 +328,9 @@ public class ChatAdapter extends BaseAdapter {
 					@Override
 					public void onClick(View v) {
 						// 接受
-						entity.setRemindState(RemindEntity.ACCEPT);
-						remindDao.updateRemind(entity);
-						changeButtonState("任务已接受", viewHolder);
+						agreeNotice(entity, 1);
+//						Toast.makeText(context, "接受",
+//								Toast.LENGTH_SHORT).show();
 					}
 				});
 				break;
@@ -322,6 +375,25 @@ public class ChatAdapter extends BaseAdapter {
 		}
 	}
 	
+	private void agreeNotice(final RemindEntity entity, final int state) {
+		final String params = HttpClient.getJsonForPost(HttpClient.agreeNotice(entity.getNoticeId(), state, "", entity.getOwnerId()));
+		new Thread(new Runnable() {
+			
+			@Override
+			public void run() {
+				String s = HttpClient.post(HttpClient.url + HttpClient.agree_notice, params);
+				Message msg = handler.obtainMessage();
+				msg.what = REFRESH_UI;
+				msg.obj = s;
+				Bundle bundle = new Bundle();
+				bundle.putSerializable("RemindEntity", entity);
+				bundle.putInt("state", state);
+				msg.setData(bundle);
+				handler.sendMessage(msg);
+			}
+		}).start();
+	}
+	
 	/**
 	 * 改变按钮状态
 	 */
@@ -333,8 +405,8 @@ public class ChatAdapter extends BaseAdapter {
 //		viewHolder.ok.setText(text);
 		viewHolder.ok.setEnabled(false);
 		
-		viewHolder.cancel.setFocusable(false);
-		viewHolder.ok.setFocusable(false);
+//		viewHolder.cancel.setFocusable(false);
+//		viewHolder.ok.setFocusable(false);
 	}
 
 	/**
@@ -345,7 +417,7 @@ public class ChatAdapter extends BaseAdapter {
 	 * @param chatMessage
 	 */
 	private void setListenerForView(ViewHolder viewHolder, final int position, final MessageEntity chatMessage) {
-		viewHolder.chatPanel.setOnClickListener(new OnClickListener() {
+		viewHolder.title.setOnClickListener(new OnClickListener() {
 			
 			@Override
 			public void onClick(View v) {
@@ -355,7 +427,7 @@ public class ChatAdapter extends BaseAdapter {
 			}
 		});
 		
-		viewHolder.chatPanel.setOnLongClickListener(new OnLongClickListener() {
+		viewHolder.title.setOnLongClickListener(new OnLongClickListener() {
 			
 			@Override
 			public boolean onLongClick(View v) {

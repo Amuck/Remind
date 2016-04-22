@@ -1,6 +1,12 @@
 package com.remind.entity;
 
-public class MessageEntity implements Cloneable{
+import java.io.Serializable;
+
+public class MessageEntity implements Cloneable, Serializable{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 8484912071208962329L;
 	/**
 	 * 正常状态
 	 */

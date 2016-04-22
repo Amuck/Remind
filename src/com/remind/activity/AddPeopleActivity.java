@@ -35,7 +35,7 @@ public class AddPeopleActivity extends AbActivity implements OnClickListener {
 			case 0:
 				removeProgressDialog();
 				String s = (String) msg.obj;
-				if (null == s || !s.contains("\\")) {
+				if (null == s || !s.contains("|")) {
 					Toast.makeText(AddPeopleActivity.this, "网络连接失败，请确认后重试.",
 							Toast.LENGTH_SHORT).show();
 				}

@@ -109,6 +109,8 @@ public class RemindEntity implements Serializable{
 	 * 对方联系人名称
 	 */
 	private String targetName;
+	private String noticeId;
+	private String ownerId;
 	/**
 	 * 联系人备注名称
 	 */
@@ -230,10 +232,13 @@ public class RemindEntity implements Serializable{
 	 * @param title			提醒标题
 	 * @param repeatType	重复模式
 	 * @param isPreview		是否可以预览
+	 * @param noticeId		提醒的id
+	 * @param ownerId		发送者的id
 	 */
 	public RemindEntity(String id,String ownerNum, String targetNum, String targetName,
 			String targetNick, String addTime, String remindTimeMiLi,
-			String content, String limitTime, String remindTime, String title, String repeatType, int isPreview) {
+			String content, String limitTime, String remindTime, String title, String repeatType, int isPreview,
+			String noticeId, String ownerId) {
 		super();
 		this.id = id;
 		this.ownerNum = ownerNum;
@@ -248,6 +253,8 @@ public class RemindEntity implements Serializable{
 		this.title = title;
 		this.repeatType = repeatType;
 		this.isPreview = isPreview;
+		this.noticeId = noticeId;
+		this.ownerId = ownerId;
 	}
 
 	/**
@@ -289,13 +296,16 @@ public class RemindEntity implements Serializable{
 	 * @param isPreview		是否可以预览,{@link #NOT_PREV}：不能预览；{@link #CAN_PREV}：能预览
 	 * 								默认为不能预览:{@link #NOT_PREV}
 	 * @param remindCount	提醒过的次数
+	 * @param noticeId		提醒的id
+	 * @param ownerId		发送者的id
 	 */
 	public RemindEntity(String id, String ownerNum, String targetNum,
 			String targetName, String nickName, String addTime,
 			String remindTimeMiLi, String title, String content,
 			String limitTime, String remindTime, String audioPath,
 			String videoPath, String imgPath, int remindMethod,
-			int remindState, int launchState, String isDelete, String repeatType, int isPreview, int remindCount) {
+			int remindState, int launchState, String isDelete, String repeatType, int isPreview, int remindCount,
+			String noticeId, String ownerId) {
 		super();
 		this.id = id;
 		this.ownerNum = ownerNum;
@@ -318,6 +328,8 @@ public class RemindEntity implements Serializable{
 		this.repeatType = repeatType;
 		this.isPreview = isPreview;
 		this.remindCount = remindCount;
+		this.noticeId = noticeId;
+		this.ownerId = ownerId;
 	}
 
 	public String getId() {
@@ -342,6 +354,22 @@ public class RemindEntity implements Serializable{
 
 	public void setTargetNum(String targetNum) {
 		this.targetNum = targetNum;
+	}
+
+	public String getNoticeId() {
+		return noticeId;
+	}
+
+	public void setNoticeId(String noticeId) {
+		this.noticeId = noticeId;
+	}
+
+	public String getOwnerId() {
+		return ownerId;
+	}
+
+	public void setOwnerId(String ownerId) {
+		this.ownerId = ownerId;
 	}
 
 	public String getTargetName() {

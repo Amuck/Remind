@@ -91,10 +91,11 @@
 
                                 <TextView
                                     android:id="@+id/chat_send_title"
-                                    android:layout_width="wrap_content"
+                                    android:layout_width="fill_parent"
                                     android:layout_height="wrap_content"
                                     android:layout_marginLeft="16dp"
-                                    android:layout_marginTop="8dp"
+                                    android:layout_marginTop="5dp"
+                                    android:padding="3dp"
                                     android:textSize="14sp"
                                     android:textColor="#000"
                                     android:layout_alignParentTop="true"
@@ -105,8 +106,9 @@
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:layout_marginLeft="16dp"
-                                    android:layout_marginTop="8dp"
+                                    android:layout_marginTop="2dp"
                                     android:text="2015-08-25"
+                                    android:paddingLeft="5dp"
                                     android:textColor="@color/chat_send_remind_time_color"
                                     android:textSize="10sp"
                                     android:layout_below="@+id/chat_send_title" />
@@ -116,11 +118,11 @@
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:layout_marginLeft="16dp"
-                                    android:layout_marginBottom="8dp"
                                     android:focusable="false"
                                     android:text="@string/refuse"
                                     android:textColor="@color/black"
                                     android:textSize="10sp"
+                                    android:padding="5dp"
                                     android:layout_alignParentBottom="true"
                                     android:layout_alignParentLeft="true" >
                                 </TextView>
@@ -130,7 +132,7 @@
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:layout_marginRight="8dp"
-                                    android:layout_marginBottom="8dp"
+                                    android:padding="5dp"
                                     android:layout_alignParentBottom="true"
                                     android:layout_alignParentRight="true"
                                     android:focusable="false"

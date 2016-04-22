@@ -61,4 +61,10 @@ public interface PeopelDao {
 	 * @param entity
 	 */
 	public void updateOwner(PeopelEntity entity);
+	/**
+	 * 根据friendid查找联系人
+	 * @param friendId
+	 * @return
+	 */
+	public Cursor queryPeopelByFriendId(String friendId);
 }
