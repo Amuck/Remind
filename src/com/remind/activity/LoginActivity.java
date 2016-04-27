@@ -117,14 +117,18 @@ public class LoginActivity extends BaseActivity implements OnClickListener {
 
 			switch (msg.what) {
 			case HTTP_OVER:
-				String s = (String) msg.obj;
-				s = s.split("|")[1];
-				if (TextUtils.isEmpty(s) || s.length() < 10) {
+				Bundle bundle = msg.getData();
+				String s = bundle.getString("code");
+				if (TextUtils.isEmpty(s)) {
 					// 失败
 					hideProgess();
-					Toast.makeText(LoginActivity.this, "失败，请重试",
+					Toast.makeText(LoginActivity.this, "注册失败，请重试.",
 							Toast.LENGTH_SHORT).show();
-				} else {
+				} else if("402".equals(s)) {
+					hideProgess();
+					Toast.makeText(LoginActivity.this, "这个号码已经注册过，请重试.",
+							Toast.LENGTH_SHORT).show();
+				} else if("200".equals(s)){
 					// 成功
 					if (!isRegist) {
 						handler.sendEmptyMessage(LOGIN_SUCCESS);
@@ -136,6 +140,11 @@ public class LoginActivity extends BaseActivity implements OnClickListener {
 										.getEditableText().toString()));
 						login(params);
 					}
+				} else {
+					// 失败
+					hideProgess();
+					Toast.makeText(LoginActivity.this, "注册失败，请重试.",
+							Toast.LENGTH_SHORT).show();
 				}
 				
 				break;
@@ -329,23 +338,29 @@ public class LoginActivity extends BaseActivity implements OnClickListener {
 				public void run() {
 					String s = HttpClient.post(
 							HttpClient.url + HttpClient.register, params);
+					String code = null;
 					try {
+						if (null == s || !s.contains("|")) {
+							s = null;
+						}
+						
+						code = s.split("\\|")[0];
 						s = s.split("\\|")[1];
 						JSONObject jsonObject = new JSONObject(s);
-//						String own_info = jsonObject.getString("own_info");
-//						JSONObject own_infojsonObject = new JSONObject(own_info);
 						from_id = jsonObject.getString("id");
 						
 					} catch (Exception e) {
 						e.printStackTrace();
-						
-						handler.sendEmptyMessage(LOGIN_FAIL);
-						return;
+//						handler.sendEmptyMessage(LOGIN_FAIL);
+//						return;
 					}
 					
-					Message msg = new Message();
+					Message msg = handler.obtainMessage();
 					msg.what = HTTP_OVER;
 					msg.obj = s;
+					Bundle bundle = new Bundle();
+					bundle.putString("code", code);
+					msg.setData(bundle);
 					handler.sendMessage(msg);
 				}
 			}).start();

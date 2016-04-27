@@ -9,7 +9,9 @@ import android.util.Log;
 import com.remind.dao.MessageIndexDao;
 import com.remind.dao.dbhelper.DBHelper;
 import com.remind.dao.msg.MessageIndexMsg;
+import com.remind.dao.msg.MessageMsg;
 import com.remind.entity.MessageIndexEntity;
+import com.remind.global.AppConstant;
 
 public class MessageIndexDaoImpl implements MessageIndexDao {
 	private static final String TAG = "MessageIndexDaoImpl";
@@ -32,6 +34,7 @@ public class MessageIndexDaoImpl implements MessageIndexDao {
 		
 		values.put(MessageIndexMsg.NAME, entity.getName());
 		values.put(MessageIndexMsg.IMG_PATH, entity.getImgPath());
+		values.put(MessageIndexMsg.LOGIN_USER, entity.getLoginUser());
 		
 		values.put(MessageIndexMsg.MESSAGE, entity.getMessage());
 		values.put(MessageIndexMsg.ISDELETE, entity.getIsDelete());
@@ -55,7 +58,7 @@ public class MessageIndexDaoImpl implements MessageIndexDao {
 	public Cursor queryAll() {
 		SQLiteDatabase db = mDBHelper.getWritableDatabase();
 		String sql = "select * from " + MessageIndexMsg.TABLENAME + " where "
-				+ MessageIndexMsg.ISDELETE + " = 0 " 
+				+ MessageIndexMsg.ISDELETE + " = 0 "  + " and " + MessageIndexMsg.LOGIN_USER + " = '" + AppConstant.USER_NUM + "' "
 				+ " order by " + MessageIndexMsg.TIME + " DESC";
 		Cursor mCursor = null;
 		mCursor = db.rawQuery(sql, null);
@@ -92,7 +95,7 @@ public class MessageIndexDaoImpl implements MessageIndexDao {
 	public Cursor queryByNum(String num) {
 		SQLiteDatabase db = mDBHelper.getWritableDatabase();
 		String sql = "select * from " + MessageIndexMsg.TABLENAME + " where "
-				+ MessageIndexMsg.NUM + " =  '"  + num + "'; ";
+				+ MessageIndexMsg.NUM + " =  '"  + num + "' " + " and " + MessageIndexMsg.LOGIN_USER + " = '" + AppConstant.USER_NUM + "' ";
 		Cursor mCursor = null;
 		mCursor = db.rawQuery(sql, null);
 		return mCursor;

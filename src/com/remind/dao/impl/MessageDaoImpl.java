@@ -12,6 +12,7 @@ import com.remind.dao.MessageDao;
 import com.remind.dao.dbhelper.DBHelper;
 import com.remind.dao.msg.MessageMsg;
 import com.remind.entity.MessageEntity;
+import com.remind.global.AppConstant;
 import com.remind.util.DataBaseParser;
 
 public class MessageDaoImpl implements MessageDao {
@@ -36,6 +37,7 @@ public class MessageDaoImpl implements MessageDao {
 
 		values.put(MessageMsg.SEND_NAME, entity.getSendName());
 		values.put(MessageMsg.SEND_NUM, entity.getSendNum());
+		values.put(MessageMsg.LOGIN_USER, entity.getLoginUser());
 		values.put(MessageMsg.IS_COMING, entity.getIsComing());
 
 		values.put(MessageMsg.RECIEVE_NAME, entity.getRecieveName());
@@ -68,6 +70,7 @@ public class MessageDaoImpl implements MessageDao {
 		sb.append("update " + MessageMsg.TABLENAME + " set ");
 		sb.append(MessageMsg.SEND_STATE + "	= '" + state + "' ");
 		sb.append(" where " + MessageMsg.ID + " = '" + msgId + "'");
+		
 		String sql = sb.toString();
 
 		Log.d(TAG, sql);
@@ -109,6 +112,7 @@ public class MessageDaoImpl implements MessageDao {
 		sb.append(MessageMsg.SEND_NAME + "	= '" + entity.getSendName() + "',");
 		sb.append(MessageMsg.SEND_NUM + "	= '" + entity.getSendNum() + "',");
 		sb.append(MessageMsg.IS_COMING + "	= '" + entity.getIsComing() + "',");
+		sb.append(MessageMsg.LOGIN_USER + "	= '" + entity.getLoginUser() + "',");
 		sb.append(MessageMsg.IS_FEED + "	= '" + entity.getFeed() + "',");
 
 		sb.append(MessageMsg.RECIEVE_NAME + "	= '" + entity.getRecieveName()
@@ -129,7 +133,7 @@ public class MessageDaoImpl implements MessageDao {
 		SQLiteDatabase db = mDBHelper.getWritableDatabase();
 		String sql = "select * from " + MessageMsg.TABLENAME + " where "
 				+ MessageMsg.ID
-				+ " = '" + id + "' ;";
+				+ " = '" + id + "' and " + MessageMsg.LOGIN_USER + " = '" + AppConstant.USER_NUM + "' ";
 		Cursor mCursor = null;
 		mCursor = db.rawQuery(sql, null);
 		return mCursor;
@@ -140,7 +144,7 @@ public class MessageDaoImpl implements MessageDao {
 		SQLiteDatabase db = mDBHelper.getWritableDatabase();
 		String sql = "select * from " + MessageMsg.TABLENAME + " where "
 				+ MessageMsg.ISDELETE + " = 0 and " + MessageMsg.MSG_INDEX
-				+ " = " + recieveNum + " order by " + MessageMsg.TIME + " asc ";
+				+ " = " + recieveNum + " and " + MessageMsg.LOGIN_USER + " = '" + AppConstant.USER_NUM + "' " +" order by " + MessageMsg.TIME + " asc ";
 		Cursor mCursor = null;
 		mCursor = db.rawQuery(sql, null);
 		return mCursor;
@@ -151,7 +155,7 @@ public class MessageDaoImpl implements MessageDao {
 		SQLiteDatabase db = mDBHelper.getWritableDatabase();
 		String sql = "select * from " + MessageMsg.TABLENAME + " where "
 				 + MessageMsg.OTHER_TYPE_ID
-				+ " = " + id + " order by " + MessageMsg.TIME + " asc ";
+				+ " = " + id  + " and " + MessageMsg.LOGIN_USER + " = '" + AppConstant.USER_NUM + "' "+ " order by " + MessageMsg.TIME + " asc ";
 		Cursor mCursor = null;
 		mCursor = db.rawQuery(sql, null);
 		return mCursor;
@@ -162,7 +166,7 @@ public class MessageDaoImpl implements MessageDao {
 		SQLiteDatabase db = mDBHelper.getWritableDatabase();
         String sql = "select count(*) from " + MessageMsg.TABLENAME + " where "
 				+ MessageMsg.ISDELETE + " = 0 and " + MessageMsg.MSG_INDEX
-				+ " = " + recieveNum;
+				+ " = " + recieveNum + " and " + MessageMsg.LOGIN_USER + " = '" + AppConstant.USER_NUM + "' ";
         Cursor c = db.rawQuery(sql, null);
         c.moveToFirst();
         int length = c.getInt(0);
@@ -177,7 +181,7 @@ public class MessageDaoImpl implements MessageDao {
         SQLiteDatabase db = mDBHelper.getWritableDatabase();
         String sql = "select * from " + MessageMsg.TABLENAME + " where "
 				+ MessageMsg.ISDELETE + " = 0 and " + MessageMsg.MSG_INDEX
-				+ " = " + recieveNum  + " order by " + MessageMsg.ID + " desc limit ?,? ";
+				+ " = " + recieveNum   + " and " + MessageMsg.LOGIN_USER + " = '" + AppConstant.USER_NUM + "' "+ " order by " + MessageMsg.ID + " desc limit ?,? ";
         Cursor mCursor = db.rawQuery(
                 sql,
                 new String[] { String.valueOf(firstResult),

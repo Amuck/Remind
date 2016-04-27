@@ -19,6 +19,7 @@ import com.remind.dao.impl.RemindDaoImpl;
 import com.remind.entity.MessageEntity;
 import com.remind.entity.PeopelEntity;
 import com.remind.entity.RemindEntity;
+import com.remind.global.AppConstant;
 import com.remind.http.HttpClient;
 import com.remind.sevice.BackService;
 import com.remind.util.AppUtil;
@@ -147,7 +148,7 @@ public class MessageReceiver extends BroadcastReceiver {
 					MessageEntity.TYPE_TEXT, 
 					"", "", 
 					entity.getNum(), MessageEntity.TYPE_RECIEVE, 
-					content, feed);
+					content, feed, AppConstant.USER_NUM);
 			// 插入数据库
 			messageDaoImpl.insert(messageEntity);
 			// 通知UI界面
@@ -233,7 +234,7 @@ public class MessageReceiver extends BroadcastReceiver {
 			pn = dataObj.getString("pn");
 			entity = new PeopelEntity(nick, nick,
 					pn, "", "", avatar, PeopelEntity.NORMAL,
-					PeopelEntity.ACCEPT, friend_id);
+					PeopelEntity.ACCEPT, friend_id, AppConstant.USER_NUM);
 			peopelDao.insertPeopel(entity);
 			// 通知UI刷新页面
 			intent.setAction(PEOPLE_ADD_ACTION);
@@ -285,7 +286,7 @@ public class MessageReceiver extends BroadcastReceiver {
 			String userNick = noticeObj.getString("userNick");
 			String noticeString = noticeObj.getString("noticeContent");
 			
-			RemindEntity remindEntity = new RemindEntity("", "",
+			RemindEntity remindEntity = new RemindEntity("", AppConstant.USER_NUM,
 					userNum, userNick,
 					userNick, AppUtil.getNowTime(),
 					"", noticeString, time
@@ -301,7 +302,7 @@ public class MessageReceiver extends BroadcastReceiver {
 					MessageEntity.TYPE_REMIND, 
 					String.valueOf(remindId), "", 
 					userNum, MessageEntity.TYPE_RECIEVE, 
-					remindEntity.getContent(), MessageEntity.FEED_DEFAULT);
+					remindEntity.getContent(), MessageEntity.FEED_DEFAULT, AppConstant.USER_NUM);
 			
 			messageDaoImpl.insert(messageEntity);
 			

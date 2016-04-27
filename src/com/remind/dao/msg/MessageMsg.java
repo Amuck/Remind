@@ -35,6 +35,10 @@ public class MessageMsg {
 	 */
 	public static final String SEND_NAME = "sendName";
 	/**
+	 * 登陆用户
+	 */
+	public static final String LOGIN_USER = "login_user";
+	/**
 	 * 发送人的号码
 	 */
 	public static final String SEND_NUM = "sendNum";

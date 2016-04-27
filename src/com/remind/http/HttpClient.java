@@ -31,6 +31,7 @@ public class HttpClient {
 	public static String url = "http://" + ip + ":" + port;
 	
 	public static String register = "/user/register";
+//	public static String register = "/users";
 	public static String create_notify = "/notice/create";
 	public static String login = "/user/login";
 	public static String friend = "/user/friend";

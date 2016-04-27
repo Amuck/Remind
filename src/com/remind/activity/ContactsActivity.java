@@ -40,6 +40,7 @@ import com.remind.application.RemindApplication;
 import com.remind.dao.PeopelDao;
 import com.remind.dao.impl.PeopelDaoImpl;
 import com.remind.entity.PeopelEntity;
+import com.remind.global.AppConstant;
 import com.remind.http.HttpClient;
 import com.remind.util.AppUtil;
 
@@ -222,7 +223,7 @@ public class ContactsActivity extends ListActivity {
 				mContactsName.get(position), num,
 				format.format(date), format.format(date),
 				mContactsUri.get(position), PeopelEntity.NORMAL,
-				PeopelEntity.VALIDATE, "");
+				PeopelEntity.VALIDATE, "", AppConstant.USER_NUM);
 		peopelDao.insertPeopel(entity);
 	}
 

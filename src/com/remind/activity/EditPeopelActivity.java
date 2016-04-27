@@ -29,6 +29,7 @@ import com.remind.dao.impl.MessageIndexDaoImpl;
 import com.remind.dao.impl.PeopelDaoImpl;
 import com.remind.entity.MessageIndexEntity;
 import com.remind.entity.PeopelEntity;
+import com.remind.global.AppConstant;
 import com.remind.util.AppUtil;
 import com.remind.util.Utils;
 import com.remind.view.RoleDetailImageView;
@@ -300,7 +301,7 @@ public class EditPeopelActivity extends BaseActivity implements OnClickListener 
 			} else {
 				messageIndexEntity = new MessageIndexEntity("", peopelEntity.getNum(), 
 						"", "", AppUtil.getName(peopelEntity), peopelEntity.getImgPath(), 0, MessageIndexEntity.DELETED, 
-						MessageIndexEntity.SEND_SUCCESS);
+						MessageIndexEntity.SEND_SUCCESS, AppConstant.USER_NUM);
 				messageIndexDao.insert(messageIndexEntity);
 			}
 			cursor.close();

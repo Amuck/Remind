@@ -483,7 +483,7 @@ public class AddRemindActivity extends AbActivity implements OnClickListener {
 				+ selectTimeBtn.getText().toString();
 		
 		String remindTimeMili = System.currentTimeMillis() + "";
-		remindEntity = new RemindEntity("", AppUtil.getPhoneNumber(this),
+		remindEntity = new RemindEntity("", AppConstant.USER_NUM,
 				targetPeopel.getNum(), targetPeopel.getName(),
 				targetPeopel.getNickName(), AppUtil.getNowTime(),
 				remindTimeMili, "一起去吃饭吧", remindTime
@@ -502,7 +502,8 @@ public class AddRemindActivity extends AbActivity implements OnClickListener {
 		messageEntity = new MessageEntity("", targetPeopel.getName(), targetPeopel.getNum(), 
 				user.getNickName(), AppConstant.USER_NUM, AppUtil.getNowTime(), 
 				MessageEntity.SENDING, MessageEntity.NORMAL, MessageEntity.TYPE_REMIND, 
-				"", "", targetPeopel.getNum(), MessageEntity.TYPE_SEND, remindEntity.getContent(), MessageEntity.FEED_DEFAULT);
+				"", "", targetPeopel.getNum(), MessageEntity.TYPE_SEND, remindEntity.getContent(), 
+				MessageEntity.FEED_DEFAULT, AppConstant.USER_NUM);
 		
 		if (isForSelf) {
 			// TODO 测试为自己添加任务, addSelf()需要去掉，isForSelf需要重新取值，将当前currentPeopel.getNum()与AppUtil.getPhoneNumber(this)比较，相同则为true
@@ -554,7 +555,8 @@ public class AddRemindActivity extends AbActivity implements OnClickListener {
 		if (cursor != null && cursor.getCount() > 0) {
 			
 		} else {
-			myself = new PeopelEntity("自己", "自己", AppConstant.USER_NUM, "", "", "", PeopelEntity.NORMAL, PeopelEntity.FRIEND, AppConstant.FROM_ID);
+			myself = new PeopelEntity("自己", "自己", AppConstant.USER_NUM, "", "", "", PeopelEntity.NORMAL, 
+					PeopelEntity.FRIEND, AppConstant.FROM_ID, AppConstant.USER_NUM);
 			peopelDao.insertPeopel(myself);
 		}
 		cursor.close();
@@ -579,7 +581,8 @@ public class AddRemindActivity extends AbActivity implements OnClickListener {
 			@Override
 			public void onClick(View v) {
 				isForSelf = true;
-				targetPeopel = new PeopelEntity("自己", "自己", AppUtil.getPhoneNumber(AddRemindActivity.this), "", "", "", PeopelEntity.NORMAL, PeopelEntity.FRIEND, AppConstant.FROM_ID);
+				targetPeopel = new PeopelEntity("自己", "自己", AppUtil.getPhoneNumber(AddRemindActivity.this), 
+						"", "", "", PeopelEntity.NORMAL, PeopelEntity.FRIEND, AppConstant.FROM_ID, AppConstant.USER_NUM);
 //				selectPeopelTxt.setText(getName(currentPeopel));
 				alertDialog.dismiss();
 			}

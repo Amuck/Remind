@@ -78,6 +78,10 @@ public class MessageEntity implements Cloneable, Serializable{
 	 */
 	private String recieveNum;
 	/**
+	 * 登陆的用户
+	 */
+	private String loginUser;
+	/**
 	 * 发送人的名称
 	 */
 	private String sendName;
@@ -156,12 +160,13 @@ public class MessageEntity implements Cloneable, Serializable{
 	 * @param isComing		发送方，用户发送：TYPE_SEND，用户接收：TYPE_RECIEVE
 	 * @param content		消息内容
 	 * @param feed			收到的消息是否反馈成功
+	 * @param loginUser		登陆的用户
 	 */
 	public MessageEntity(String id, String recieveName, String recieveNum,
 			String sendName, String sendNum, String time, String sendState,
 			String isDelete, String msgType, String otherTypeId,
 			String msgPath, String messageIndex, String isComing, String content, 
-			String feed) {
+			String feed, String loginUser) {
 		super();
 		this.id = id;
 		this.recieveName = recieveName;
@@ -178,6 +183,7 @@ public class MessageEntity implements Cloneable, Serializable{
 		this.isComing = isComing;
 		this.content = content;
 		this.feed = feed;
+		this.loginUser = loginUser;
 	}
 
 	public String getId() {
@@ -186,6 +192,14 @@ public class MessageEntity implements Cloneable, Serializable{
 
 	public void setId(String id) {
 		this.id = id;
+	}
+
+	public String getLoginUser() {
+		return loginUser;
+	}
+
+	public void setLoginUser(String loginUser) {
+		this.loginUser = loginUser;
 	}
 
 	public String getMessageIndex() {

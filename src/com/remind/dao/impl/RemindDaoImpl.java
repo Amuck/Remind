@@ -13,6 +13,7 @@ import com.remind.dao.dbhelper.DBHelper;
 import com.remind.dao.msg.PeopelMsg;
 import com.remind.dao.msg.RemindMsg;
 import com.remind.entity.RemindEntity;
+import com.remind.global.AppConstant;
 
 public class RemindDaoImpl implements RemindDao {
 	private static final String TAG = "RemindDaoImpl";
@@ -170,6 +171,8 @@ public class RemindDaoImpl implements RemindDao {
 		Cursor mCursor = null;
 		StringBuffer sb = new StringBuffer();
 		sb.append("select * from " + RemindMsg.TABLENAME + " where " + RemindMsg.IS_DELETE + " = 0 ");
+		sb.append( " and " + RemindMsg.OWNER_NUM + " = '" + AppConstant.USER_NUM + "' ");
+		
 		if (null != entity.getId() && entity.getId().length() > 0)
 			sb.append(" and " + RemindMsg.ID + "='" + entity.getId() + "'");
 //		if (entity.getRemindState() >= 0 && entity.getRemindState() <= 3)
@@ -188,6 +191,7 @@ public class RemindDaoImpl implements RemindDao {
 		Cursor mCursor = null;
 		StringBuffer sb = new StringBuffer();
 		sb.append("select * from " + RemindMsg.TABLENAME + " where 1 = 1 ");
+		sb.append( " and " + RemindMsg.OWNER_NUM + " = '" + AppConstant.USER_NUM + "' ");
 		if (null != entity.getId() && entity.getId().length() > 0)
 			sb.append(" and " + RemindMsg.ID + "='" + entity.getId() + "'");
 //		if (entity.getRemindState() >= 0 && entity.getRemindState() <= 3)
@@ -205,7 +209,8 @@ public class RemindDaoImpl implements RemindDao {
 	public Cursor queryRemind() {
 		SQLiteDatabase db = mDBHelper.getWritableDatabase();
 		String sql = "select * from " + RemindMsg.TABLENAME + " where "
-				+ RemindMsg.IS_DELETE + " = 0 order by " + RemindMsg.REMIND_TIME_MILI;
+				+ RemindMsg.IS_DELETE + " = 0 " +  " and " + RemindMsg.OWNER_NUM + " = '"
+				+ AppConstant.USER_NUM + "' " + " order by " + RemindMsg.REMIND_TIME_MILI;
 		Cursor mCursor = null;
 		mCursor = db.rawQuery(sql, null);
 		return mCursor;
@@ -247,6 +252,7 @@ public class RemindDaoImpl implements RemindDao {
 		sb.append(" ( select " + RemindMsg.TABLENAME + "." + RemindMsg.ID + " from " + RemindMsg.TABLENAME);
 		sb.append(" where " + RemindMsg.REMIND_TIME + " like '" + today + "%') ");
 		sb.append(" and " + RemindMsg.IS_DELETE + " =  0 ");
+		sb.append( " and " + RemindMsg.OWNER_NUM + " = '" + AppConstant.USER_NUM + "' ");
 		sb.append(" order by  " + RemindMsg.REMIND_TIME_MILI + " desc ) b ");
 		sb.append(" limit " + startPosition + "," + selectedCount);
 		sb.append(";");
@@ -271,6 +277,7 @@ public class RemindDaoImpl implements RemindDao {
 		sb.append(" and  ");
 		sb.append(RemindMsg.REMIND_STATE);
 		sb.append("  =  0  ");
+		sb.append( " and " + RemindMsg.OWNER_NUM + " = '" + AppConstant.USER_NUM + "' ");
 		sb.append(";");
 		String sql = sb.toString();
 		Cursor mCursor = db.rawQuery(sql, null);
@@ -295,6 +302,7 @@ public class RemindDaoImpl implements RemindDao {
 		sb.append(" and  ");
 		sb.append(RemindMsg.REMIND_STATE);
 		sb.append("  =  1  ");
+		sb.append( " and " + RemindMsg.OWNER_NUM + " = '" + AppConstant.USER_NUM + "' ");
 		sb.append(" order by  " + RemindMsg.ADD_TIME + " desc ");
 		sb.append(";");
 		String sql = sb.toString();
@@ -317,6 +325,7 @@ public class RemindDaoImpl implements RemindDao {
 		sb.append(" and  ");
 		sb.append(RemindMsg.REMIND_STATE);
 		sb.append("  =  1  ");
+		sb.append( " and " + RemindMsg.OWNER_NUM + " = '" + AppConstant.USER_NUM + "' ");
 		sb.append(" order by  " + RemindMsg.ADD_TIME + " desc ");
 		sb.append(" limit " + startPosition + "," + selectedCount);
 		sb.append(";");
@@ -337,6 +346,7 @@ public class RemindDaoImpl implements RemindDao {
 		sb.append(" and  ");
 		sb.append(RemindMsg.REMIND_STATE);
 		sb.append("  =  1  ");
+		sb.append( " and " + RemindMsg.OWNER_NUM + " = '" + AppConstant.USER_NUM + "' ");
 		sb.append(" order by  " + RemindMsg.ADD_TIME + " desc ");
 		sb.append(";");
 		String sql = sb.toString();
@@ -359,6 +369,7 @@ public class RemindDaoImpl implements RemindDao {
 		sb.append(" and  ");
 		sb.append(RemindMsg.REMIND_STATE);
 		sb.append("  =  0  ");
+		sb.append( " and " + RemindMsg.OWNER_NUM + " = '" + AppConstant.USER_NUM + "' ");
 		sb.append(" and  ");
 		sb.append(RemindMsg.REMIND_TIME);
 		sb.append(" like '" + today + "%' ");
@@ -384,6 +395,7 @@ public class RemindDaoImpl implements RemindDao {
 		sb.append(" and  ");
 		sb.append(RemindMsg.REMIND_STATE);
 		sb.append("  =  0  ");
+		sb.append( " and " + RemindMsg.OWNER_NUM + " = '" + AppConstant.USER_NUM + "' ");
 		sb.append(" and  ");
 		sb.append(RemindMsg.REMIND_TIME);
 		sb.append(" like '" + today + "%' ");
@@ -407,6 +419,7 @@ public class RemindDaoImpl implements RemindDao {
 		sb.append(" and  ");
 		sb.append(RemindMsg.REMIND_STATE);
 		sb.append("  =  0  ");
+		sb.append( " and " + RemindMsg.OWNER_NUM + " = '" + AppConstant.USER_NUM + "' ");
 		sb.append(" and  ");
 		sb.append(RemindMsg.REMIND_TIME);
 		sb.append(" like '" + today + "%' ");
@@ -432,6 +445,7 @@ public class RemindDaoImpl implements RemindDao {
 		sb.append(" and  ");
 		sb.append(RemindMsg.REMIND_STATE);
 		sb.append("  =  0  ");
+		sb.append( " and " + RemindMsg.OWNER_NUM + " = '" + AppConstant.USER_NUM + "' ");
 		sb.append(" and  ");
 		sb.append(RemindMsg.REMIND_TIME);
 		sb.append(" not like '" + today + "%' ");
@@ -457,6 +471,7 @@ public class RemindDaoImpl implements RemindDao {
 		sb.append(" and  ");
 		sb.append(RemindMsg.REMIND_STATE);
 		sb.append("  =  0  ");
+		sb.append( " and " + RemindMsg.OWNER_NUM + " = '" + AppConstant.USER_NUM + "' ");
 		sb.append(" and  ");
 		sb.append(RemindMsg.REMIND_TIME);
 		sb.append(" not like '" + today + "%' ");
@@ -480,6 +495,7 @@ public class RemindDaoImpl implements RemindDao {
 		sb.append(" and  ");
 		sb.append(RemindMsg.REMIND_STATE);
 		sb.append("  =  0  ");
+		sb.append( " and " + RemindMsg.OWNER_NUM + " = '" + AppConstant.USER_NUM + "' ");
 		sb.append(" and  ");
 		sb.append(RemindMsg.REMIND_TIME);
 		sb.append(" not like '" + today + "%' ");
@@ -507,7 +523,8 @@ public class RemindDaoImpl implements RemindDao {
 	public Cursor queryRemindByNoticeId(String noticeId) {
 		SQLiteDatabase db = mDBHelper.getWritableDatabase();
 		String sql = "select * from " + RemindMsg.TABLENAME + " where "
-				+ RemindMsg.IS_DELETE + " = 0 and " + RemindMsg.NOTICE_ID + " = '" + noticeId + "'";
+				+ RemindMsg.IS_DELETE + " = 0 and " + RemindMsg.NOTICE_ID + " = '" + noticeId + "'"
+				+ " and " + RemindMsg.OWNER_NUM + " = '" + AppConstant.USER_NUM + "' ";
 		Cursor mCursor = null;
 		mCursor = db.rawQuery(sql, null);
 		return mCursor;

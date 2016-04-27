@@ -302,7 +302,8 @@ public class RemindDetailActivity extends AbActivity implements OnClickListener 
 			@Override
 			public void onClick(View v) {
 				isForSelf = true;
-				currentPeopel = new PeopelEntity("自己", "自己", getPhoneNumber(), "", "", "", PeopelEntity.NORMAL, PeopelEntity.FRIEND, AppConstant.FROM_ID);
+				currentPeopel = new PeopelEntity("自己", "自己", getPhoneNumber(), "", "", "", PeopelEntity.NORMAL, 
+						PeopelEntity.FRIEND, AppConstant.FROM_ID, AppConstant.USER_NUM);
 				selectPeopelTxt.setText(getName(currentPeopel));
 				alertDialog.dismiss();
 			}

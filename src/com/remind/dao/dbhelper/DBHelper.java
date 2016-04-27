@@ -17,7 +17,7 @@ public class DBHelper extends SQLiteOpenHelper {
 	/**
 	 * 数据库版本号
 	 */
-	public static final int DB_FILE_VERSION = 2;
+	public static final int DB_FILE_VERSION = 3;
 
 	private static final String TAG = "DBHelper";
 
@@ -56,6 +56,8 @@ public class DBHelper extends SQLiteOpenHelper {
 		peopelSql.append(PeopelMsg.NICKNAME);
 		peopelSql.append(" text,");
 		peopelSql.append(PeopelMsg.NUM);
+		peopelSql.append(" text,");
+		peopelSql.append(PeopelMsg.LOGIN_USER);
 		peopelSql.append(" text,");
 		peopelSql.append(PeopelMsg.IMGPATH);
 		peopelSql.append(" text,");
@@ -162,6 +164,8 @@ public class DBHelper extends SQLiteOpenHelper {
 		messageIndexSql.append(" INTEGER PRIMARY KEY AUTOINCREMENT,");// 长度为13的主键
 		messageIndexSql.append(MessageIndexMsg.NUM);
 		messageIndexSql.append(" text,");
+		messageIndexSql.append(MessageIndexMsg.LOGIN_USER);
+		messageIndexSql.append(" text,");
 		messageIndexSql.append(MessageIndexMsg.MESSAGE);
 		messageIndexSql.append(" text,");
 		messageIndexSql.append(MessageIndexMsg.TIME);
@@ -202,6 +206,8 @@ public class DBHelper extends SQLiteOpenHelper {
 		messageSql.append(MessageMsg.RECIEVE_NAME);
 		messageSql.append(" text,");
 		messageSql.append(MessageMsg.RECIEVE_NUM);
+		messageSql.append(" text,");
+		messageSql.append(MessageMsg.LOGIN_USER);
 		messageSql.append(" text,");
 		messageSql.append(MessageMsg.TIME);
 		messageSql.append(" text,");

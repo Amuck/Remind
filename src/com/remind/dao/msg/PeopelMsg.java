@@ -24,6 +24,10 @@ public class PeopelMsg {
 	 */
 	public static final String NICKNAME = "nickName";
 	/**
+	 * 登陆用户
+	 */
+	public static final String LOGIN_USER = "login_user";
+	/**
 	 * 联系人手机号
 	 */
 	public static final String NUM = "num";

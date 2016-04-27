@@ -34,9 +34,10 @@ public class DataBaseParser {
 			String isDelete = mCursor.getString(mCursor.getColumnIndex(PeopelMsg.ISDELETE));
 			String friendId = mCursor.getString(mCursor.getColumnIndex(PeopelMsg.FRIEND_ID));
 			int status = mCursor.getInt(mCursor.getColumnIndex(PeopelMsg.STATUS));
+			String loginUser = mCursor.getString(mCursor.getColumnIndex(PeopelMsg.LOGIN_USER));
 			
 			PeopelEntity entity = new PeopelEntity(name, nickName, num, addTime, 
-					updateTime, imgPath, isDelete, status, friendId);
+					updateTime, imgPath, isDelete, status, friendId, loginUser);
 			lists.add(entity);
 		}
 		return lists;
@@ -103,8 +104,10 @@ public class DataBaseParser {
 			String sendState = mCursor.getString(mCursor.getColumnIndex(MessageIndexMsg.SEND_STATE));
 			String name = mCursor.getString(mCursor.getColumnIndex(MessageIndexMsg.NAME));
 			String imgPath = mCursor.getString(mCursor.getColumnIndex(MessageIndexMsg.IMG_PATH));
+			String loginUser = mCursor.getString(mCursor.getColumnIndex(MessageIndexMsg.LOGIN_USER));
 			
-			MessageIndexEntity entity = new MessageIndexEntity(id, num, message, time, name, imgPath, unReadCount, isDelete, sendState);
+			MessageIndexEntity entity = new MessageIndexEntity(id, num, message, time, name, imgPath, 
+					unReadCount, isDelete, sendState, loginUser);
 			lists.add(entity);
 		}
 		return lists;
@@ -134,8 +137,11 @@ public class DataBaseParser {
 			String isComing = mCursor.getString(mCursor.getColumnIndex(MessageMsg.IS_COMING));
 			String content = mCursor.getString(mCursor.getColumnIndex(MessageMsg.CONTENT));
 			String feed = mCursor.getString(mCursor.getColumnIndex(MessageMsg.IS_FEED));
+			String loginUser = mCursor.getString(mCursor.getColumnIndex(MessageMsg.LOGIN_USER));
 			
-			MessageEntity entity = new MessageEntity(id, recieveName, recieveNum, sendName, sendNum, time, sendState, isDelete, msgType, otherTypeId, msgPath, msgIndex, isComing, content, feed);
+			MessageEntity entity = new MessageEntity(id, recieveName, recieveNum, sendName, sendNum, 
+					time, sendState, isDelete, msgType, otherTypeId, msgPath, msgIndex, isComing, content, 
+					feed, loginUser);
 			lists.add(entity);
 		}
 		return lists;

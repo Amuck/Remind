@@ -10,8 +10,10 @@ import android.util.Log;
 
 import com.remind.dao.PeopelDao;
 import com.remind.dao.dbhelper.DBHelper;
+import com.remind.dao.msg.MessageIndexMsg;
 import com.remind.dao.msg.PeopelMsg;
 import com.remind.entity.PeopelEntity;
+import com.remind.global.AppConstant;
 
 public class PeopelDaoImpl implements PeopelDao {
 	private static final String TAG = "PeopelDaoImpl";
@@ -33,6 +35,7 @@ public class PeopelDaoImpl implements PeopelDao {
 		values.put(PeopelMsg.ADDTIME, entity.getAddTime());
 		values.put(PeopelMsg.NICKNAME, entity.getNickName());
 		values.put(PeopelMsg.NUM, entity.getNum());
+		values.put(PeopelMsg.LOGIN_USER, entity.getLoginUser());
 		values.put(PeopelMsg.UPDATETIME, entity.getUpdateTime());
 		values.put(PeopelMsg.FRIEND_ID, entity.getFriendId());
 		values.put(PeopelMsg.ISDELETE, entity.getIsDelete());
@@ -55,6 +58,7 @@ public class PeopelDaoImpl implements PeopelDao {
 			values.put(PeopelMsg.NAME, entity.getName());
 			values.put(PeopelMsg.ADDTIME, entity.getAddTime());
 			values.put(PeopelMsg.NICKNAME, entity.getNickName());
+			values.put(PeopelMsg.LOGIN_USER, entity.getLoginUser());
 			values.put(PeopelMsg.NUM, entity.getNum());
 			values.put(PeopelMsg.UPDATETIME, entity.getUpdateTime());
 			values.put(PeopelMsg.FRIEND_ID, entity.getFriendId());
@@ -70,7 +74,7 @@ public class PeopelDaoImpl implements PeopelDao {
 	public void deletePeopelByNum(String num) {
 		String sql = "update " + PeopelMsg.TABLENAME + " set "
 				+ PeopelMsg.ISDELETE + "='" + "1" + "'" + " where "
-				+ PeopelMsg.NUM + "='" + num + "'";
+				+ PeopelMsg.NUM + "='" + num + "'"  + " and " + PeopelMsg.LOGIN_USER + " = '" + AppConstant.USER_NUM + "' ";
 		SQLiteDatabase db = mDBHelper.getWritableDatabase();
 		Log.d(TAG, sql);
 		db.execSQL(sql);
@@ -89,11 +93,13 @@ public class PeopelDaoImpl implements PeopelDao {
 		sb.append(PeopelMsg.ADDTIME + "	= '" + entity.getAddTime() + "',");
 		sb.append(PeopelMsg.NICKNAME + "	= '" + entity.getNickName() + "',");
 		sb.append(PeopelMsg.IMGPATH + "	= '" + entity.getImgPath() + "',");
+		sb.append(PeopelMsg.LOGIN_USER + "	= '" + entity.getLoginUser() + "',");
 		sb.append(PeopelMsg.FRIEND_ID + "	= '" + entity.getFriendId() + "',");
 		sb.append(PeopelMsg.UPDATETIME + "	= '" + entity.getUpdateTime() + "',");
 		sb.append(PeopelMsg.ISDELETE + "	= '" + entity.getIsDelete() + "',");
 		sb.append(PeopelMsg.STATUS + "	= '" + entity.getStatus() + "' ");
 		sb.append(" where " + PeopelMsg.NUM + " = '" + entity.getNum() + "'");
+		sb.append(" and " + PeopelMsg.LOGIN_USER + " = '" + AppConstant.USER_NUM + "' ");
 		String sql = sb.toString();
 
 		Log.d(TAG, sql);
@@ -113,12 +119,14 @@ public class PeopelDaoImpl implements PeopelDao {
 		sb.append(PeopelMsg.NUM + "	= '" + entity.getNum() + "',");
 		sb.append(PeopelMsg.ADDTIME + "	= '" + entity.getAddTime() + "',");
 		sb.append(PeopelMsg.NICKNAME + "	= '" + entity.getNickName() + "',");
+		sb.append(PeopelMsg.LOGIN_USER + "	= '" + entity.getLoginUser() + "',");
 		sb.append(PeopelMsg.IMGPATH + "	= '" + entity.getImgPath() + "',");
 		sb.append(PeopelMsg.FRIEND_ID + "	= '" + entity.getFriendId() + "',");
 		sb.append(PeopelMsg.UPDATETIME + "	= '" + entity.getUpdateTime() + "',");
 		sb.append(PeopelMsg.ISDELETE + "	= '" + entity.getIsDelete() + "',");
 		sb.append(PeopelMsg.STATUS + "	= '" + entity.getStatus() + "' ");
-		sb.append(" where " + PeopelMsg.ID + " = '" + 1 + "'");
+		sb.append(" where " + PeopelMsg.NUM + " = '" + AppConstant.USER_NUM + "'");
+		sb.append(" and " + PeopelMsg.LOGIN_USER + " = '" + AppConstant.USER_NUM + "' ");
 		String sql = sb.toString();
 		
 		Log.d(TAG, sql);
@@ -129,7 +137,7 @@ public class PeopelDaoImpl implements PeopelDao {
 	public Cursor queryPeopel() {
 		SQLiteDatabase db = mDBHelper.getWritableDatabase();
 		String sql = "select * from " + PeopelMsg.TABLENAME + " where "
-				+ PeopelMsg.ISDELETE + " = 0 " ;
+				+ PeopelMsg.ISDELETE + " = 0 " + " and " + PeopelMsg.LOGIN_USER + " = '" + AppConstant.USER_NUM + "' ";
 //				+ " order by " + PeopelMsg.UPDATETIME + " DESC";
 		Cursor mCursor = null;
 		mCursor = db.rawQuery(sql, null);
@@ -140,7 +148,8 @@ public class PeopelDaoImpl implements PeopelDao {
 	public Cursor queryPeopelByNum(String num) {
 		SQLiteDatabase db = mDBHelper.getWritableDatabase();
 		String sql = "select * from " + PeopelMsg.TABLENAME + " where "
-				+ PeopelMsg.ISDELETE + " = 0 and " + PeopelMsg.NUM + " = '" + num + "'";
+				+ PeopelMsg.ISDELETE + " = 0 and " + PeopelMsg.NUM + " = '" + num + "'"
+				 + " and " + PeopelMsg.LOGIN_USER + " = '" + AppConstant.USER_NUM + "' ";
 		Cursor mCursor = null;
 		mCursor = db.rawQuery(sql, null);
 		return mCursor;
@@ -150,7 +159,8 @@ public class PeopelDaoImpl implements PeopelDao {
 	public Cursor queryPeopelByFriendId(String friendId) {
 		SQLiteDatabase db = mDBHelper.getWritableDatabase();
 		String sql = "select * from " + PeopelMsg.TABLENAME + " where "
-				+ PeopelMsg.ISDELETE + " = 0 and " + PeopelMsg.FRIEND_ID + " = '" + friendId + "'";
+				+ PeopelMsg.ISDELETE + " = 0 and " + PeopelMsg.FRIEND_ID + " = '" + friendId + "'"
+				 + " and " + PeopelMsg.LOGIN_USER + " = '" + AppConstant.USER_NUM + "' ";
 		Cursor mCursor = null;
 		mCursor = db.rawQuery(sql, null);
 		return mCursor;
@@ -160,7 +170,8 @@ public class PeopelDaoImpl implements PeopelDao {
 	public Cursor queryOwner() {
 		SQLiteDatabase db = mDBHelper.getWritableDatabase();
 		String sql = "select * from " + PeopelMsg.TABLENAME + " where "
-				+ PeopelMsg.ISDELETE + " = 0 order by " + PeopelMsg.ID + ";";
+				+ PeopelMsg.ISDELETE + " = 0 "  + " and " + PeopelMsg.LOGIN_USER + " = '" 
+				+ AppConstant.USER_NUM + "' "+ " order by " + PeopelMsg.ID + ";";
 		Cursor mCursor = null;
 		mCursor = db.rawQuery(sql, null);
 		return mCursor;
@@ -171,7 +182,8 @@ public class PeopelDaoImpl implements PeopelDao {
 		String imgPath = "";
 		SQLiteDatabase db = mDBHelper.getWritableDatabase();
 		String sql = "select " + PeopelMsg.IMGPATH +" from " + PeopelMsg.TABLENAME + " where "
-				+ PeopelMsg.ISDELETE + " = 0 and " + PeopelMsg.NUM + " = '" + num + "'";
+				+ PeopelMsg.ISDELETE + " = 0 and " + PeopelMsg.NUM + " = '" + num + "'"
+				 + " and " + PeopelMsg.LOGIN_USER + " = '" + AppConstant.USER_NUM + "' ";
 		Cursor mCursor = null;
 		mCursor = db.rawQuery(sql, null);
 		if (mCursor.getCount() > 0) {
@@ -186,7 +198,8 @@ public class PeopelDaoImpl implements PeopelDao {
 	public void realDeleteByNum(String num) {
 		SQLiteDatabase db = mDBHelper.getWritableDatabase();
 		String sql = "delete from " + PeopelMsg.TABLENAME + " where "
-				+ PeopelMsg.NUM + " = '" + num + "'; ";
+				+ PeopelMsg.NUM + " = '" + num 
+				+ " and " + PeopelMsg.LOGIN_USER + " = '" + AppConstant.USER_NUM + "' "+ "' ; ";
 		db.execSQL(sql);
 	}
 

@@ -57,6 +57,10 @@ public class MessageIndexEntity implements Serializable {
 	 */
 	private String time;
 	/**
+	 * 登陆的用户
+	 */
+	private String loginUser;
+	/**
 	 * 名字
 	 */
 	private String name;
@@ -105,7 +109,8 @@ public class MessageIndexEntity implements Serializable {
 	 * @param imgPath		头像路径
 	 */
 	public MessageIndexEntity(String id, String num, String message,
-			String time, String name, String imgPath, int unReadCount, String isDelete, String sendState) {
+			String time, String name, String imgPath, int unReadCount, 
+			String isDelete, String sendState, String loginUser) {
 		super();
 		this.id = id;
 		this.num = num;
@@ -116,6 +121,7 @@ public class MessageIndexEntity implements Serializable {
 		this.sendState = sendState;
 		this.name = name;
 		this.imgPath = imgPath;
+		this.loginUser = loginUser;
 	}
 
 	public String getId() {
@@ -124,6 +130,14 @@ public class MessageIndexEntity implements Serializable {
 
 	public void setId(String id) {
 		this.id = id;
+	}
+
+	public String getLoginUser() {
+		return loginUser;
+	}
+
+	public void setLoginUser(String loginUser) {
+		this.loginUser = loginUser;
 	}
 
 	public String getNum() {

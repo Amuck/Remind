@@ -58,6 +58,10 @@ public class PeopelEntity implements Serializable{
 	 */
 	private String updateTime;
 	/**
+	 * 登陆用户
+	 */
+	private String loginUser;
+	/**
 	 * 头像路径
 	 */
 	private String imgPath;
@@ -115,10 +119,11 @@ public class PeopelEntity implements Serializable{
 	 *
 	 * @param friendId		用户id
 	 * 
+	 * @param loginUser		登陆用户
 	 */
 	public PeopelEntity(String name, String nickName, String num,
 			String addTime, String updateTime, String imgPath, 
-			String isDelete, int status, String friendId) {
+			String isDelete, int status, String friendId, String loginUser) {
 		super();
 		this.name = name;
 		this.nickName = nickName;
@@ -129,6 +134,7 @@ public class PeopelEntity implements Serializable{
 		this.isDelete = isDelete;
 		this.status = status;
 		this.friendId = friendId;
+		this.loginUser = loginUser;
 	}
 
 	public String getName() {
@@ -137,6 +143,14 @@ public class PeopelEntity implements Serializable{
 
 	public void setName(String name) {
 		this.name = name;
+	}
+
+	public String getLoginUser() {
+		return loginUser;
+	}
+
+	public void setLoginUser(String loginUser) {
+		this.loginUser = loginUser;
 	}
 
 	public String getNickName() {

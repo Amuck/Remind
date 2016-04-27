@@ -29,6 +29,10 @@ public class RemindMsg {
 	 */
 	public static final String TARGET_NAME = "targetName";
 	/**
+	 * 登陆用户
+	 */
+	public static final String LOGIN_USER = "login_user";
+	/**
 	 * 联系人备注名称
 	 */
 	public static final String NICK_NAME = "nickName";

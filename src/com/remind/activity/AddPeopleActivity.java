@@ -18,6 +18,7 @@ import com.help.remind.R;
 import com.remind.dao.PeopelDao;
 import com.remind.dao.impl.PeopelDaoImpl;
 import com.remind.entity.PeopelEntity;
+import com.remind.global.AppConstant;
 import com.remind.http.HttpClient;
 import com.remind.util.AppUtil;
 import com.remind.view.ClearEditText;
@@ -187,7 +188,7 @@ public class AddPeopleActivity extends AbActivity implements OnClickListener {
 				"", friend,
 				format.format(date), format.format(date),
 				"", PeopelEntity.NORMAL,
-				PeopelEntity.VALIDATE,"");
+				PeopelEntity.VALIDATE,"",AppConstant.USER_NUM);
 		peopelDao.insertPeopel(entity);
 	}
 

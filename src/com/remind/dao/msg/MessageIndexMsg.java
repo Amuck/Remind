@@ -26,6 +26,10 @@ public class MessageIndexMsg {
 	 */
 	public static final String NAME = "name";
 	/**
+	 * 登陆用户
+	 */
+	public static final String LOGIN_USER = "login_user";
+	/**
 	 * 联系人头像路径
 	 */
 	public static final String IMG_PATH = "imgPath";
