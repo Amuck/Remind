@@ -92,12 +92,12 @@ public class ChatAdapter extends BaseAdapter {
 					} else {
 						// 同意
 						state = RemindEntity.ACCEPT;
+						// 启动闹钟
+						AppUtil.setAlarm(context, entity.getRemindTime(), Integer.valueOf(entity.getId()));
 					}
 					entity.setRemindState(state);
 					remindDao.updateRemind(entity);
 					notifyDataSetChanged();
-					// 启动闹钟
-					AppUtil.setAlarm(context, entity.getRemindTime(), Integer.valueOf(entity.getId()));
 				}
 				
 

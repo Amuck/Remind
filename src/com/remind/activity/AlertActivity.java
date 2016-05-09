@@ -178,6 +178,17 @@ public class AlertActivity extends BaseActivity implements OnClickListener{
 		// 获取重复类型
 		String repeatType = remindEntity.getRepeatType();
 		// 计算下一次响铃时间
+		if (RemindEntity.REPEAT_NO.equals(repeatType)) {
+//			remindDao.
+		} else if (RemindEntity.REPEAT_DAY.equals(repeatType)) {
+
+		} else if (RemindEntity.REPEAT_WEEK.equals(repeatType)) {
+
+		} else if (RemindEntity.REPEAT_MONTH.equals(repeatType)) {
+
+		} else if (RemindEntity.REPEAT_YEAR.equals(repeatType)) {
+
+		}
 		// 设置闹铃
 	}
 

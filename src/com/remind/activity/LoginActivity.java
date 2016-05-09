@@ -405,6 +405,7 @@ public class LoginActivity extends BaseActivity implements OnClickListener {
 						peopelEntity.setName(nick);
 						peopelEntity.setNickName(nick);
 						peopelEntity.setImgPath(avatar);
+						peopelEntity.setLoginUser(num);
 						peopelEntity.setStatus(PeopelEntity.FRIEND);
 
 						Cursor cursor = peopelDao.queryPeopel();

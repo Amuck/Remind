@@ -309,6 +309,7 @@ public class MessageReceiver extends BroadcastReceiver {
 			// 通知UI界面
 			intent.setAction(GET_MESSAGE_ACTION);
 			intent.putExtra("messageEntity", messageEntity);
+			intent.putExtra("remindEntity", remindEntity);
 			context.sendBroadcast(intent);
 			break;
 		case 4:

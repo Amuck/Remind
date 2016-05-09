@@ -241,6 +241,12 @@ public class AddRemindActivity extends AbActivity implements OnClickListener {
 				Intent intent = new Intent(AddRemindActivity.this, ChatActivity.class);
 				remindEntity.setId(remindId + "");
 				intent.putExtra("remind", remindEntity);
+				
+				if (isForSelf) {
+					// TODO 测试为自己添加任务, addSelf()需要去掉，isForSelf需要重新取值，将当前currentPeopel.getNum()与AppUtil.getPhoneNumber(this)比较，相同则为true
+					AppUtil.setAlarm(AddRemindActivity.this, remindEntity.getRemindTime(), (int) remindId);
+				}
+				
 				setResult(RESULT_OK, intent);
 				
 				removeProgressDialog();
@@ -507,7 +513,7 @@ public class AddRemindActivity extends AbActivity implements OnClickListener {
 		
 		if (isForSelf) {
 			// TODO 测试为自己添加任务, addSelf()需要去掉，isForSelf需要重新取值，将当前currentPeopel.getNum()与AppUtil.getPhoneNumber(this)比较，相同则为true
-			AppUtil.setAlarm(this, remindEntity.getRemindTime(), (int) remindId);
+//			AppUtil.setAlarm(this, remindEntity.getRemindTime(), (int) remindId);
 			
 			handler.sendEmptyMessage(NOTIFY_SUCCESS);
 		} else if(TextUtils.isEmpty(targetPeopel.getFriendId())) {
@@ -624,7 +630,7 @@ public class AddRemindActivity extends AbActivity implements OnClickListener {
 			@Override
 			public void onPeopelSelected(int position, PeopelEntity entity) {
 				// 设置选中联系人操作
-				if (position == 0) {
+				if (entity.getNum().equals(AppConstant.USER_NUM)) {
 					isForSelf = true;
 				} else {
 					isForSelf = false;

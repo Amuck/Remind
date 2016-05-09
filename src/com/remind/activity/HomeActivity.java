@@ -20,6 +20,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.IBinder;
+import android.os.Message;
 import android.os.RemoteException;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.DisplayMetrics;
@@ -39,6 +40,7 @@ import com.baidu.location.LocationClientOption;
 import com.baidu.location.LocationClientOption.LocationMode;
 import com.ecloud.pulltozoomview.PullToZoomListViewEx;
 import com.help.remind.R;
+import com.remind.activity.ChatActivity.MessageBackReciver;
 import com.remind.adapter.RemindAdapter;
 import com.remind.application.RemindApplication;
 import com.remind.asyn.ImageLoader;
@@ -46,10 +48,12 @@ import com.remind.dao.PeopelDao;
 import com.remind.dao.RemindDao;
 import com.remind.dao.impl.PeopelDaoImpl;
 import com.remind.dao.impl.RemindDaoImpl;
+import com.remind.entity.MessageEntity;
 import com.remind.entity.PeopelEntity;
 import com.remind.entity.RemindEntity;
 import com.remind.global.AppConstant;
 import com.remind.http.HttpClient;
+import com.remind.receiver.MessageReceiver;
 import com.remind.sevice.BackService;
 import com.remind.sevice.IBackService;
 import com.remind.sp.WeatherSp;
@@ -134,6 +138,9 @@ public class HomeActivity extends BaseActivity implements OnClickListener {
 	
 	private IBackService iBackService;
 	
+	private RemindBackReciver mReciver;
+	private IntentFilter mIntentFilter;
+	
 	private ServiceConnection conn = new ServiceConnection() {
 
 		@Override
@@ -201,6 +208,10 @@ public class HomeActivity extends BaseActivity implements OnClickListener {
 		remindDao = new RemindDaoImpl(this);
 		peopelDao = new PeopelDaoImpl(this);
 		today = dateFormat.format(new Date());
+		
+		mReciver = new RemindBackReciver();
+		mIntentFilter = new IntentFilter();
+		mIntentFilter.addAction(MessageReceiver.GET_MESSAGE_ACTION);
 		
 		mServiceIntent = new Intent(this, BackService.class);
 
@@ -362,6 +373,8 @@ public class HomeActivity extends BaseActivity implements OnClickListener {
 	@Override
 	protected void onStart() {
 		super.onStart();
+		registerReceiver(mReciver, mIntentFilter);
+		
 		if (RemindApplication.iBackService == null) {
 			ComponentName cn = startService(mServiceIntent);
 			if (cn != null) {
@@ -380,12 +393,14 @@ public class HomeActivity extends BaseActivity implements OnClickListener {
 
 	@Override
 	protected void onStop() {
-		super.onStop();
+		unregisterReceiver(mReciver);
+		
 		if (isNeedUnbind) {
 			unbindService(conn);
 		}
 		mLocationClient.stop();
 		((RemindApplication) getApplication()).cancelRequest();
+		super.onStop();
 	}
 
 	@Override
@@ -597,5 +612,22 @@ public class HomeActivity extends BaseActivity implements OnClickListener {
 		}
 		
 		datas.addAll(temp);
+	}
+	
+	class RemindBackReciver extends BroadcastReceiver {
+
+		public RemindBackReciver() {
+		}
+
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			String action = intent.getAction();
+			if (action.equals(MessageReceiver.GET_MESSAGE_ACTION)) {
+				// 收到好友发送的消息/提醒
+				RemindEntity remindEntity = (RemindEntity) intent.getSerializableExtra("remindEntity");
+				datas.add(remindEntity);
+				remindAdapter.notifyDataSetChanged();
+			}
+		};
 	}
 }
