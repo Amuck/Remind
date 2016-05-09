@@ -300,7 +300,7 @@ public class EditPeopelActivity extends BaseActivity implements OnClickListener 
 //				messageIndexEntity = messageIndexEntities.get(0);
 			} else {
 				messageIndexEntity = new MessageIndexEntity("", peopelEntity.getNum(), 
-						"", "", AppUtil.getName(peopelEntity), peopelEntity.getImgPath(), 0, MessageIndexEntity.DELETED, 
+						"", "", AppUtil.getName(peopelEntity), peopelEntity.getImgPath(), 0, MessageIndexEntity.NORMAL, 
 						MessageIndexEntity.SEND_SUCCESS, AppConstant.USER_NUM);
 				messageIndexDao.insert(messageIndexEntity);
 			}

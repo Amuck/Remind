@@ -29,6 +29,7 @@ import com.remind.fragment.PeopelFragment;
 import com.remind.fragment.SettingFragment;
 import com.remind.fragment.UserFragment;
 import com.remind.global.AppConstant;
+import com.remind.util.AppUtil;
 import com.remind.view.MyViewPager;
 
 public class MainActivity1 extends AbActivity {
@@ -95,6 +96,10 @@ public class MainActivity1 extends AbActivity {
 		three = one * 3;
 		four = one * 4;
 
+		// 是否去掉notification
+		int id = getIntent().getIntExtra("num", 0);
+		// 去掉相应的notification
+		AppUtil.cancelNotify(id, getApplicationContext());
 	}
 
 	public class MyOnPageChangeListener implements OnPageChangeListener {

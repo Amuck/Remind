@@ -244,6 +244,10 @@ public class ChatActivity extends BaseActivity implements OnClickListener, OnScr
 			finish();
 			return;
 		}
+		
+		// 去掉相应的notification
+		AppUtil.cancelNotify(num, this);
+		
 		// 获取当前聊天对象
 		Cursor cursor = peopelDao.queryPeopelByNum(num);
 		peopelEntity = DataBaseParser.getPeoPelDetail(cursor).get(0);
@@ -927,6 +931,7 @@ public class ChatActivity extends BaseActivity implements OnClickListener, OnScr
 					MessageEntity messageEntity = (MessageEntity) intent.getSerializableExtra("messageEntity");
 					datas.add(messageEntity);
 					chatAdapter.notifyDataSetChanged();
+					chatList.setSelection(datas.size());
 				} else if(action.equals(MessageReceiver.NOTICE_STATE_ACTION)) {
 					// 收到接受/拒绝提醒
 //					String noticeId = intent.getStringExtra("noticeId");
@@ -946,11 +951,13 @@ public class ChatActivity extends BaseActivity implements OnClickListener, OnScr
 		@Override
 		protected void onStart() {
 			super.onStart();
+			RemindApplication.IS_CHAT_VIEW_SHOW = true;
 			registerReceiver(mReciver, mIntentFilter);
 		}
 		
 		@Override
 		protected void onStop() {
+			RemindApplication.IS_CHAT_VIEW_SHOW = false;
 			unregisterReceiver(mReciver);
 			super.onStop();
 		}

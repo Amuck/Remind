@@ -34,4 +34,11 @@ public interface MessageIndexDao {
 	 * @param entity
 	 */
 	public void update(MessageIndexEntity entity);
+
+	/**
+	 * 获取联系人的id
+	 * @param num
+	 * @return
+	 */
+	public int queryIdByNum(String num);
 }

@@ -83,9 +83,9 @@ public class BackService extends Service {
 		super.onCreate();
 		new InitSocketThread().start();
 		mLocalBroadcastManager=LocalBroadcastManager.getInstance(this);
-		Notification notification = new Notification();
+//		Notification notification = new Notification();
 
-		startForeground(1, notification);
+//		startForeground(1, notification);
 //		Notification notification = new Notification(R.drawable.ic_launcher, "服务开启", System.currentTimeMillis());
 //        notification.flags|= Notification.FLAG_NO_CLEAR;  
 //        notification.flags=Notification.FLAG_ONGOING_EVENT;

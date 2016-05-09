@@ -169,6 +169,11 @@ public class RemindApplication extends Application {
 	public final static int GET_INFO_ERROR = 1000002;// 连接出错
 	public final static int GET_WEATHER_OK = 1000003;// 连接出错
 	
+	/**
+	 * 当前是否是聊天界面
+	 */
+	public static boolean IS_CHAT_VIEW_SHOW = false;
+	
 	public Handler mHandler = new Handler() {
 		@Override
 		public void handleMessage(Message msg) {

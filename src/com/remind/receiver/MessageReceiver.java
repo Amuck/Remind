@@ -14,9 +14,11 @@ import android.widget.Toast;
 
 import com.remind.application.RemindApplication;
 import com.remind.dao.impl.MessageDaoImpl;
+import com.remind.dao.impl.MessageIndexDaoImpl;
 import com.remind.dao.impl.PeopelDaoImpl;
 import com.remind.dao.impl.RemindDaoImpl;
 import com.remind.entity.MessageEntity;
+import com.remind.entity.MessageIndexEntity;
 import com.remind.entity.PeopelEntity;
 import com.remind.entity.RemindEntity;
 import com.remind.global.AppConstant;
@@ -57,6 +59,7 @@ public class MessageReceiver extends BroadcastReceiver {
 	private MessageDaoImpl messageDaoImpl;
 	private PeopelDaoImpl peopelDao;
 	private RemindDaoImpl remindDaoImpl;
+	private MessageIndexDaoImpl messageIndexDao;
 
 	public MessageReceiver() {
 	}
@@ -73,6 +76,7 @@ public class MessageReceiver extends BroadcastReceiver {
 			messageDaoImpl = new MessageDaoImpl(context);
 			remindDaoImpl = new RemindDaoImpl(context);
 			peopelDao = new PeopelDaoImpl(context);
+			messageIndexDao = new MessageIndexDaoImpl(context);
 			String message = intent.getStringExtra("message");
 
 			try {
@@ -151,10 +155,24 @@ public class MessageReceiver extends BroadcastReceiver {
 					content, feed, AppConstant.USER_NUM);
 			// 插入数据库
 			messageDaoImpl.insert(messageEntity);
+			
+			cursor = messageIndexDao.queryByNum(entity.getNum());
+			if (cursor.getCount() > 0) {
+			} else {
+				MessageIndexEntity messageIndexEntity = new MessageIndexEntity("", entity.getNum(), 
+						"", "", entity.getNickName(), "", 0, MessageIndexEntity.NORMAL, 
+						MessageIndexEntity.SEND_SUCCESS, AppConstant.USER_NUM);
+				messageIndexDao.insert(messageIndexEntity);
+			}
+			cursor.close();
 			// 通知UI界面
 			Intent intent = new Intent(GET_MESSAGE_ACTION);
 			intent.putExtra("messageEntity", messageEntity);
 			context.sendBroadcast(intent);
+			// 发送notification
+			if (!RemindApplication.IS_CHAT_VIEW_SHOW) {
+				AppUtil.simpleNotify(context, entity.getNum(), 0, entity.getNickName(), entity.getNum(), content, true);
+			}
 		}
 	}
 
@@ -240,6 +258,8 @@ public class MessageReceiver extends BroadcastReceiver {
 			intent.setAction(PEOPLE_ADD_ACTION);
 			intent.putExtra("PeopelEntity", entity);
 			context.sendBroadcast(intent);
+			// 发送notification
+			AppUtil.simpleNotify(context, pn, 3, nick, pn, "", true);
 			break;
 		case 2:
 			// 同意添加好友
@@ -306,11 +326,25 @@ public class MessageReceiver extends BroadcastReceiver {
 			
 			messageDaoImpl.insert(messageEntity);
 			
+			cursor = messageIndexDao.queryByNum(userNum);
+			if (cursor.getCount() > 0) {
+			} else {
+				MessageIndexEntity messageIndexEntity = new MessageIndexEntity("", userNum, 
+						"", "", userNick, "", 0, MessageIndexEntity.NORMAL, 
+						MessageIndexEntity.SEND_SUCCESS, AppConstant.USER_NUM);
+				messageIndexDao.insert(messageIndexEntity);
+			}
+			cursor.close();
+			
 			// 通知UI界面
 			intent.setAction(GET_MESSAGE_ACTION);
 			intent.putExtra("messageEntity", messageEntity);
 			intent.putExtra("remindEntity", remindEntity);
 			context.sendBroadcast(intent);
+			// 发送notification
+			if (!RemindApplication.IS_CHAT_VIEW_SHOW) {
+				AppUtil.simpleNotify(context, userNum, 1, userNick, userNum, title, true);
+			}
 			break;
 		case 4:
 			// 收到是否同意闹钟
@@ -329,6 +363,8 @@ public class MessageReceiver extends BroadcastReceiver {
 			intent.putExtra("noticeId", noticeId);
 			intent.putExtra("state", state);
 			context.sendBroadcast(intent);
+			// 发送notification
+//			AppUtil.simpleNotify(context, Integer.valueOf(userNum), 1, userNick, userNum, title, true);
 			break;
 
 		default:

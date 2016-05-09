@@ -25,10 +25,14 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.media.RingtoneManager;
 import android.os.Environment;
+import android.support.v7.app.NotificationCompat;
 import android.telephony.TelephonyManager;
 import android.widget.Toast;
 
 import com.help.remind.R;
+import com.remind.activity.ChatActivity;
+import com.remind.activity.MainActivity1;
+import com.remind.dao.impl.MessageIndexDaoImpl;
 import com.remind.entity.PeopelEntity;
 import com.remind.entity.RemindEntity;
 
@@ -52,8 +56,11 @@ public class AppUtil {
 	private static int messageNotificationID = 1000;
 	private static Notification messageNotification = new Notification();
 	private static NotificationManager messageNotificatioManager = null;
+	private static MessageIndexDaoImpl messageIndexDaoImpl = null;
+	private static NotificationCompat.Builder builder = null;
 	// 设置页面声音状态的布尔值
 	static boolean soundtype = true;
+	private static int i = 0;
 
 	/**
 	 * dip转像素
@@ -496,7 +503,9 @@ public class AppUtil {
 	 */
 	@SuppressWarnings("deprecation")
 	public static void sendNotif(Context context) {
-		messageNotificatioManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+		if (null == messageNotificatioManager) {
+			messageNotificatioManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+		}
 		// 获取系统默认短信铃声
 		if (soundtype) {
 			messageNotification.sound = RingtoneManager
@@ -523,6 +532,149 @@ public class AppUtil {
 
 	}
 	
+	/**
+	 * 收到消息后发送notification
+	 * 
+	 * @param context
+	 * @param msgIndex			消息索引
+	 * @param type				类型： 0：收到消息；1：收到提醒；2：发送的提醒状态改变；3：收到好友；4：发送添加好友请求状态改变
+	 * @param friendName		朋友的名字
+	 * @param friendNum			朋友的号码
+	 * @param msg				消息内容/提醒的标题
+	 * @param state				提醒/好友所改变的状态（同意/拒绝）
+	 */
+	public static void simpleNotify(Context context, String msgIndex, int type, String friendName, String friendNum,
+			String msg, boolean state){
+		if (null == messageNotificatioManager) {
+			messageNotificatioManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+		}
+		if (null == messageIndexDaoImpl) {
+			messageIndexDaoImpl = new MessageIndexDaoImpl(context);
+		}
+		if (null == builder) {
+			//为了版本兼容  选择V7包下的NotificationCompat进行构造
+			builder = new NotificationCompat.Builder(
+					context);
+		}
+		Intent intent = new Intent();
+		String ticker = "";
+		String content = "";
+		int id = 0;
+		switch (type) {
+		case 0:
+			// 收到消息
+			ticker = friendName + ": " + msg;
+			content = ticker;
+			
+			intent.setClass(context, ChatActivity.class);
+			intent.putExtra("num", friendNum);
+			id = messageIndexDaoImpl.queryIdByNum(msgIndex);
+			break;
+		case 1:
+			// 收到提醒
+			ticker = "收到" + friendName + "发送的提醒。";
+			content = "收到" + friendName + ": " + msg + " 的提醒";
+			
+			intent.setClass(context, ChatActivity.class);
+			intent.putExtra("num", friendNum);
+			id = messageIndexDaoImpl.queryIdByNum(msgIndex);
+			break;
+		case 2:
+			// 发送的提醒状态改变
+			if (state) {
+				// 同意
+				ticker = friendName + "接受了您发送的提醒。";
+			} else {
+				// 拒绝
+				ticker = "您发送给" + friendName + "的提醒已被拒绝。";
+			}
+			content = ticker;
+			
+			intent.setClass(context, ChatActivity.class);
+			intent.putExtra("num", friendNum);
+			id = messageIndexDaoImpl.queryIdByNum(msgIndex);
+			break;
+		case 3:
+			// 收到好友
+			ticker = "收到" + friendName + "的好友请求。";
+			content = friendName + "申请成为您的好友";
+			
+			intent.setClass(context, MainActivity1.class);
+			id = ++i;
+			intent.putExtra("num", id);
+			break;
+		case 4:
+			// 发送添加好友请求状态改变
+			if (state) {
+				// 同意
+				ticker = friendName + "通过了您的好友请求。";
+			} else {
+				// 拒绝
+				ticker = friendName + "拒绝了您的好友请求。";
+			}
+			content = ticker;
+			
+			intent.setClass(context, MainActivity1.class);
+			id = ++i;
+			intent.putExtra("num", id);
+			break;
+
+		default:
+			break;
+		}
+        //Ticker是状态栏显示的提示
+        builder.setTicker(ticker);
+        //第一行内容  通常作为通知栏标题
+//        builder.setContentTitle("标题");
+        //第二行内容 通常是通知正文
+        builder.setContentText(content);
+        //第三行内容 通常是内容摘要什么的 在低版本机器上不一定显示
+//        builder.setSubText("这里显示的是通知第三行内容！");
+        //ContentInfo 在通知的右侧 时间的下面 用来展示一些其他信息
+        //builder.setContentInfo("2");
+        //number设计用来显示同种通知的数量和ContentInfo的位置一样，如果设置了ContentInfo则number会被隐藏
+//        builder.setNumber(2);
+        //可以点击通知栏的删除按钮删除
+        builder.setAutoCancel(true);
+        //系统状态栏显示的小图标
+        builder.setSmallIcon(R.drawable.ic_launcher);
+        //下拉显示的大图标
+        builder.setLargeIcon(BitmapFactory.decodeResource(context.getResources(),R.drawable.ic_launcher));
+        
+        PendingIntent pIntent = PendingIntent.getActivity(context,1,intent,0);
+        //点击跳转的intent
+        builder.setContentIntent(pIntent);
+        //通知默认的声音 震动 呼吸灯 
+        builder.setDefaults(Notification.DEFAULT_ALL);
+        Notification notification = builder.build();
+        messageNotificatioManager.notify(id ,notification);
+    }
+	
+	/**
+	 * 关闭notification
+	 * 
+	 * @param num	msgindex
+	 */
+	public static void cancelNotify(String msgIndex, Context context) {
+		if (null == messageNotificatioManager) {
+			messageNotificatioManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+		}
+		if (null == messageIndexDaoImpl) {
+			messageIndexDaoImpl = new MessageIndexDaoImpl(context);
+		}
+		messageNotificatioManager.cancel(messageIndexDaoImpl.queryIdByNum(msgIndex));
+	}
+	/**
+	 * 关闭notification
+	 * 
+	 * @param num	msgindex
+	 */
+	public static void cancelNotify(int id, Context context) {
+		if (null == messageNotificatioManager) {
+			messageNotificatioManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+		}
+		messageNotificatioManager.cancel(id);
+	}
 	/**
 	 * 获取本机号码
 	 * 

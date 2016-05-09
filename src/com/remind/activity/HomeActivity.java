@@ -625,8 +625,10 @@ public class HomeActivity extends BaseActivity implements OnClickListener {
 			if (action.equals(MessageReceiver.GET_MESSAGE_ACTION)) {
 				// 收到好友发送的消息/提醒
 				RemindEntity remindEntity = (RemindEntity) intent.getSerializableExtra("remindEntity");
-				datas.add(remindEntity);
-				remindAdapter.notifyDataSetChanged();
+				if (null != remindEntity) {
+					datas.add(remindEntity);
+					remindAdapter.notifyDataSetChanged();
+				}
 			}
 		};
 	}

@@ -9,7 +9,6 @@ import android.util.Log;
 import com.remind.dao.MessageIndexDao;
 import com.remind.dao.dbhelper.DBHelper;
 import com.remind.dao.msg.MessageIndexMsg;
-import com.remind.dao.msg.MessageMsg;
 import com.remind.entity.MessageIndexEntity;
 import com.remind.global.AppConstant;
 
@@ -101,4 +100,16 @@ public class MessageIndexDaoImpl implements MessageIndexDao {
 		return mCursor;
 	}
 
+	@Override
+	public int queryIdByNum(String num) {
+		SQLiteDatabase db = mDBHelper.getWritableDatabase();
+        String sql = "select id from " + MessageIndexMsg.TABLENAME + " where "
+				+ MessageIndexMsg.ISDELETE + " = 0 and " + MessageIndexMsg.NUM
+				+ " = " + num + " and " + MessageIndexMsg.LOGIN_USER + " = '" + AppConstant.USER_NUM + "' ";
+        Cursor c = db.rawQuery(sql, null);
+        c.moveToFirst();
+        int length = c.getInt(0);
+        c.close();
+        return length;
+	}
 }
