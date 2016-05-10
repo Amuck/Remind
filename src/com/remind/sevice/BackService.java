@@ -8,9 +8,13 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.Arrays;
 
+import android.app.AlarmManager;
 import android.app.Notification;
+import android.app.PendingIntent;
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.RemoteException;
@@ -19,9 +23,18 @@ import android.util.Log;
 
 import com.remind.application.RemindApplication;
 import com.remind.global.AppConstant;
+import com.remind.receiver.WakeReceiver;
 import com.remind.util.ByteUtil;
 
 public class BackService extends Service {
+    /**
+     * 定时唤醒的时间间隔，5分钟
+     */
+    private final static int ALARM_INTERVAL = 5 * 60 * 1000;
+    private final static int WAKE_REQUEST_CODE = 6666;
+    
+	private final static int GRAY_SERVICE_ID = -1001;
+	
 	private static final String TAG = "BackService";
 	private static final long HEART_BEAT_RATE = 30 * 1000;
 
@@ -83,8 +96,11 @@ public class BackService extends Service {
 		super.onCreate();
 		new InitSocketThread().start();
 		mLocalBroadcastManager=LocalBroadcastManager.getInstance(this);
+		
 //		Notification notification = new Notification();
-
+//		notification.flags = Notification.FLAG_ONGOING_EVENT;  
+//		notification.flags |= Notification.FLAG_NO_CLEAR;  
+//		notification.flags |= Notification.FLAG_FOREGROUND_SERVICE;  
 //		startForeground(1, notification);
 //		Notification notification = new Notification(R.drawable.ic_launcher, "服务开启", System.currentTimeMillis());
 //        notification.flags|= Notification.FLAG_NO_CLEAR;  
@@ -93,6 +109,26 @@ public class BackService extends Service {
 //        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0);
 //        notification.setLatestEventInfo(this, "service", "测试防止服务被任务管理器所杀", pendingIntent);     
 //        startForeground(1, notification);
+	}
+	
+	@Override
+	public int onStartCommand(Intent intent, int flags, int startId) {
+		if (Build.VERSION.SDK_INT < 18) {
+            startForeground(GRAY_SERVICE_ID, new Notification());//API < 18 ，此方法能有效隐藏Notification上的图标
+        } else {
+            Intent innerIntent = new Intent(this, GrayInnerService.class);
+            startService(innerIntent);
+            startForeground(GRAY_SERVICE_ID, new Notification());
+        }
+ 
+		//发送唤醒广播来促使挂掉的UI进程重新启动起来
+        AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+        Intent alarmIntent = new Intent();
+        alarmIntent.setAction(WakeReceiver.GRAY_WAKE_ACTION);
+        PendingIntent operation = PendingIntent.getBroadcast(this, WAKE_REQUEST_CODE, alarmIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        alarmManager.setInexactRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), ALARM_INTERVAL, operation);
+		
+        return START_STICKY;
 	}
 	
 	public void isClose() {
@@ -358,4 +394,21 @@ public class BackService extends Service {
 //		Log.e(TAG, "onDestroy---------");
 		super.onDestroy();
 	}
+	
+	public static class GrayInnerService extends Service {
+ 
+        @Override
+        public int onStartCommand(Intent intent, int flags, int startId) {
+            startForeground(GRAY_SERVICE_ID, new Notification());
+//            stopForeground(true);
+            stopSelf();
+            return super.onStartCommand(intent, flags, startId);
+        }
+
+		@Override
+		public IBinder onBind(Intent intent) {
+			return null;
+		}
+ 
+    }
 }

@@ -107,8 +107,11 @@ public class MessageIndexDaoImpl implements MessageIndexDao {
 				+ MessageIndexMsg.ISDELETE + " = 0 and " + MessageIndexMsg.NUM
 				+ " = " + num + " and " + MessageIndexMsg.LOGIN_USER + " = '" + AppConstant.USER_NUM + "' ";
         Cursor c = db.rawQuery(sql, null);
-        c.moveToFirst();
-        int length = c.getInt(0);
+        int length = 0;
+        if (c.getCount() > 0) {
+        	c.moveToFirst();
+        	length = c.getInt(0);
+		}
         c.close();
         return length;
 	}

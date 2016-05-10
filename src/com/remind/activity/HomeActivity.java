@@ -6,9 +6,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
@@ -20,13 +17,13 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.IBinder;
-import android.os.Message;
-import android.os.RemoteException;
-import android.support.v4.content.LocalBroadcastManager;
 import android.util.DisplayMetrics;
+import android.view.Gravity;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.WindowManager;
 import android.widget.AbsListView;
 import android.widget.AbsListView.OnScrollListener;
 import android.widget.AdapterView;
@@ -40,7 +37,6 @@ import com.baidu.location.LocationClientOption;
 import com.baidu.location.LocationClientOption.LocationMode;
 import com.ecloud.pulltozoomview.PullToZoomListViewEx;
 import com.help.remind.R;
-import com.remind.activity.ChatActivity.MessageBackReciver;
 import com.remind.adapter.RemindAdapter;
 import com.remind.application.RemindApplication;
 import com.remind.asyn.ImageLoader;
@@ -48,11 +44,9 @@ import com.remind.dao.PeopelDao;
 import com.remind.dao.RemindDao;
 import com.remind.dao.impl.PeopelDaoImpl;
 import com.remind.dao.impl.RemindDaoImpl;
-import com.remind.entity.MessageEntity;
 import com.remind.entity.PeopelEntity;
 import com.remind.entity.RemindEntity;
 import com.remind.global.AppConstant;
-import com.remind.http.HttpClient;
 import com.remind.receiver.MessageReceiver;
 import com.remind.sevice.BackService;
 import com.remind.sevice.IBackService;
@@ -141,6 +135,9 @@ public class HomeActivity extends BaseActivity implements OnClickListener {
 	private RemindBackReciver mReciver;
 	private IntentFilter mIntentFilter;
 	
+	private WindowManager wm;
+	private WindowManager.LayoutParams layoutParams;
+	
 	private ServiceConnection conn = new ServiceConnection() {
 
 		@Override
@@ -192,6 +189,8 @@ public class HomeActivity extends BaseActivity implements OnClickListener {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_home);
+		
+//		addPopView();
 
 		createFile();
 		// TODO 删除超过30天的数据
@@ -218,6 +217,28 @@ public class HomeActivity extends BaseActivity implements OnClickListener {
 		initWeather();
 		getLocationAndWeather();
 		setUpView();
+	}
+	
+	private void addPopView() {
+		wm = (WindowManager) getApplicationContext().getSystemService(Context.WINDOW_SERVICE);
+		//设置TextView的属性
+        layoutParams = new WindowManager.LayoutParams();
+        layoutParams.width = 100;
+        layoutParams.height = 100;
+        //这里是关键，使控件始终在最上方
+        layoutParams.type = WindowManager.LayoutParams.TYPE_SYSTEM_ALERT | WindowManager.LayoutParams.TYPE_SYSTEM_OVERLAY;
+        layoutParams.flags = WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL | WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE;
+        //这个Gravity也不能少，不然的话，下面"移动歌词"的时候就会出问题了～ 可以试试[官网文档有说明]
+        layoutParams.gravity = Gravity.LEFT|Gravity.TOP;
+
+        //创建自定义的TextView
+//        View myView = new View(this);
+//        myView.setBackgroundResource(R.color.transparent);
+        TextView myView = new TextView(this);
+        myView.setText("Hello World!");
+        myView.setTextSize(24);
+
+        wm.addView(myView, layoutParams);
 	}
 	
 	/**
@@ -631,5 +652,16 @@ public class HomeActivity extends BaseActivity implements OnClickListener {
 				}
 			}
 		};
+	}
+	
+	@Override
+	public boolean onKeyDown(int keyCode, KeyEvent event) {
+		if (keyCode == KeyEvent.KEYCODE_BACK
+				&& event.getAction() == KeyEvent.ACTION_DOWN) {
+			moveTaskToBack(true);
+			
+			return true;
+		}
+		return super.onKeyDown(keyCode, event);
 	}
 }
