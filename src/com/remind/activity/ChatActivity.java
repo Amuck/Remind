@@ -373,14 +373,14 @@ public class ChatActivity extends BaseActivity implements OnClickListener, OnScr
 				user.getNum(), AppUtil.getNowTime(), 
 				MessageEntity.SEND_SUCCESS, MessageEntity.NORMAL, 
 				MessageEntity.TYPE_TEXT, "", "", peopelEntity.getNum(),
-				MessageEntity.TYPE_SEND, "", MessageEntity.FEED_DEFAULT, AppConstant.USER_NUM);
+				MessageEntity.TYPE_SEND, "", MessageEntity.FEED_DEFAULT, AppConstant.USER_NUM, "");
 		
 		contactMessageEntity = new MessageEntity("", user.getName(),
 				user.getNum(), peopelEntity.getName(), 
 				peopelEntity.getNum(), AppUtil.getNowTime(), 
 				MessageEntity.SEND_SUCCESS, MessageEntity.NORMAL, 
 				MessageEntity.TYPE_TEXT, "", "", peopelEntity.getNum(),
-				MessageEntity.TYPE_RECIEVE, "", MessageEntity.FEED_DEFAULT, AppConstant.USER_NUM);
+				MessageEntity.TYPE_RECIEVE, "", MessageEntity.FEED_DEFAULT, AppConstant.USER_NUM, "");
 	}
 	
 	/**

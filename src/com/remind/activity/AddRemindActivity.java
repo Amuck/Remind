@@ -235,11 +235,13 @@ public class AddRemindActivity extends AbActivity implements OnClickListener {
 				// 加入到remind数据库
 				remindId = remindDao.insertRemind(remindEntity);
 				// 插入数据库
+				String id = String.valueOf(remindId);
 				messageEntity.setOtherTypeId(String.valueOf(remindId));
+				messageEntity.setRemindId(id);
 				messageEntity.setSendState(MessageEntity.SEND_SUCCESS);
 				msgId = messageDao.insert(messageEntity);
 				Intent intent = new Intent(AddRemindActivity.this, ChatActivity.class);
-				remindEntity.setId(remindId + "");
+				remindEntity.setId(id);
 				intent.putExtra("remind", remindEntity);
 				
 				if (isForSelf) {
@@ -494,7 +496,7 @@ public class AddRemindActivity extends AbActivity implements OnClickListener {
 				targetPeopel.getNickName(), AppUtil.getNowTime(),
 				remindTimeMili, "一起去吃饭吧", remindTime
 				, remindTime, selectTitleBtn
-						.getText().toString(), repeatType, isPreview, "", "");
+						.getText().toString(), repeatType, isPreview, "", "", RemindEntity.READ);
 		
 		if (isForSelf) {
 			// 如果为自己，设置为已接受的提醒
@@ -509,7 +511,7 @@ public class AddRemindActivity extends AbActivity implements OnClickListener {
 				user.getNickName(), AppConstant.USER_NUM, AppUtil.getNowTime(), 
 				MessageEntity.SENDING, MessageEntity.NORMAL, MessageEntity.TYPE_REMIND, 
 				"", "", targetPeopel.getNum(), MessageEntity.TYPE_SEND, remindEntity.getContent(), 
-				MessageEntity.FEED_DEFAULT, AppConstant.USER_NUM);
+				MessageEntity.FEED_DEFAULT, AppConstant.USER_NUM, "");
 		
 		if (isForSelf) {
 			// TODO 测试为自己添加任务, addSelf()需要去掉，isForSelf需要重新取值，将当前currentPeopel.getNum()与AppUtil.getPhoneNumber(this)比较，相同则为true
