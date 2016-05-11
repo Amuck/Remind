@@ -39,6 +39,7 @@ public class MessageDaoImpl implements MessageDao {
 		values.put(MessageMsg.SEND_NUM, entity.getSendNum());
 		values.put(MessageMsg.LOGIN_USER, entity.getLoginUser());
 		values.put(MessageMsg.IS_COMING, entity.getIsComing());
+		values.put(MessageMsg.REMIND_ID, entity.getRemindId());
 
 		values.put(MessageMsg.RECIEVE_NAME, entity.getRecieveName());
 		values.put(MessageMsg.RECIEVE_NUM, entity.getRecieveNum());
@@ -114,6 +115,7 @@ public class MessageDaoImpl implements MessageDao {
 		sb.append(MessageMsg.IS_COMING + "	= '" + entity.getIsComing() + "',");
 		sb.append(MessageMsg.LOGIN_USER + "	= '" + entity.getLoginUser() + "',");
 		sb.append(MessageMsg.IS_FEED + "	= '" + entity.getFeed() + "',");
+		sb.append(MessageMsg.REMIND_ID + "	= '" + entity.getRemindId() + "',");
 
 		sb.append(MessageMsg.RECIEVE_NAME + "	= '" + entity.getRecieveName()
 				+ "',");

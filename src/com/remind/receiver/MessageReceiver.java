@@ -152,7 +152,7 @@ public class MessageReceiver extends BroadcastReceiver {
 					MessageEntity.TYPE_TEXT, 
 					"", "", 
 					entity.getNum(), MessageEntity.TYPE_RECIEVE, 
-					content, feed, AppConstant.USER_NUM);
+					content, feed, AppConstant.USER_NUM, "");
 			// 插入数据库
 			messageDaoImpl.insert(messageEntity);
 			
@@ -305,13 +305,14 @@ public class MessageReceiver extends BroadcastReceiver {
 			String userNum = noticeObj.getString("userNum");
 			String userNick = noticeObj.getString("userNick");
 			String noticeString = noticeObj.getString("noticeContent");
+			noticeString = AppUtil.toUTF8(noticeString);
 			
 			RemindEntity remindEntity = new RemindEntity("", AppConstant.USER_NUM,
 					userNum, userNick,
 					userNick, AppUtil.getNowTime(),
 					"", noticeString, time
 					, time, title, repeatType, Integer.valueOf(isPrev),
-					notice_id, owner_id);
+					notice_id, owner_id, RemindEntity.NOT_READ);
 			remindEntity.setRemindState(RemindEntity.NEW);
 			
 			long remindId = remindDaoImpl.insertRemind(remindEntity);
@@ -322,7 +323,7 @@ public class MessageReceiver extends BroadcastReceiver {
 					MessageEntity.TYPE_REMIND, 
 					String.valueOf(remindId), "", 
 					userNum, MessageEntity.TYPE_RECIEVE, 
-					remindEntity.getContent(), MessageEntity.FEED_DEFAULT, AppConstant.USER_NUM);
+					remindEntity.getContent(), MessageEntity.FEED_DEFAULT, AppConstant.USER_NUM, String.valueOf(remindId));
 			
 			messageDaoImpl.insert(messageEntity);
 			

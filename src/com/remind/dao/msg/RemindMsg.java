@@ -129,6 +129,11 @@ public class RemindMsg {
 	 */
 	public static final String REMIND_COUNT = "remindCount";
 	/**
+	 * 是否已读
+	 */
+	public static final String IS_READ = "isRead";
+	
+	/**
 	 * 预留字段
 	 */
 	public static final String Z1 = "z1";

@@ -75,12 +75,13 @@ public class DataBaseParser {
 			int launchState = mCursor.getInt(mCursor.getColumnIndex(RemindMsg.LAUNCH_STATE));
 			int isPreview = mCursor.getInt(mCursor.getColumnIndex(RemindMsg.IS_PRIVIEW));
 			int remindCount = mCursor.getInt(mCursor.getColumnIndex(RemindMsg.REMIND_COUNT));
+			int isRead = mCursor.getInt(mCursor.getColumnIndex(RemindMsg.IS_READ));
 			
 			RemindEntity entity = new RemindEntity(id, ownerNum, targetNum, 
 					targetName, targetNick, addTime, lastEditTime, title, 
 					content, limitTime, remindTime, audioPath, videoPath, 
 					imgPath, remindMethod, remindState, launchState, isDelete, repeatType,
-					isPreview, remindCount, noticeId, ownerId);
+					isPreview, remindCount, noticeId, ownerId, isRead);
 			lists.add(entity);
 		}
 		return lists;
@@ -138,10 +139,11 @@ public class DataBaseParser {
 			String content = mCursor.getString(mCursor.getColumnIndex(MessageMsg.CONTENT));
 			String feed = mCursor.getString(mCursor.getColumnIndex(MessageMsg.IS_FEED));
 			String loginUser = mCursor.getString(mCursor.getColumnIndex(MessageMsg.LOGIN_USER));
+			String remindId = mCursor.getString(mCursor.getColumnIndex(MessageMsg.REMIND_ID));
 			
 			MessageEntity entity = new MessageEntity(id, recieveName, recieveNum, sendName, sendNum, 
 					time, sendState, isDelete, msgType, otherTypeId, msgPath, msgIndex, isComing, content, 
-					feed, loginUser);
+					feed, loginUser, remindId);
 			lists.add(entity);
 		}
 		return lists;

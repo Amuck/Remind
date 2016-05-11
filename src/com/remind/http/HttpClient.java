@@ -10,6 +10,7 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.params.CoreConnectionPNames;
+import org.apache.http.protocol.HTTP;
 
 import android.content.res.AssetManager;
 
@@ -417,7 +418,9 @@ public class HttpClient {
 		try {
 			/*post向服务器请求数据*/
 			HttpPost request = new HttpPost(httpUrl);
-			StringEntity se = new StringEntity(jsonString);
+			StringEntity se = new StringEntity(jsonString, HTTP.UTF_8);
+//			se.setContentType("application/x-www-form-urlencoded;charset=utf-8");
+//			se.setContentEncoding("UTF-8");
 			request.setEntity(se);
 			DefaultHttpClient client = new DefaultHttpClient();
 			// 请求超时

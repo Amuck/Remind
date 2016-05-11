@@ -121,4 +121,10 @@ public interface RemindDao {
 	 * @return
 	 */
 	public void updateByNoticeId(String noticeId, int state);
+	/**
+	 * 改变已读未读状态
+	 * @param id
+	 * @param state
+	 */
+	public void updateReadState(String id, int state);
 }

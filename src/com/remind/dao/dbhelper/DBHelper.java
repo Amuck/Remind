@@ -139,7 +139,9 @@ public class DBHelper extends SQLiteOpenHelper {
 		remindSql.append(RemindMsg.IS_PRIVIEW);
 		remindSql.append(" varchar(2),");
 		remindSql.append(RemindMsg.REMIND_COUNT);
-		remindSql.append(" varchar(2),");
+		remindSql.append(" integer,");
+		remindSql.append(RemindMsg.IS_READ);
+		remindSql.append(" integer,");
 		
 		remindSql.append(RemindMsg.Z1);
 		remindSql.append(" varchar(100),");
@@ -216,6 +218,8 @@ public class DBHelper extends SQLiteOpenHelper {
 		messageSql.append(MessageMsg.SEND_NAME);
 		messageSql.append(" text,");
 		messageSql.append(MessageMsg.SEND_NUM);
+		messageSql.append(" text,");
+		messageSql.append(MessageMsg.REMIND_ID);
 		messageSql.append(" text,");
 		messageSql.append(MessageMsg.IS_COMING);
 		messageSql.append(" varchar(2),");

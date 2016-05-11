@@ -80,6 +80,10 @@ public class MessageMsg {
 	 */
 	public static final String IS_FEED = "isfeed";
 	/**
+	 * 事件驱动id，为所属提醒的id
+	 */
+	public static final String REMIND_ID = "remindId";
+	/**
 	 * 预留字段
 	 */
 	public static final String Z1 = "z1";

@@ -57,6 +57,7 @@ public class RemindDaoImpl implements RemindDao {
 		
 		values.put(RemindMsg.IS_PRIVIEW, entity.getIsPreview());
 		values.put(RemindMsg.REMIND_COUNT, entity.getRemindCount());
+		values.put(RemindMsg.IS_READ, entity.getIsRead());
 //		values.put(RemindMsg.Z1, entity.getZ1());
 //		values.put(RemindMsg.Z2, entity.getZ2());
 //		values.put(RemindMsg.Z3, entity.getZ3());
@@ -101,7 +102,7 @@ public class RemindDaoImpl implements RemindDao {
 			
 			values.put(RemindMsg.IS_PRIVIEW, entity.getIsPreview());
 			values.put(RemindMsg.REMIND_COUNT, entity.getRemindCount());
-			
+			values.put(RemindMsg.IS_READ, entity.getIsRead());
 //			values.put(RemindMsg.Z1, entity.getZ1());
 //			values.put(RemindMsg.Z2, entity.getZ2());
 //			values.put(RemindMsg.Z3, entity.getZ3());
@@ -155,6 +156,7 @@ public class RemindDaoImpl implements RemindDao {
 		
 		sb.append(RemindMsg.IS_PRIVIEW + "	= '" + entity.getIsPreview() + "',");
 		sb.append(RemindMsg.REMIND_COUNT + "	= '" + entity.getRemindCount() + "',");
+		sb.append(RemindMsg.IS_READ + "	= '" + entity.getIsRead() + "',");
 		
 		sb.append(RemindMsg.IS_DELETE + "	= '" + entity.getIsDelete() + "' ");
 		
@@ -513,6 +515,19 @@ public class RemindDaoImpl implements RemindDao {
 		sb.append("update " + RemindMsg.TABLENAME + " set ");
 		sb.append(RemindMsg.REMIND_STATE + "	= '" + state + "' ");
 		sb.append(" where " + RemindMsg.NOTICE_ID + " = '" + noticeId + "'");
+		String sql = sb.toString();
+
+		Log.d(TAG, sql);
+		db.execSQL(sql);
+	}
+	
+	@Override
+	public void updateReadState(String id, int state) {
+		SQLiteDatabase db = mDBHelper.getWritableDatabase();
+		StringBuffer sb = new StringBuffer();
+		sb.append("update " + RemindMsg.TABLENAME + " set ");
+		sb.append(RemindMsg.IS_READ + "	= '" + state + "' ");
+		sb.append(" where " + RemindMsg.ID + " = '" + id + "'");
 		String sql = sb.toString();
 
 		Log.d(TAG, sql);

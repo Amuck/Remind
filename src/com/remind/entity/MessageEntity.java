@@ -121,6 +121,10 @@ public class MessageEntity implements Cloneable, Serializable{
 	private String otherTypeId;
 	
 	/**
+	 * 事件驱动的id，为所属remind的id
+	 */
+	private String remindId;
+	/**
 	 * 其他消息类型，储存路径
 	 */
 	private String msgPath;
@@ -161,12 +165,13 @@ public class MessageEntity implements Cloneable, Serializable{
 	 * @param content		消息内容
 	 * @param feed			收到的消息是否反馈成功
 	 * @param loginUser		登陆的用户
+	 * @param remindId		所属remind的id
 	 */
 	public MessageEntity(String id, String recieveName, String recieveNum,
 			String sendName, String sendNum, String time, String sendState,
 			String isDelete, String msgType, String otherTypeId,
 			String msgPath, String messageIndex, String isComing, String content, 
-			String feed, String loginUser) {
+			String feed, String loginUser, String remindId) {
 		super();
 		this.id = id;
 		this.recieveName = recieveName;
@@ -184,6 +189,7 @@ public class MessageEntity implements Cloneable, Serializable{
 		this.content = content;
 		this.feed = feed;
 		this.loginUser = loginUser;
+		this.remindId = remindId;
 	}
 
 	public String getId() {
@@ -312,6 +318,14 @@ public class MessageEntity implements Cloneable, Serializable{
 
 	public void setFeed(String feed) {
 		this.feed = feed;
+	}
+
+	public String getRemindId() {
+		return remindId;
+	}
+
+	public void setRemindId(String remindId) {
+		this.remindId = remindId;
 	}
 
 	@Override
