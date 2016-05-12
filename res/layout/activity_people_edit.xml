@@ -173,12 +173,10 @@
 
         <com.remind.view.RoleDetailImageView
             android:id="@+id/peopel_img_preview"
-            android:layout_width="170dp"
-            android:layout_height="170dp"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
             android:layout_marginLeft="20dp"
-            android:layout_alignParentBottom="true"
-            android:layout_below="@+id/show_role_panel"
-            android:layout_centerHorizontal="true"
+            android:layout_gravity="center"
             imagecontrol:border_inside_color="#f0A9E3F5"
             imagecontrol:border_outside_color="#60ABE3F4"
             imagecontrol:border_thickness="4dp" />
@@ -203,4 +201,13 @@
 	        android:background="@drawable/btn_warn_deail"
 	        android:text="@string/send_msg"
 	        android:textColor="@color/black" />
+    <Button
+	        android:id="@+id/exit_btn"
+	        android:layout_width="fill_parent"
+	        android:layout_height="50dp"
+	        android:layout_margin="15dp"
+	        android:background="@drawable/btn_warn_deail"
+	        android:text="@string/exit_msg"
+	        android:textColor="@color/black"
+	        android:visibility="gone"  />
 </LinearLayout>
