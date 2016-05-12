@@ -3,13 +3,16 @@ package com.remind.activity;
 import java.io.File;
 import java.io.InputStream;
 
+import android.app.AlertDialog;
 import android.content.ActivityNotFoundException;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.RemoteException;
 import android.provider.ContactsContract;
 import android.provider.MediaStore;
 import android.text.InputFilter;
@@ -23,6 +26,7 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.help.remind.R;
+import com.remind.application.RemindApplication;
 import com.remind.dao.MessageIndexDao;
 import com.remind.dao.PeopelDao;
 import com.remind.dao.impl.MessageIndexDaoImpl;
@@ -30,6 +34,7 @@ import com.remind.dao.impl.PeopelDaoImpl;
 import com.remind.entity.MessageIndexEntity;
 import com.remind.entity.PeopelEntity;
 import com.remind.global.AppConstant;
+import com.remind.sp.MySharedPreferencesLoginType;
 import com.remind.util.AppUtil;
 import com.remind.util.Utils;
 import com.remind.view.RoleDetailImageView;
@@ -87,6 +92,10 @@ public class EditPeopelActivity extends BaseActivity implements OnClickListener 
 	 * 取消
 	 */
 	private Button cancelBtn;
+	/**
+	 * 退出
+	 */
+	private Button exitBtn;
 
 	/**
 	 * 名字
@@ -113,6 +122,11 @@ public class EditPeopelActivity extends BaseActivity implements OnClickListener 
 	 * 发送消息
 	 */
 	private Button sendMsg;
+	
+	/**
+	 * 用户是否登陆
+	 */
+	private boolean isUserLogin = false;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -127,16 +141,18 @@ public class EditPeopelActivity extends BaseActivity implements OnClickListener 
 
 		if (null == peopelEntity) {
 			AppUtil.showToast(this, "查看联系人信息失败");
+			finish();
 			return;
 		}
 
-		initView(intent.getBooleanExtra("user", false));
+		isUserLogin = intent.getBooleanExtra("user", false);
+		initView();
 	}
 
 	/**
 	 * @param isUser		是否是查看登陆用户信息
 	 */
-	private void initView(boolean isUser) {
+	private void initView() {
 		name = (TextView) findViewById(R.id.peopel_name_edit);
 		num = (TextView) findViewById(R.id.peopel_num_edit);
 		nickNameEdit = (EditText) findViewById(R.id.peopel_nick_edit);
@@ -146,10 +162,7 @@ public class EditPeopelActivity extends BaseActivity implements OnClickListener 
 		okBtn = (Button) findViewById(R.id.title_ok);
 		cancelBtn = (Button) findViewById(R.id.title_cancel);
 		sendMsg = (Button) findViewById(R.id.send_msg_btn);
-		
-		if (isUser) {
-			sendMsg.setVisibility(View.GONE);
-		}
+		exitBtn = (Button) findViewById(R.id.exit_btn);
 		
 		imgPath = peopelEntity.getImgPath();
 
@@ -158,6 +171,7 @@ public class EditPeopelActivity extends BaseActivity implements OnClickListener 
 		okBtn.setOnClickListener(this);
 		cancelBtn.setOnClickListener(this);
 		sendMsg.setOnClickListener(this);
+		exitBtn.setOnClickListener(this);
 
 		setupView();
 		setupImg();
@@ -242,7 +256,12 @@ public class EditPeopelActivity extends BaseActivity implements OnClickListener 
 		okBtn.setVisibility(View.GONE);
 		cancelBtn.setVisibility(View.GONE);
 		editBtn.setVisibility(View.VISIBLE);
-		sendMsg.setVisibility(View.VISIBLE);
+		if (!isUserLogin) {
+			sendMsg.setVisibility(View.VISIBLE);
+		} else {
+			sendMsg.setVisibility(View.GONE);
+			exitBtn.setVisibility(View.VISIBLE);
+		}
 	}
 
 	@Override
@@ -312,10 +331,42 @@ public class EditPeopelActivity extends BaseActivity implements OnClickListener 
 			
 			finish();
 			break;
+		case R.id.exit_btn:
+			// 退出登陆
+			exit();
+			break;
 
 		default:
 			break;
 		}
+	}
+	
+	/**
+	 * 退出登陆
+	 */
+	private void exit() {
+		new AlertDialog.Builder(this).setTitle("是否退出登陆？")
+		.setPositiveButton("确定", new DialogInterface.OnClickListener() {
+			
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				RemindApplication.IS_LOGIN = false;
+				MySharedPreferencesLoginType.setOnlineState(EditPeopelActivity.this, false);
+				try {
+					RemindApplication.iBackService.release();
+				} catch (RemoteException e) {
+					e.printStackTrace();
+				}
+				finish();
+			}
+		})
+		.setNegativeButton("取消", new DialogInterface.OnClickListener() {
+			
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				
+			}
+		}).create().show();
 	}
 	
 	/**

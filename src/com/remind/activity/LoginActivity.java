@@ -2,8 +2,11 @@ package com.remind.activity;
 
 import org.json.JSONObject;
 
+import android.content.BroadcastReceiver;
 import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.database.Cursor;
 import android.os.Bundle;
@@ -29,6 +32,7 @@ import com.remind.dao.impl.PeopelDaoImpl;
 import com.remind.entity.PeopelEntity;
 import com.remind.global.AppConstant;
 import com.remind.http.HttpClient;
+import com.remind.receiver.MessageReceiver;
 import com.remind.sevice.BackService;
 import com.remind.sevice.IBackService;
 import com.remind.sp.MySharedPreferencesLoginType;
@@ -97,6 +101,9 @@ public class LoginActivity extends BaseActivity implements OnClickListener {
 	
 	private IBackService iBackService;
 	
+	private LoginBackReciver mReciver;
+	private IntentFilter mIntentFilter;
+	
 	private ServiceConnection conn = new ServiceConnection() {
 
 		@Override
@@ -149,9 +156,6 @@ public class LoginActivity extends BaseActivity implements OnClickListener {
 				
 				break;
 			case LOGIN_SUCCESS:
-//				RemindApplication.IS_LOGIN = true;
-				// 成功
-				hideProgess();
 				// 是否记住用户名
 				if (isRemember) {
 					MySharedPreferencesLoginType.saveUserName(
@@ -162,11 +166,6 @@ public class LoginActivity extends BaseActivity implements OnClickListener {
 					MySharedPreferencesLoginType.saveUserName(
 							getApplicationContext(), "", "");
 				}
-
-//				Toast.makeText(LoginActivity.this, "登陆成功",
-//						Toast.LENGTH_SHORT).show();
-				
-				finish();
 				break;
 
 			case LOGIN_FAIL:
@@ -191,15 +190,23 @@ public class LoginActivity extends BaseActivity implements OnClickListener {
 		// .getAppExceptionHandler());
 		// AppManager.getAppManager().addActivity(this);
 
+		mReciver = new LoginBackReciver();
+		mIntentFilter = new IntentFilter();
+		mIntentFilter.addAction(MessageReceiver.LOGIN_STATE_ACTION);
+		
 		init();
+	}
+	
+	@Override
+	protected void onStart() {
+		super.onStart();
+		registerReceiver(mReciver, mIntentFilter);
 	}
 
 	@Override
 	protected void onStop() {
+		unregisterReceiver(mReciver);
 		super.onStop();
-//		if (isRegistService) {
-//			unbindService(conn);
-//		}
 	}
 
 	private void init() {
@@ -470,4 +477,29 @@ public class LoginActivity extends BaseActivity implements OnClickListener {
 //		
 //		return isSend;
 //	}
+	
+	class LoginBackReciver extends BroadcastReceiver {
+
+		public LoginBackReciver() {
+		}
+
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			String action = intent.getAction();
+			if (action.equals(MessageReceiver.LOGIN_STATE_ACTION)) {
+				hideProgess();
+				// 登陆状态改变
+				if (RemindApplication.IS_LOGIN) {
+					Toast.makeText(context, "登陆成功", Toast.LENGTH_SHORT).show();
+					// 成功
+					MySharedPreferencesLoginType.setOnlineState(LoginActivity.this, true);
+					MySharedPreferencesLoginType.saveFromId(LoginActivity.this, AppConstant.FROM_ID);
+					finish();
+				} else {
+					Toast.makeText(context, "登陆失败，请重新登陆", Toast.LENGTH_SHORT)
+					.show();
+				}
+			}
+		};
+	}
 }

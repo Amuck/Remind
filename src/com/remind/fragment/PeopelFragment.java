@@ -391,7 +391,7 @@ public class PeopelFragment extends Fragment implements OnClickListener{
 		switch (v.getId()) {
 		case R.id.delete:
 			// 删除
-			peopelDao.deletePeopelByNum(currentPeople.getNum());
+			peopelDao.deleteFromDbByNum(currentPeople.getNum());
 			datas.remove(currentPeople);
 			peopelAdapter.notifyDataSetChanged();
 			alertDialog.dismiss();

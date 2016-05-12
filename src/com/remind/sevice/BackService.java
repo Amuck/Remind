@@ -19,11 +19,13 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.os.RemoteException;
 import android.support.v4.content.LocalBroadcastManager;
+import android.text.TextUtils;
 import android.util.Log;
 
 import com.remind.application.RemindApplication;
 import com.remind.global.AppConstant;
 import com.remind.receiver.WakeReceiver;
+import com.remind.sp.MySharedPreferencesLoginType;
 import com.remind.util.ByteUtil;
 
 public class BackService extends Service {
@@ -84,6 +86,14 @@ public class BackService extends Service {
 		public boolean sendMessage(String message) throws RemoteException {
 			return sendMsg(message);
 		}
+
+		@Override
+		public void release() throws RemoteException {
+			mReadThread.release();
+			releaseLastSocket(msocket);
+			new InitSocketThread().start();
+		}
+		
 	};
 
 	@Override
@@ -232,7 +242,13 @@ public class BackService extends Service {
 	private void initSocket() {//初始化Socket
 		try {
 			msocket = new Socket(HOST, PORT);
-			if (AppConstant.FROM_ID != null && AppConstant.FROM_ID.length() > 0) {
+			boolean isOnline = MySharedPreferencesLoginType.isOnline(getApplicationContext());
+			if (isOnline) {
+				if (TextUtils.isEmpty(AppConstant.FROM_ID)) {
+					AppConstant.FROM_ID = MySharedPreferencesLoginType.getFromId(getApplicationContext());
+					RemindApplication.IS_LOGIN = true;
+					AppConstant.USER_NUM = MySharedPreferencesLoginType.getString(getBaseContext(), MySharedPreferencesLoginType.USERNAME);
+				}
 				RemindApplication.startLongLink();
 			}
 //			Socket so = new Socket();

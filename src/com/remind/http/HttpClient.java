@@ -76,7 +76,12 @@ public class HttpClient {
 		public String mid;
 		public String from_id;
 		public String to;
-		public String content;
+		public Content content;
+		
+		static class Content {
+			public String content;
+			public String remindId;
+		}
 	}
 	
 	public static class AgreeNotice {
@@ -130,25 +135,32 @@ public class HttpClient {
 	 * @param content		发送内容
 	 * @return
 	 */
-	public static Message sendMsg1(String mid, String to, String content) {
+	public static Message sendMsg1(String mid, String to, String content, String remindId) {
 		Message message = new Message();
 		message.type = "message";
 		message.mid = mid;
 		message.from_id = AppConstant.FROM_ID;
-//		message.to = to;
-		message.to = "81a95d871f661e13bc64fe5868592b2292dd1fc2";
-		message.content = content;
+		message.to = to;
+//		message.to = "81a95d871f661e13bc64fe5868592b2292dd1fc2";
+		Message.Content content2 = new Message.Content();
+		content2.content = content;
+		content2.remindId = remindId;
+		message.content = content2;
+		
 		return message;
 	}
 	
-	public static Message sendMsg2(String mid, String to, String content) {
+	public static Message sendMsg2(String mid, String to, String content, String remindId) {
 		Message message = new Message();
 		message.type = "message";
 		message.mid = mid;
 		message.from_id = AppConstant.FROM_ID;
 //		message.to = to;
 		message.to = "bfa3e1dd3865915333079226c19120097c437ee5";
-		message.content = content;
+		Message.Content content2 = new Message.Content();
+		content2.content = content;
+		content2.remindId = remindId;
+		message.content = content2;
 		return message;
 	}
 	

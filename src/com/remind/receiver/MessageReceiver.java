@@ -53,6 +53,10 @@ public class MessageReceiver extends BroadcastReceiver {
 	 * 改变提醒状态
 	 */
 	public static final String NOTICE_STATE_ACTION = "com.remind.notice_state";
+	/**
+	 * socket注册状态
+	 */
+	public static final String LOGIN_STATE_ACTION = "com.remind.login";
 	
 	private Context context;
 	private JSONObject jsonObject;
@@ -139,6 +143,7 @@ public class MessageReceiver extends BroadcastReceiver {
 		String feed = feedBack();
 		
 		String content = jsonObject.getString("content");
+		JSONObject contentObj = new JSONObject(content);
 		String from_id = jsonObject.getString("from_id");
 		// 获取发送人信息
 		Cursor cursor = peopelDao.queryPeopelByFriendId(from_id);
@@ -152,7 +157,7 @@ public class MessageReceiver extends BroadcastReceiver {
 					MessageEntity.TYPE_TEXT, 
 					"", "", 
 					entity.getNum(), MessageEntity.TYPE_RECIEVE, 
-					content, feed, AppConstant.USER_NUM, "");
+					contentObj.getString("content"), feed, AppConstant.USER_NUM, contentObj.getString("remindId"));
 			// 插入数据库
 			messageDaoImpl.insert(messageEntity);
 			
@@ -171,7 +176,7 @@ public class MessageReceiver extends BroadcastReceiver {
 			context.sendBroadcast(intent);
 			// 发送notification
 			if (!RemindApplication.IS_CHAT_VIEW_SHOW) {
-				AppUtil.simpleNotify(context, entity.getNum(), 0, entity.getNickName(), entity.getNum(), content, true);
+				AppUtil.simpleNotify(context, entity.getNum(), 0, entity.getNickName(), entity.getNum(), contentObj.getString("content"), true);
 			}
 		}
 	}
@@ -213,13 +218,15 @@ public class MessageReceiver extends BroadcastReceiver {
 		if ("socket_regist".equals(mid)) {
 			if ("200".equals(code)) {
 				RemindApplication.IS_LOGIN = true;
-				Toast.makeText(context, "登陆成功", Toast.LENGTH_SHORT).show();
+				
 			} else {
 				RemindApplication.IS_LOGIN = false;
-				Toast.makeText(context, "登陆失败，请重新登陆", Toast.LENGTH_SHORT)
-						.show();
+				
 			}
 		}
+		
+		Intent intent = new Intent(LOGIN_STATE_ACTION);
+		context.sendBroadcast(intent);
 	}
 	
 	/**

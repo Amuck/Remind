@@ -79,6 +79,15 @@ public class PeopelDaoImpl implements PeopelDao {
 		Log.d(TAG, sql);
 		db.execSQL(sql);
 	}
+	
+	@Override
+	public void deleteFromDbByNum(String num) {
+		String sql = "delete  from " + PeopelMsg.TABLENAME +  " where "
+				+ PeopelMsg.NUM + "='" + num + "'"  + " and " + PeopelMsg.LOGIN_USER + " = '" + AppConstant.USER_NUM + "' ";
+		SQLiteDatabase db = mDBHelper.getWritableDatabase();
+		Log.d(TAG, sql);
+		db.execSQL(sql);
+	}
 
 	@Override
 	public void updatePeopel(PeopelEntity entity) {

@@ -67,4 +67,9 @@ public interface PeopelDao {
 	 * @return
 	 */
 	public Cursor queryPeopelByFriendId(String friendId);
+	/**
+	 * 将联系人从数据库中删除
+	 * @param num
+	 */
+	public void deleteFromDbByNum(String num);
 }

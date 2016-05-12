@@ -487,11 +487,11 @@ public class ChatActivity extends BaseActivity implements OnClickListener, OnScr
 //		chatAdapter.notifyDataSetChanged();
 		chatAdapter.getNewMsg(userMessageEntity.clone(), chatList);
 		
-//		String param = HttpClient.getJsonForPost(HttpClient.sendMsg1(mid + "", num, msg));
-		String param = HttpClient.getJsonForPost(HttpClient.sendMsg1(mid + "", "13716022538", msg));
-		if (AppConstant.USER_NUM.equals("13716022538")) {
-			param = HttpClient.getJsonForPost(HttpClient.sendMsg2(mid + "", "13716022537", msg));
-		}
+		String param = HttpClient.getJsonForPost(HttpClient.sendMsg1(mid + "", peopelEntity.getFriendId(), msg, ""));
+//		String param = HttpClient.getJsonForPost(HttpClient.sendMsg1(mid + "", "13716022538", msg, ""));
+//		if (AppConstant.USER_NUM.equals("13716022538")) {
+//			param = HttpClient.getJsonForPost(HttpClient.sendMsg2(mid + "", "13716022537", msg, ""));
+//		}
 		String state = MessageEntity.SEND_FAIL;
 		try {
 			boolean isSend = RemindApplication.iBackService.sendMessage(param);//Send Content by socket
