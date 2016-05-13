@@ -6,6 +6,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.text.TextUtils;
 import android.util.Log;
 
 import com.remind.dao.MessageDao;
@@ -164,28 +165,42 @@ public class MessageDaoImpl implements MessageDao {
 	}
 
 	@Override
-	public int getCount(String recieveNum) {
+	public int getCount(String recieveNum, String remindId) {
 		SQLiteDatabase db = mDBHelper.getWritableDatabase();
+		StringBuffer buffer = new StringBuffer();
         String sql = "select count(*) from " + MessageMsg.TABLENAME + " where "
 				+ MessageMsg.ISDELETE + " = 0 and " + MessageMsg.MSG_INDEX
 				+ " = " + recieveNum + " and " + MessageMsg.LOGIN_USER + " = '" + AppConstant.USER_NUM + "' ";
-        Cursor c = db.rawQuery(sql, null);
-        c.moveToFirst();
-        int length = c.getInt(0);
+        buffer.append(sql);
+        if (!TextUtils.isEmpty(remindId)) {
+        	buffer.append(" and " + MessageMsg.REMIND_ID + " = '" + remindId + "' ");
+		}
+        Cursor c = db.rawQuery(buffer.toString(), null);
+        int length = 0;
+        if (c.getCount() > 0) {
+        	c.moveToFirst();
+        	length = c.getInt(0);
+		}
         c.close();
         return length;
 	}
 
 	@Override
-	public synchronized ArrayList<MessageEntity> getMsgByPage(int currentPage, int pageSize, String recieveNum) {
+	public synchronized ArrayList<MessageEntity> getMsgByPage(int currentPage, int pageSize, String recieveNum, String remindId) {
 		int firstResult = (currentPage - 1) * pageSize;
 //        int maxResult = currentPage * pageSize;
+		StringBuffer buffer = new StringBuffer();
         SQLiteDatabase db = mDBHelper.getWritableDatabase();
         String sql = "select * from " + MessageMsg.TABLENAME + " where "
 				+ MessageMsg.ISDELETE + " = 0 and " + MessageMsg.MSG_INDEX
-				+ " = " + recieveNum   + " and " + MessageMsg.LOGIN_USER + " = '" + AppConstant.USER_NUM + "' "+ " order by " + MessageMsg.ID + " desc limit ?,? ";
+				+ " = " + recieveNum   + " and " + MessageMsg.LOGIN_USER + " = '" + AppConstant.USER_NUM + "' " ;
+        buffer.append(sql);
+        if (!TextUtils.isEmpty(remindId)) {
+        	buffer.append(" and " + MessageMsg.REMIND_ID + " = '" + remindId + "' ");
+		}
+        buffer.append(" order by " + MessageMsg.ID + " desc limit ?,? ");
         Cursor mCursor = db.rawQuery(
-                sql,
+        		buffer.toString(),
                 new String[] { String.valueOf(firstResult),
                         String.valueOf(pageSize) });
         //不要关闭数据库

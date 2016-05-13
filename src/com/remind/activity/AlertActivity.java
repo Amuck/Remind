@@ -12,6 +12,7 @@ import android.os.PowerManager.WakeLock;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -27,6 +28,7 @@ import com.remind.dao.impl.RemindDaoImpl;
 import com.remind.entity.RemindEntity;
 import com.remind.util.AppUtil;
 import com.remind.util.DataBaseParser;
+import com.remind.util.Utils;
 
 public class AlertActivity extends BaseActivity implements OnClickListener{
 
@@ -177,19 +179,31 @@ public class AlertActivity extends BaseActivity implements OnClickListener{
 	private void getNextRemindTime() {
 		// 获取重复类型
 		String repeatType = remindEntity.getRepeatType();
+		// 提醒时间
+		String remindTime = remindEntity.getRemindTime();
+		// 下次提醒时间
+		String nextRemindTime = null;
+		int remindCount = remindEntity.getRemindCount() + 1;
+		remindEntity.setRemindCount(remindCount);
 		// 计算下一次响铃时间
 		if (RemindEntity.REPEAT_NO.equals(repeatType)) {
-//			remindDao.
+
 		} else if (RemindEntity.REPEAT_DAY.equals(repeatType)) {
-
+			nextRemindTime = Utils.getTargeDate(remindTime, 0, 0, 1, 0, 0);
 		} else if (RemindEntity.REPEAT_WEEK.equals(repeatType)) {
-
+			nextRemindTime = Utils.getTargeDate(remindTime, 0, 0, 7, 0, 0);
 		} else if (RemindEntity.REPEAT_MONTH.equals(repeatType)) {
-
+			nextRemindTime = Utils.getTargeDate(remindTime, 0, 0, 0, 1, 0);
 		} else if (RemindEntity.REPEAT_YEAR.equals(repeatType)) {
-
+			nextRemindTime = Utils.getTargeDate(remindTime, 0, 0, 0, 0, 1);
 		}
 		// 设置闹铃
+		if (!TextUtils.isEmpty(nextRemindTime)) {
+			remindEntity.setRemindTime(nextRemindTime);
+			AppUtil.setAlarm(this, nextRemindTime, remindId);
+		}
+		// 更新数据库数据
+		remindDao.updateRemind(remindEntity);
 	}
 
 	/**

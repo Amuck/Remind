@@ -133,6 +133,7 @@ public class HttpClient {
 	 * @param mid			标记id
 	 * @param to			对方id
 	 * @param content		发送内容
+	 * @param remindId		所属提醒的id，没有的话为空串
 	 * @return
 	 */
 	public static Message sendMsg1(String mid, String to, String content, String remindId) {

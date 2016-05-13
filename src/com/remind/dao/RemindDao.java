@@ -127,4 +127,21 @@ public interface RemindDao {
 	 * @param state
 	 */
 	public void updateReadState(String id, int state);
+	/**
+	 * 获取未读数据
+	 * @return
+	 */
+	public Cursor getUnReadRemind();
+	/**
+	 * 获取当天已读
+	 * @param today
+	 * @return
+	 */
+	public Cursor getTodayReadRemind(String today);
+	/**
+	 * 获取其他天已读
+	 * @param today
+	 * @return
+	 */
+	public Cursor getOtherdayReadRemind(String today);
 }

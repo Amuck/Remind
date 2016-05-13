@@ -6,6 +6,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -172,6 +173,37 @@ public class Utils {
 		return time;
 	}
 
+	/**
+	 * 获得目标时间
+	 * @param startDate			开始的时间
+	 * @param passDayCounts		经过的天数
+	 * @param passMinuteCounts	经过的分钟
+	 * @param passHourCounts	经过的小时
+	 * @param passMonthCounts	经过的月
+	 * @param passYearCounts	经过的年
+	 * @return
+	 */
+	public static String getTargeDate(String startDate, int passMinuteCounts, int passHourCounts, int passDayCounts, int passMonthCounts, int passYearCounts) {
+		Calendar cal = Calendar.getInstance();
+		String time = null;
+		SimpleDateFormat temp = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+		Date date;
+		try {
+			date = temp.parse(startDate);
+			cal.setTime(date);
+			
+			cal.set(Calendar.MINUTE, cal.get(Calendar.MINUTE) + passMinuteCounts);
+			cal.set(Calendar.HOUR, cal.get(Calendar.HOUR) + passHourCounts);
+			cal.set(Calendar.DATE, cal.get(Calendar.DATE) + passDayCounts);
+			cal.set(Calendar.MONTH, cal.get(Calendar.MONTH) + passMonthCounts);
+			cal.set(Calendar.YEAR, cal.get(Calendar.YEAR) + passYearCounts);
+			time = temp.format(cal.getTime());
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+		return time;
+	}
+	
 	public static boolean isAvailable(Context context) {
 
 		ConnectivityManager manager = (ConnectivityManager) context

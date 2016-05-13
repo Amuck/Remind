@@ -357,6 +357,26 @@ public class RemindDaoImpl implements RemindDao {
 	}
 	
 	@Override
+	public Cursor getUnReadRemind() {
+		SQLiteDatabase db = mDBHelper.getWritableDatabase();
+		StringBuffer sb = new StringBuffer();
+		sb.append(" select * from ");
+		sb.append(RemindMsg.TABLENAME);
+		sb.append(" where  ");
+		sb.append(RemindMsg.IS_DELETE);
+		sb.append("  =  0  ");
+		sb.append(" and  ");
+		sb.append(RemindMsg.IS_READ);
+		sb.append("  =  0  ");
+		sb.append( " and " + RemindMsg.OWNER_NUM + " = '" + AppConstant.USER_NUM + "' ");
+		sb.append(" order by  " + RemindMsg.ADD_TIME + " desc ");
+		sb.append(";");
+		String sql = sb.toString();
+		Cursor mCursor = db.rawQuery(sql, null);
+		return mCursor;
+	}
+	
+	@Override
 	public int getTodayCount(String today) {
 		int count = 0;
 		SQLiteDatabase db = mDBHelper.getWritableDatabase();
@@ -375,7 +395,7 @@ public class RemindDaoImpl implements RemindDao {
 		sb.append(" and  ");
 		sb.append(RemindMsg.REMIND_TIME);
 		sb.append(" like '" + today + "%' ");
-		sb.append(" order by  " + RemindMsg.REMIND_TIME_MILI + " desc ");
+		sb.append(" order by  " + RemindMsg.REMIND_TIME + " desc ");
 		sb.append(";");
 		String sql = sb.toString();
 		Cursor mCursor = db.rawQuery(sql, null);
@@ -401,7 +421,7 @@ public class RemindDaoImpl implements RemindDao {
 		sb.append(" and  ");
 		sb.append(RemindMsg.REMIND_TIME);
 		sb.append(" like '" + today + "%' ");
-		sb.append(" order by  " + RemindMsg.REMIND_TIME_MILI + " desc ");
+		sb.append(" order by  " + RemindMsg.REMIND_TIME + " desc ");
 		sb.append(" limit " + startPosition + "," + selectedCount);
 		sb.append(";");
 		String sql = sb.toString();
@@ -425,7 +445,30 @@ public class RemindDaoImpl implements RemindDao {
 		sb.append(" and  ");
 		sb.append(RemindMsg.REMIND_TIME);
 		sb.append(" like '" + today + "%' ");
-		sb.append(" order by  " + RemindMsg.REMIND_TIME_MILI + " desc ");
+		sb.append(" order by  " + RemindMsg.REMIND_TIME + " desc ");
+		sb.append(";");
+		String sql = sb.toString();
+		Cursor mCursor = db.rawQuery(sql, null);
+		return mCursor;
+	}
+	
+	@Override
+	public Cursor getTodayReadRemind(String today) {
+		SQLiteDatabase db = mDBHelper.getWritableDatabase();
+		StringBuffer sb = new StringBuffer();
+		sb.append(" select * from  ");
+		sb.append(RemindMsg.TABLENAME);
+		sb.append(" where  ");
+		sb.append(RemindMsg.IS_DELETE);
+		sb.append("  =  0  ");
+		sb.append(" and  ");
+		sb.append(RemindMsg.IS_READ);
+		sb.append("  =  1  ");
+		sb.append( " and " + RemindMsg.OWNER_NUM + " = '" + AppConstant.USER_NUM + "' ");
+		sb.append(" and  ");
+		sb.append(RemindMsg.REMIND_TIME);
+		sb.append(" like '" + today + "%' ");
+		sb.append(" order by  " + RemindMsg.REMIND_TIME + " desc ");
 		sb.append(";");
 		String sql = sb.toString();
 		Cursor mCursor = db.rawQuery(sql, null);
@@ -451,7 +494,7 @@ public class RemindDaoImpl implements RemindDao {
 		sb.append(" and  ");
 		sb.append(RemindMsg.REMIND_TIME);
 		sb.append(" not like '" + today + "%' ");
-		sb.append(" order by  " + RemindMsg.REMIND_TIME_MILI + " desc ");
+		sb.append(" order by  " + RemindMsg.REMIND_TIME + " desc ");
 		sb.append(";");
 		String sql = sb.toString();
 		Cursor mCursor = db.rawQuery(sql, null);
@@ -477,7 +520,7 @@ public class RemindDaoImpl implements RemindDao {
 		sb.append(" and  ");
 		sb.append(RemindMsg.REMIND_TIME);
 		sb.append(" not like '" + today + "%' ");
-		sb.append(" order by  " + RemindMsg.REMIND_TIME_MILI + " desc ");
+		sb.append(" order by  " + RemindMsg.REMIND_TIME + " desc ");
 		sb.append(" limit " + startPosition + "," + selectedCount);
 		sb.append(";");
 		String sql = sb.toString();
@@ -501,13 +544,36 @@ public class RemindDaoImpl implements RemindDao {
 		sb.append(" and  ");
 		sb.append(RemindMsg.REMIND_TIME);
 		sb.append(" not like '" + today + "%' ");
-		sb.append(" order by  " + RemindMsg.REMIND_TIME_MILI + " desc ");
+		sb.append(" order by  " + RemindMsg.REMIND_TIME + " desc ");
 		sb.append(";");
 		String sql = sb.toString();
 		Cursor mCursor = db.rawQuery(sql, null);
 		return mCursor;
 	}
 
+	@Override
+	public Cursor getOtherdayReadRemind(String today) {
+		SQLiteDatabase db = mDBHelper.getWritableDatabase();
+		StringBuffer sb = new StringBuffer();
+		sb.append(" select * from  ");
+		sb.append(RemindMsg.TABLENAME);
+		sb.append(" where  ");
+		sb.append(RemindMsg.IS_DELETE);
+		sb.append("  =  0  ");
+		sb.append(" and  ");
+		sb.append(RemindMsg.IS_READ);
+		sb.append("  =  1  ");
+		sb.append( " and " + RemindMsg.OWNER_NUM + " = '" + AppConstant.USER_NUM + "' ");
+		sb.append(" and  ");
+		sb.append(RemindMsg.REMIND_TIME);
+		sb.append(" not like '" + today + "%' ");
+		sb.append(" order by  " + RemindMsg.REMIND_TIME + " desc ");
+		sb.append(";");
+		String sql = sb.toString();
+		Cursor mCursor = db.rawQuery(sql, null);
+		return mCursor;
+	}
+	
 	@Override
 	public void updateByNoticeId(String noticeId, int state) {
 		SQLiteDatabase db = mDBHelper.getWritableDatabase();

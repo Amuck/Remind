@@ -12,17 +12,21 @@ public interface MessageDao {
 	public void update(MessageEntity entity);
 	public Cursor query(String recieveNum);
 	/**
+     * @param recieveNum 接收者的号码
+     * @param remindId 所属提醒的id
 	 * @return		总消息条数
 	 */
-	public int getCount(String recieveNum);
+	public int getCount(String recieveNum, String remindId);
 	/**
      * 分页查询
      * 
      * @param currentPage 当前页
      * @param pageSize 每页显示的记录
+     * @param recieveNum 接收者的号码
+     * @param remindId 所属提醒的id
      * @return 当前页的记录
 	 */
-	public ArrayList<MessageEntity> getMsgByPage(int currentPage, int pageSize, String recieveNum);
+	public ArrayList<MessageEntity> getMsgByPage(int currentPage, int pageSize, String recieveNum, String remindId);
 	/**
 	 * 修改发送状态
 	 * @param msgId

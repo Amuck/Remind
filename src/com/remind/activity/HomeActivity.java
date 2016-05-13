@@ -375,7 +375,7 @@ public class HomeActivity extends BaseActivity implements OnClickListener {
 		super.onResume();
 //		resetDataPage();
 //		getMoreData(1);
-		getData();
+		getDataByReadState();
 		remindAdapter.notifyDataSetChanged();
 	}
 	
@@ -514,9 +514,9 @@ public class HomeActivity extends BaseActivity implements OnClickListener {
 	}
 	
 	/**
-	 * 获取数据
+	 * 根据接受状态获取数据
 	 */
-	private void getData() {
+	private void getDataByAcceptState() {
 		datas.clear();
 		// 显示未接受的数据
 		Cursor cursor = remindDao.getUnAcceptRemind();
@@ -526,6 +526,23 @@ public class HomeActivity extends BaseActivity implements OnClickListener {
 		datas.addAll(DataBaseParser.getRemindDetail(cursor));
 		// 显示其他天的提醒
 		cursor = remindDao.getOtherdayRemind(today);
+		datas.addAll(DataBaseParser.getRemindDetail(cursor));
+		cursor.close();
+	}
+	
+	/**
+	 * 根据未读状态获取数据
+	 */
+	private void getDataByReadState() {
+		datas.clear();
+		// 显示未接受的数据
+		Cursor cursor = remindDao.getUnReadRemind();
+		datas.addAll(DataBaseParser.getRemindDetail(cursor));
+		// 显示今天的提醒
+		cursor = remindDao.getTodayReadRemind(today);
+		datas.addAll(DataBaseParser.getRemindDetail(cursor));
+		// 显示其他天的提醒
+		cursor = remindDao.getOtherdayReadRemind(today);
 		datas.addAll(DataBaseParser.getRemindDetail(cursor));
 		cursor.close();
 	}

@@ -81,7 +81,7 @@ public class RemindAdapter extends BaseAdapter {
 		viewHolder.remind_content_txt.setText(remindEntity.getContent());
 		viewHolder.remind_name_txt.setText(remindEntity.getTargetName());
 //		viewHolder.remind_name_txt.setText(remindEntity.getTargetName() + remindEntity.getId());
-		viewHolder.remind_img.setmBorderInsideColor(remindEntity.getRemindState() == RemindEntity.NEW ? Color.RED : Color.WHITE);
+		viewHolder.remind_img.setmBorderInsideColor(remindEntity.getIsRead() == RemindEntity.NOT_READ ? Color.RED : Color.WHITE);
 		
 		String imgPath = peopelDao.getImgPath(remindEntity.getTargetNum());
 		viewHolder.remind_img.setTag(imgPath);

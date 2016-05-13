@@ -17,6 +17,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.os.RemoteException;
 import android.support.v4.content.LocalBroadcastManager;
+import android.text.TextUtils;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
@@ -184,6 +185,12 @@ public class ChatActivity extends BaseActivity implements OnClickListener, OnScr
 	private boolean isShosrt = false;
 	private String voiceName;
 	private long startVoiceT, endVoiceT;
+	
+	/**
+	 * 所属提醒的id
+	 */
+	private String remindId = "";
+	
 	private Handler mHandler = new Handler() {
 		@Override
 		public void handleMessage(Message msg) {
@@ -243,6 +250,13 @@ public class ChatActivity extends BaseActivity implements OnClickListener, OnScr
 			AppUtil.showToast(this, "聊天窗口打开失败，请重试");
 			finish();
 			return;
+		}
+		
+		remindId = intent.getStringExtra("remind_id");
+		if (null == remindId) {
+			remindId = "";
+		} else {
+			remindDao.updateReadState(remindId, RemindEntity.READ);
 		}
 		
 		// 去掉相应的notification
@@ -373,14 +387,14 @@ public class ChatActivity extends BaseActivity implements OnClickListener, OnScr
 				user.getNum(), AppUtil.getNowTime(), 
 				MessageEntity.SEND_SUCCESS, MessageEntity.NORMAL, 
 				MessageEntity.TYPE_TEXT, "", "", peopelEntity.getNum(),
-				MessageEntity.TYPE_SEND, "", MessageEntity.FEED_DEFAULT, AppConstant.USER_NUM, "");
+				MessageEntity.TYPE_SEND, "", MessageEntity.FEED_DEFAULT, AppConstant.USER_NUM, remindId);
 		
 		contactMessageEntity = new MessageEntity("", user.getName(),
 				user.getNum(), peopelEntity.getName(), 
 				peopelEntity.getNum(), AppUtil.getNowTime(), 
 				MessageEntity.SEND_SUCCESS, MessageEntity.NORMAL, 
 				MessageEntity.TYPE_TEXT, "", "", peopelEntity.getNum(),
-				MessageEntity.TYPE_RECIEVE, "", MessageEntity.FEED_DEFAULT, AppConstant.USER_NUM, "");
+				MessageEntity.TYPE_RECIEVE, "", MessageEntity.FEED_DEFAULT, AppConstant.USER_NUM, remindId);
 	}
 	
 	/**
@@ -443,11 +457,11 @@ public class ChatActivity extends BaseActivity implements OnClickListener, OnScr
 	 * 查询消息数据
 	 */
 	private void getData() {
-		allRecorders = messageDao.getCount(num);
+		allRecorders = messageDao.getCount(num, remindId);
         //计算总页数
         pageSize = (allRecorders + lineSize -1) / lineSize;  
 		datas.clear();
-		ArrayList<MessageEntity> items = messageDao.getMsgByPage(currentPage, lineSize, num);
+		ArrayList<MessageEntity> items = messageDao.getMsgByPage(currentPage, lineSize, num, remindId);
 		// 倒序
 		Collections.reverse(items);
 		datas.addAll(items);
@@ -487,7 +501,7 @@ public class ChatActivity extends BaseActivity implements OnClickListener, OnScr
 //		chatAdapter.notifyDataSetChanged();
 		chatAdapter.getNewMsg(userMessageEntity.clone(), chatList);
 		
-		String param = HttpClient.getJsonForPost(HttpClient.sendMsg1(mid + "", peopelEntity.getFriendId(), msg, ""));
+		String param = HttpClient.getJsonForPost(HttpClient.sendMsg1(mid + "", peopelEntity.getFriendId(), msg, remindId));
 //		String param = HttpClient.getJsonForPost(HttpClient.sendMsg1(mid + "", "13716022538", msg, ""));
 //		if (AppConstant.USER_NUM.equals("13716022538")) {
 //			param = HttpClient.getJsonForPost(HttpClient.sendMsg2(mid + "", "13716022537", msg, ""));
@@ -603,7 +617,7 @@ public class ChatActivity extends BaseActivity implements OnClickListener, OnScr
      */
     private void appendDate(){
 		final ArrayList<MessageEntity> additems = messageDao.getMsgByPage(
-				currentPage, lineSize, num);
+				currentPage, lineSize, num, remindId);
 		// 倒序
 		Collections.reverse(additems);
 		datas.addAll(0, additems);
@@ -929,9 +943,18 @@ public class ChatActivity extends BaseActivity implements OnClickListener, OnScr
 				} else if (action.equals(MessageReceiver.GET_MESSAGE_ACTION)) {
 					// 收到好友发送的消息/提醒
 					MessageEntity messageEntity = (MessageEntity) intent.getSerializableExtra("messageEntity");
-					datas.add(messageEntity);
-					chatAdapter.notifyDataSetChanged();
-					chatList.setSelection(datas.size());
+					if (num.equals(messageEntity.getSendNum())) {
+						if (TextUtils.isEmpty(remindId)) {
+							datas.add(messageEntity);
+							chatAdapter.notifyDataSetChanged();
+							chatList.setSelection(datas.size());
+						}else if (!TextUtils.isEmpty(remindId) && remindId.equals(messageEntity.getRemindId())) {
+							datas.add(messageEntity);
+							chatAdapter.notifyDataSetChanged();
+							chatList.setSelection(datas.size());
+						}
+					}
+					
 				} else if(action.equals(MessageReceiver.NOTICE_STATE_ACTION)) {
 					// 收到接受/拒绝提醒
 //					String noticeId = intent.getStringExtra("noticeId");
