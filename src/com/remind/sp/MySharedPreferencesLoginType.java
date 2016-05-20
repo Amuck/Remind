@@ -10,14 +10,9 @@ import android.content.SharedPreferences.Editor;
  */
 public class MySharedPreferencesLoginType {
 	private static final String PREFERENCES_NAME = "com.remind.userInfo.data";
-	private static final String ACCOUNT_NAME = "com.remind.account.data";
-	public static final String LOGINTYPE = "loginType";
 	public static final String USERNAME = "userName";
-	public static final String ACCOUNT = "account";
 	public static final String PASSWORD = "password";
-	public static final String RANDOM = "random";
 	public static final String MACADDRESS = "macAddress";
-	public static final String DATE = "date";
 	/**
 	 * 用户是否在线
 	 */
@@ -27,18 +22,6 @@ public class MySharedPreferencesLoginType {
 	 */
 	public static final String FROM_ID = "from_id";
 	
-	/**
-	 * 登陆日期
-	 * @param context
-	 * @param date
-	 */
-	public static void saveDate(Context context,String date){
-		SharedPreferences pref = context.getSharedPreferences(PREFERENCES_NAME, Context.MODE_APPEND);
-		Editor editor = pref.edit();
-		editor.putString(DATE, date);
-
-		editor.commit();
-	}
 	/**
 	 * 登陆用户id
 	 * @param context
@@ -83,37 +66,7 @@ public class MySharedPreferencesLoginType {
 		boolean value = pref.getBoolean(IS_ONLINE, false);
 		return value;
 	}
-	/**
-	 *登录方式 0为远程登录 1为本地登录
-	 * @param context
-	 * @param loginType
-	 */
-	public static void saveUserInfo(Context context,String loginType){
-		SharedPreferences pref = context.getSharedPreferences(PREFERENCES_NAME, Context.MODE_APPEND);
-		Editor editor = pref.edit();
-		editor.putString(LOGINTYPE, loginType);
 
-		editor.commit();
-	}
-	/**
-	 *保存随机码
-	 * @param context
-	 * @param loginType
-	 */
-	public static void saveRandmStr(Context context,String random){
-		SharedPreferences pref = context.getSharedPreferences(PREFERENCES_NAME, Context.MODE_APPEND);
-		Editor editor = pref.edit();
-		editor.putString(RANDOM, random);
-		
-		editor.commit();
-	}
-	public static void saveAccount(Context context,String account){
-		SharedPreferences pref = context.getSharedPreferences(PREFERENCES_NAME, Context.MODE_APPEND);
-		Editor editor = pref.edit();
-		editor.putString(ACCOUNT, account);
-		
-		editor.commit();
-	}
 	/**
 	 *保存用户名
 	 * @param context
@@ -138,12 +91,6 @@ public class MySharedPreferencesLoginType {
 	    Editor editor = pref.edit();
 	    editor.clear();
 	    editor.commit();
-	}
-	public static void clearAccount(Context context){
-		SharedPreferences pref = context.getSharedPreferences(ACCOUNT_NAME, Context.MODE_APPEND);
-		Editor editor = pref.edit();
-		editor.clear();
-		editor.commit();
 	}
 	
 	/**
