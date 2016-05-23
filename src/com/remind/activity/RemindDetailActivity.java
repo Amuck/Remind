@@ -45,7 +45,7 @@ import com.remind.view.SwitchButton.OnSwitchListener;
  *
  * 查看提醒详细信息界面
  */
-public class RemindDetailActivity extends AbActivity implements OnClickListener {
+public class RemindDetailActivity extends BaseActivity implements OnClickListener {
 
 	/**
 	 * 选择联系人按钮
@@ -126,7 +126,6 @@ public class RemindDetailActivity extends AbActivity implements OnClickListener 
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setAbContentView(R.layout.activity_add_remind);
-		setNotitle();
 		peopelDao = new PeopelDaoImpl(this);
 		remindDao = new RemindDaoImpl(this);
 

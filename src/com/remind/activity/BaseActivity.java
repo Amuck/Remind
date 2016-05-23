@@ -1,6 +1,5 @@
 package com.remind.activity;
 
-import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnKeyListener;
@@ -9,7 +8,9 @@ import android.os.Handler;
 import android.view.KeyEvent;
 import android.widget.Toast;
 
-public class BaseActivity extends Activity {
+import com.ab.activity.AbActivity;
+
+public class BaseActivity extends AbActivity {
 	// 显示进度条
 	private final int PAGE_START = 10000;
 	// 隐藏进度条

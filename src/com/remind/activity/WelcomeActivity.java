@@ -3,12 +3,15 @@ package com.remind.activity;
 import org.json.JSONObject;
 
 import android.content.BroadcastReceiver;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.ServiceConnection;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.IBinder;
 import android.widget.Toast;
 
 import com.help.remind.R;
@@ -19,6 +22,8 @@ import com.remind.entity.PeopelEntity;
 import com.remind.global.AppConstant;
 import com.remind.http.HttpClient;
 import com.remind.receiver.MessageReceiver;
+import com.remind.sevice.BackService;
+import com.remind.sevice.IBackService;
 import com.remind.sp.MySharedPreferencesLoginType;
 import com.remind.util.NetWorkUtil;
 
@@ -51,6 +56,32 @@ public class WelcomeActivity extends BaseActivity {
 	
 	private LoginBackReciver mReciver;
 	private IntentFilter mIntentFilter;
+	
+	/**
+	 * 是否需要解除绑定
+	 */
+	private boolean isNeedUnbind = false;
+	
+	private Intent mServiceIntent;
+	private IBackService iBackService;
+	private ServiceConnection conn = new ServiceConnection() {
+
+		@Override
+		public void onServiceDisconnected(ComponentName name) {
+			iBackService = null;
+
+		}
+
+		@Override
+		public void onServiceConnected(ComponentName name, IBinder service) {
+			iBackService = IBackService.Stub.asInterface(service);
+			if (RemindApplication.iBackService == null) {
+				RemindApplication.iBackService = iBackService;
+			} else {
+				iBackService = RemindApplication.iBackService;
+			}
+		}
+	};
 
 	private Handler handler = new Handler() {
 
@@ -84,6 +115,7 @@ public class WelcomeActivity extends BaseActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_welcome);
 
+		mServiceIntent = new Intent(this, BackService.class);
 		mIntent = new Intent();
 		peopelDao = new PeopelDaoImpl(this);
 		mReciver = new LoginBackReciver();
@@ -103,6 +135,20 @@ public class WelcomeActivity extends BaseActivity {
 	protected void onStart() {
 		super.onStart();
 		registerReceiver(mReciver, mIntentFilter);
+		if (RemindApplication.iBackService == null) {
+			ComponentName cn = startService(mServiceIntent);
+			if (cn != null) {
+				bindService(mServiceIntent, conn, BIND_AUTO_CREATE);
+			} else {
+				RemindApplication.IS_LOGIN = false;
+				showToast("登陆失败，请重新登陆");
+				return;
+			}
+			RemindApplication.iBackService = iBackService;
+			isNeedUnbind = true;
+		} else {
+			isNeedUnbind = false;
+		}
 	}
 
 	@Override
@@ -111,6 +157,13 @@ public class WelcomeActivity extends BaseActivity {
 		super.onStop();
 	}
 
+	@Override
+	protected void onDestroy() {
+		if (isNeedUnbind) {
+			unbindService(conn);
+		}
+		super.onDestroy();
+	}
 	/**
 	 * 是否已经登陆了
 	 */
@@ -128,7 +181,7 @@ public class WelcomeActivity extends BaseActivity {
 			login(params);
 		} else {
 			// 退出了
-			mIntent.setClass(WelcomeActivity.this, LoginActivity.class);
+			mIntent.setClass(WelcomeActivity.this, HomeActivity.class);
 			startActivity(mIntent);
 			finish();
 		}
@@ -196,7 +249,7 @@ public class WelcomeActivity extends BaseActivity {
 			}).start();
 		} else {
 			showToast(getResources().getString(R.string.net_null));
-			mIntent.setClass(WelcomeActivity.this, LoginActivity.class);
+			mIntent.setClass(WelcomeActivity.this, HomeActivity.class);
 			startActivity(mIntent);
 			finish();
 		}

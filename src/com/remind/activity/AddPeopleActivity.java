@@ -23,7 +23,7 @@ import com.remind.http.HttpClient;
 import com.remind.util.AppUtil;
 import com.remind.view.ClearEditText;
 
-public class AddPeopleActivity extends AbActivity implements OnClickListener {
+public class AddPeopleActivity extends BaseActivity implements OnClickListener {
 	private ClearEditText userName;
 	private Button addUser;
 
@@ -34,7 +34,7 @@ public class AddPeopleActivity extends AbActivity implements OnClickListener {
 		public void handleMessage(android.os.Message msg) {
 			switch (msg.what) {
 			case 0:
-				removeProgressDialog();
+				hideProgess();
 				String s = (String) msg.obj;
 				if (null == s || !s.contains("|")) {
 					Toast.makeText(AddPeopleActivity.this, "网络连接失败，请确认后重试.",
@@ -193,8 +193,9 @@ public class AddPeopleActivity extends AbActivity implements OnClickListener {
 	}
 
 	private void friend(final String params) {
-		showProgressDialog();
-		mProgressDialog.setCanceledOnTouchOutside(false);
+		if (!isProgesShow()) {
+			showProgess();
+		}
 		
 		new Thread(new Runnable() {
 			

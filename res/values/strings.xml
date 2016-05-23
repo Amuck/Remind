@@ -41,7 +41,7 @@
     <string name="repeat_month">每月</string>
     <string name="repeat_year">每年</string>
     <string name="select_title">主题</string>
-    <string name="select_title_txt">工作计划</string>
+    <string name="select_title_txt">请填写主题</string>
     <string name="select_type">形式</string>
     <string name="select_type_txt">语音</string>
     <string name="select_prev">是否可预览  </string>

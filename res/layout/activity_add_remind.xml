@@ -70,14 +70,14 @@
                 android:textColor="@color/white"
                 android:textSize="16sp" />
 
-            <TextView
+            <AutoCompleteTextView
                 android:id="@+id/select_title_btn"
                 android:layout_width="151dp"
                 android:layout_height="27dp"
                 android:background="@drawable/right_board"
                 android:gravity="center"
-                android:text="@string/select_title_txt"
                 android:textColor="@color/white"
+                android:hint="@string/select_title_txt"
                 android:textSize="10sp" />
         </LinearLayout>
 
@@ -215,7 +215,7 @@
                 android:textColor="@color/white"
                 android:textSize="16sp" />
 
-            <com.remind.view.SwitchButton
+           <com.remind.view.SwitchButton
                 android:id="@+id/select_preview_btn"
                 android:layout_width="51dp"
                 android:layout_height="27dp" />

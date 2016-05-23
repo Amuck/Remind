@@ -416,9 +416,6 @@ public class HomeActivity extends BaseActivity implements OnClickListener {
 	protected void onStop() {
 		unregisterReceiver(mReciver);
 		
-		if (isNeedUnbind) {
-			unbindService(conn);
-		}
 		mLocationClient.stop();
 		((RemindApplication) getApplication()).cancelRequest();
 		super.onStop();
@@ -427,6 +424,9 @@ public class HomeActivity extends BaseActivity implements OnClickListener {
 	@Override
 	protected void onDestroy() {
 		ImageLoader.getInstance(this).clearCache();
+		if (isNeedUnbind) {
+			unbindService(conn);
+		}
 		super.onDestroy();
 	}
 

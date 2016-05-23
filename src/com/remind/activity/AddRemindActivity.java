@@ -2,6 +2,7 @@ package com.remind.activity;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import org.json.JSONException;
@@ -28,8 +29,9 @@ import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.ab.activity.AbActivity;
 import com.ab.global.AbConstant;
+import com.ab.util.AbDateUtil;
+import com.ab.util.AbStrUtil;
 import com.ab.view.wheel.AbWheelUtil;
 import com.ab.view.wheel.AbWheelView;
 import com.help.remind.R;
@@ -58,7 +60,7 @@ import com.remind.view.SwitchButton.OnSwitchListener;
  * @author ChenLong
  *
  */
-public class AddRemindActivity extends AbActivity implements OnClickListener {
+public class AddRemindActivity extends BaseActivity implements OnClickListener {
 	private final static int HTTP_OVER = 0;
 	private final static int NOTIFY_SUCCESS = 1;
 	private final static int NOTIFY_FAILE = 2;
@@ -313,6 +315,7 @@ public class AddRemindActivity extends AbActivity implements OnClickListener {
 			@Override
 			public void onClick(View v) {
 				showDialog(AbConstant.DIALOGBOTTOM, mDateView, 40);
+//				AbDialogUtil.showDialog(mDateView,Gravity.BOTTOM);
 			}
 
 		});
@@ -322,6 +325,7 @@ public class AddRemindActivity extends AbActivity implements OnClickListener {
 			@Override
 			public void onClick(View v) {
 				showDialog(AbConstant.DIALOGBOTTOM, mTimeView, 40);
+//				AbDialogUtil.showDialog(mTimeView,Gravity.BOTTOM);
 			}
 
 		});
@@ -686,19 +690,13 @@ public class AddRemindActivity extends AbActivity implements OnClickListener {
 	 * @param mText
 	 */
 	public void initWheelTime(View mTimeView, TextView mText) {
-		final AbWheelView mWheelViewHH = (AbWheelView) mTimeView
-				.findViewById(R.id.wheelView1);
-		final AbWheelView mWheelViewMM = (AbWheelView) mTimeView
-				.findViewById(R.id.wheelView2);
-		Button okBtn = (Button) mTimeView.findViewById(R.id.okBtn);
-		Button cancelBtn = (Button) mTimeView.findViewById(R.id.cancelBtn);
-		mWheelViewMM.setCenterSelectDrawable(this.getResources().getDrawable(
-				R.drawable.wheel_select));
-		mWheelViewHH.setCenterSelectDrawable(this.getResources().getDrawable(
-				R.drawable.wheel_select));
-		AbWheelUtil.initWheelTimePicker2(this, mText, mWheelViewHH, mWheelViewMM, okBtn, cancelBtn, 
-				10,
-				0, true);
+		final AbWheelView mWheelViewMM = (AbWheelView)mTimeView.findViewById(R.id.wheelView1);
+		final AbWheelView mWheelViewHH = (AbWheelView)mTimeView.findViewById(R.id.wheelView2);
+		Button okBtn = (Button)mTimeView.findViewById(R.id.okBtn);
+		Button cancelBtn = (Button)mTimeView.findViewById(R.id.cancelBtn);
+		mWheelViewMM.setCenterSelectDrawable(this.getResources().getDrawable(R.drawable.wheel_select));
+		mWheelViewHH.setCenterSelectDrawable(this.getResources().getDrawable(R.drawable.wheel_select));
+        AbWheelUtil.initWheelTimePicker2(this, mText,mWheelViewMM, mWheelViewHH,okBtn,cancelBtn,1,1,true);
 	}
 
 	/**
@@ -707,27 +705,29 @@ public class AddRemindActivity extends AbActivity implements OnClickListener {
 	 * @param mText
 	 */
 	public void initWheelDate(View mDateView, TextView mText) {
-		// 年月日时间选择器
-		Calendar calendar = Calendar.getInstance();
-		int year = calendar.get(Calendar.YEAR);
-		int month = calendar.get(Calendar.MONTH) + 1;
+		//年月日时间选择器
+        Calendar calendar = Calendar.getInstance();
+        int year = calendar.get(Calendar.YEAR);
+		int month = calendar.get(Calendar.MONTH)+1;
 		int day = calendar.get(Calendar.DATE);
-		final AbWheelView mWheelViewY = (AbWheelView) mDateView
-				.findViewById(R.id.wheelView1);
-		final AbWheelView mWheelViewM = (AbWheelView) mDateView
-				.findViewById(R.id.wheelView2);
-		final AbWheelView mWheelViewD = (AbWheelView) mDateView
-				.findViewById(R.id.wheelView3);
-		Button okBtn = (Button) mDateView.findViewById(R.id.okBtn);
-		Button cancelBtn = (Button) mDateView.findViewById(R.id.cancelBtn);
-		mWheelViewY.setCenterSelectDrawable(this.getResources().getDrawable(
-				R.drawable.wheel_select));
-		mWheelViewM.setCenterSelectDrawable(this.getResources().getDrawable(
-				R.drawable.wheel_select));
-		mWheelViewD.setCenterSelectDrawable(this.getResources().getDrawable(
-				R.drawable.wheel_select));
-		AbWheelUtil.initWheelDatePicker(this, mText, mWheelViewY, mWheelViewM,
-				mWheelViewD, okBtn, cancelBtn, year, month, day, year, 120,
-				false);
+        String date =  mText.getText().toString().trim();
+        if(!AbStrUtil.isEmpty(date)){
+        	Date dateNew = AbDateUtil.getDateByFormat(date, AbDateUtil.dateFormatYMD);
+        	if(dateNew!=null){
+        		year = 1900+dateNew.getYear();
+        		month = dateNew.getMonth()+1;
+        		day = dateNew.getDate();
+        	}
+        }
+        
+		final AbWheelView mWheelViewY = (AbWheelView)mDateView.findViewById(R.id.wheelView1);
+		final AbWheelView mWheelViewM = (AbWheelView)mDateView.findViewById(R.id.wheelView2);
+		final AbWheelView mWheelViewD = (AbWheelView)mDateView.findViewById(R.id.wheelView3);
+		Button okBtn = (Button)mDateView.findViewById(R.id.okBtn);
+		Button cancelBtn = (Button)mDateView.findViewById(R.id.cancelBtn);
+		mWheelViewY.setCenterSelectDrawable(this.getResources().getDrawable(R.drawable.wheel_select));
+		mWheelViewM.setCenterSelectDrawable(this.getResources().getDrawable(R.drawable.wheel_select));
+		mWheelViewD.setCenterSelectDrawable(this.getResources().getDrawable(R.drawable.wheel_select));
+		AbWheelUtil.initWheelDatePicker(this, mText, mWheelViewY, mWheelViewM, mWheelViewD,okBtn,cancelBtn, year,month,day, year, 120, false);
 	}
 }
