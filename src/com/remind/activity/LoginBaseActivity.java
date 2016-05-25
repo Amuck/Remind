@@ -1,6 +1,5 @@
 package com.remind.activity;
 
-import org.json.JSONArray;
 import org.json.JSONObject;
 
 import android.content.BroadcastReceiver;
@@ -13,7 +12,6 @@ import android.database.Cursor;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
-import android.widget.Toast;
 
 import com.help.remind.R;
 import com.remind.application.RemindApplication;
@@ -23,27 +21,20 @@ import com.remind.dao.RemindDao;
 import com.remind.dao.impl.MessageDaoImpl;
 import com.remind.dao.impl.PeopelDaoImpl;
 import com.remind.dao.impl.RemindDaoImpl;
-import com.remind.entity.MessageEntity;
 import com.remind.entity.PeopelEntity;
-import com.remind.entity.RemindEntity;
 import com.remind.global.AppConstant;
 import com.remind.http.HttpClient;
 import com.remind.receiver.MessageReceiver;
 import com.remind.sevice.BackService;
 import com.remind.sevice.IBackService;
-import com.remind.sp.MySharedPreferencesLoginType;
-import com.remind.util.AppUtil;
 import com.remind.util.NetWorkUtil;
 
-public class WelcomeActivity extends BaseActivity {
-	private final static int LOGIN_SUCCESS = 1;
-	private final static int LOGIN_FAIL = 2;
-	private static final int INIT_FINISH = 3;
-
-	/**
-	 * 是否已经登录
-	 */
-	private boolean isLogin = false;
+public class LoginBaseActivity extends BaseActivity {
+	public final static int HTTP_OVER = 0;
+	public final static int LOGIN_SUCCESS = 1;
+	public final static int LOGIN_FAIL = 2;
+	public static final int INIT_FINISH = 3;
+	
 	/**
 	 * 用户登陆id
 	 */
@@ -53,20 +44,14 @@ public class WelcomeActivity extends BaseActivity {
 	 */
 	private String mobile = "";
 	/**
-	 * 登录用户密码
-	 */
-	private String pwdStr = "";
-	/**
 	 * 用户联系人数据库
 	 */
 	private PeopelDao peopelDao;
 	private RemindDao remindDao;
 	private MessageDao messageDao;
-	private Intent mIntent;
 	
-	private LoginBackReciver mReciver;
+	private LoginReciver mReciver;
 	private IntentFilter mIntentFilter;
-	
 	/**
 	 * 是否需要解除绑定
 	 */
@@ -85,64 +70,67 @@ public class WelcomeActivity extends BaseActivity {
 		@Override
 		public void onServiceConnected(ComponentName name, IBinder service) {
 			iBackService = IBackService.Stub.asInterface(service);
-			if (RemindApplication.iBackService == null) {
-				RemindApplication.iBackService = iBackService;
-			} else {
-				iBackService = RemindApplication.iBackService;
-			}
 		}
 	};
-
-	private Handler handler = new Handler() {
+	
+	public Handler handler = new Handler() {
 
 		public void handleMessage(android.os.Message msg) {
 			switch (msg.what) {
 
 			case INIT_FINISH:
-				isAlreadyLogin();
+				initFinish();
+				break;
+			case HTTP_OVER:
+				httpOver();
 				break;
 
 			case LOGIN_SUCCESS:
-				mIntent.setClass(WelcomeActivity.this, HomeActivity.class);
-				startActivity(mIntent);
-				finish();
+				loginSuccess();
 				break;
 
 			case LOGIN_FAIL:
-				Toast.makeText(WelcomeActivity.this, "获取用户信息失败，请重新登陆",
-						Toast.LENGTH_SHORT).show();
-				mIntent.setClass(WelcomeActivity.this, LoginActivity.class);
-				startActivity(mIntent);
-				finish();
+				loginFail();
 				break;
 			}
 		};
 
 	};
-
+	
+	public void initFinish(){};
+	public void httpOver(){};
+	public void loginSuccess(){};
+	public void loginFail(){};
+	public void loginBackRecevie(){};
+	public void outNet(){};
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_welcome);
-
-		mServiceIntent = new Intent(this, BackService.class);
-		mIntent = new Intent();
+		
 		peopelDao = new PeopelDaoImpl(this);
 		remindDao = new RemindDaoImpl(this);
 		messageDao = new MessageDaoImpl(this);
-		mReciver = new LoginBackReciver();
+		mServiceIntent = new Intent(this, BackService.class);
+		mReciver = new LoginReciver();
 		mIntentFilter = new IntentFilter();
 		mIntentFilter.addAction(MessageReceiver.LOGIN_STATE_ACTION);
-		isLogin = MySharedPreferencesLoginType.isOnline(this);
-		
-		if (isLogin) {
-			// 已登录
-			handler.sendEmptyMessage(INIT_FINISH);
-		} else {
-			handler.sendEmptyMessageDelayed(INIT_FINISH, 2000);
-		}
 	}
+	
+	class LoginReciver extends BroadcastReceiver {
 
+		public LoginReciver() {
+		}
+
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			String action = intent.getAction();
+			if (action.equals(MessageReceiver.LOGIN_STATE_ACTION)) {
+				loginBackRecevie();
+			}
+		};
+	}
+	
 	@Override
 	protected void onStart() {
 		super.onStart();
@@ -176,35 +164,13 @@ public class WelcomeActivity extends BaseActivity {
 		}
 		super.onDestroy();
 	}
-	/**
-	 * 是否已经登陆了
-	 */
-	private void isAlreadyLogin() {
-
-		if (isLogin) {
-			// 登陆没有退出
-			mobile = MySharedPreferencesLoginType.getString(this,
-					MySharedPreferencesLoginType.USERNAME);
-			pwdStr = MySharedPreferencesLoginType.getString(this,
-					MySharedPreferencesLoginType.PASSWORD);
-			// 登陆
-			String params = HttpClient.getJsonForPost(HttpClient
-					.getUserForLogin(mobile, pwdStr));
-			login(params);
-		} else {
-			// 退出了
-			mIntent.setClass(WelcomeActivity.this, HomeActivity.class);
-			startActivity(mIntent);
-			finish();
-		}
-	}
-
+	
 	/**
 	 * 登陆
 	 * 
 	 * @param params
 	 */
-	private void login(final String params) {
+	public void login(final String params) {
 		if (NetWorkUtil.isAvailable(this)) {
 			new Thread(new Runnable() {
 
@@ -350,29 +316,8 @@ public class WelcomeActivity extends BaseActivity {
 			}).start();
 		} else {
 			showToast(getResources().getString(R.string.net_null));
-			mIntent.setClass(WelcomeActivity.this, HomeActivity.class);
-			startActivity(mIntent);
-			finish();
+			outNet();
 		}
 
-	}
-	
-	class LoginBackReciver extends BroadcastReceiver {
-
-		public LoginBackReciver() {
-		}
-
-		@Override
-		public void onReceive(Context context, Intent intent) {
-			String action = intent.getAction();
-			if (action.equals(MessageReceiver.LOGIN_STATE_ACTION)) {
-				// 登陆状态改变
-				if (RemindApplication.IS_LOGIN) {
-					handler.sendEmptyMessage(LOGIN_SUCCESS);
-				} else {
-					handler.sendEmptyMessage(LOGIN_FAIL);
-				}
-			}
-		};
 	}
 }

@@ -72,4 +72,10 @@ public interface PeopelDao {
 	 * @param num
 	 */
 	public void deleteFromDbByNum(String num);
+	/**
+	 * 通过friendid获取数量
+	 * @param friendId
+	 * @return
+	 */
+	public int getCount(String friendId);
 }

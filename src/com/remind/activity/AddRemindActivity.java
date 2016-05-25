@@ -538,7 +538,7 @@ public class AddRemindActivity extends BaseActivity implements OnClickListener {
 								targetPeopel.getFriendId(), AppConstant.FROM_ID, 
 								remindEntity.getTitle(), remindEntity.getIsPreview() + "", 
 								remindEntity.getRemindTime(), remindEntity.getRepeatType(),
-								AppConstant.USER_NUM, remindEntity.getNickName(), remindEntity.getContent());
+								AppConstant.USER_NUM, remindEntity.getNickName(), remindEntity.getContent(), remindEntity.getAddTime());
 						String s = HttpClient.post(
 								HttpClient.url + HttpClient.create_notify, params);
 						

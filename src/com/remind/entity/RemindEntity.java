@@ -5,11 +5,7 @@ import java.io.Serializable;
 /**
  * @author ChenLong
  *
- * 提醒的实体类
- */
-/**
- * @author ChenLong
- *
+ * 提醒的实体类, 需要设置remindState
  */
 public class RemindEntity implements Serializable{
 	/**
@@ -108,20 +104,24 @@ public class RemindEntity implements Serializable{
 	 */
 	private String id;
 	/**
-	 * 本机手机号
+	 * 登陆用户手机号
 	 */
 	private String ownerNum;
 	
 	/**
-	 * 对方手机号
+	 * 发送者的手机号
 	 */
 	private String targetNum;
 	
 	/**
-	 * 对方联系人名称
+	 * 发送者的名称
 	 */
 	private String targetName;
 	private String noticeId;
+	
+	/**
+	 * 发送者 的id
+	 */
 	private String ownerId;
 	/**
 	 * 联系人备注名称

@@ -301,6 +301,7 @@ public class HttpClient {
 		public String title;
 		public String type;
 		public String time;
+		public String addTime;
 		public String isPrev;
 		public String userNum;
 		public String userNick;
@@ -370,7 +371,7 @@ public class HttpClient {
 	 * @return
 	 */
 	public static String getCreateNofiJsonForPost(String user_id, String owner_id, String title, String isPrev,
-			String time, String type, String userNum, String userNick, String noticeContent) {
+			String time, String type, String userNum, String userNick, String noticeContent, String addTime) {
 		Gson gson = new Gson();
 		String result = "";
 		Notify notify = new Notify();
@@ -380,6 +381,7 @@ public class HttpClient {
 		content.title = title;
 		content.isPrev = isPrev;
 		content.time = time;
+		content.addTime = addTime;
 		content.type = type;
 		content.userNum = userNum;
 		content.userNick = userNick;

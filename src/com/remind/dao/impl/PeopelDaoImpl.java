@@ -6,11 +6,11 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.text.TextUtils;
 import android.util.Log;
 
 import com.remind.dao.PeopelDao;
 import com.remind.dao.dbhelper.DBHelper;
-import com.remind.dao.msg.MessageIndexMsg;
 import com.remind.dao.msg.PeopelMsg;
 import com.remind.entity.PeopelEntity;
 import com.remind.global.AppConstant;
@@ -212,4 +212,24 @@ public class PeopelDaoImpl implements PeopelDao {
 		db.execSQL(sql);
 	}
 
+	@Override
+	public int getCount(String friendId) {
+		SQLiteDatabase db = mDBHelper.getWritableDatabase();
+		StringBuffer buffer = new StringBuffer();
+        String sql = "select count(*) from " + PeopelMsg.TABLENAME + " where "
+				+ PeopelMsg.ISDELETE + " = 0 and " + PeopelMsg.FRIEND_ID
+				+ " = " + friendId + " and " + PeopelMsg.LOGIN_USER + " = '" + AppConstant.USER_NUM + "' ";
+        buffer.append(sql);
+//        if (!TextUtils.isEmpty(remindId)) {
+//        	buffer.append(" and " + MessageMsg.REMIND_ID + " = '" + remindId + "' ");
+//		}
+        Cursor c = db.rawQuery(buffer.toString(), null);
+        int length = 0;
+        if (c.getCount() > 0) {
+        	c.moveToFirst();
+        	length = c.getInt(0);
+		}
+        c.close();
+        return length;
+	}
 }

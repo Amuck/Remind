@@ -130,11 +130,27 @@
                 <action android:name="com.remind.heart_beat_ACTION" />
             </intent-filter>
         </receiver>
-        <receiver android:name="com.remind.receiver.BootReceiver" >
+        <!-- <receiver android:name="com.remind.receiver.BootReceiver" >
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
+        </receiver> -->
+        
+        <receiver
+            android:name="com.remind.receiver.BootReceiver"
+            android:permission="android.permission.RECEIVE_BOOT_COMPLETED" >
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.MEDIA_MOUNTED" />
+                <action android:name="android.intent.action.MEDIA_UNMOUNTED" />
+                <action android:name="android.intent.action.MEDIA_EJECT" />
+                <data android:scheme="file" >
+                </data>
+            </intent-filter>
         </receiver>
+        
         <receiver android:name="com.remind.receiver.WakeReceiver" >
             <intent-filter>
                 <action android:name="com.wake.gray" />
