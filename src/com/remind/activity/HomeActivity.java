@@ -405,7 +405,7 @@ public class HomeActivity extends BaseActivity implements OnClickListener {
 				showToast("登陆失败，请重新登陆");
 				return;
 			}
-			RemindApplication.iBackService = iBackService;
+//			RemindApplication.iBackService = iBackService;
 			isNeedUnbind = true;
 		} else {
 			isNeedUnbind = false;

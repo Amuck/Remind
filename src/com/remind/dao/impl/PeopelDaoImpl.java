@@ -218,7 +218,7 @@ public class PeopelDaoImpl implements PeopelDao {
 		StringBuffer buffer = new StringBuffer();
         String sql = "select count(*) from " + PeopelMsg.TABLENAME + " where "
 				+ PeopelMsg.ISDELETE + " = 0 and " + PeopelMsg.FRIEND_ID
-				+ " = " + friendId + " and " + PeopelMsg.LOGIN_USER + " = '" + AppConstant.USER_NUM + "' ";
+				+ " = '" + friendId + "' and " + PeopelMsg.LOGIN_USER + " = '" + AppConstant.USER_NUM + "' ";
         buffer.append(sql);
 //        if (!TextUtils.isEmpty(remindId)) {
 //        	buffer.append(" and " + MessageMsg.REMIND_ID + " = '" + remindId + "' ");

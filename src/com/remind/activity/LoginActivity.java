@@ -2,16 +2,7 @@ package com.remind.activity;
 
 import org.json.JSONObject;
 
-import android.content.BroadcastReceiver;
-import android.content.ComponentName;
-import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
-import android.content.ServiceConnection;
-import android.database.Cursor;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.IBinder;
 import android.os.Message;
 import android.text.TextUtils;
 import android.view.MotionEvent;
@@ -27,14 +18,8 @@ import android.widget.Toast;
 
 import com.help.remind.R;
 import com.remind.application.RemindApplication;
-import com.remind.dao.PeopelDao;
-import com.remind.dao.impl.PeopelDaoImpl;
-import com.remind.entity.PeopelEntity;
 import com.remind.global.AppConstant;
 import com.remind.http.HttpClient;
-import com.remind.receiver.MessageReceiver;
-import com.remind.sevice.BackService;
-import com.remind.sevice.IBackService;
 import com.remind.sp.MySharedPreferencesLoginType;
 import com.remind.util.NetWorkUtil;
 import com.remind.view.ClearEditText;
@@ -43,10 +28,7 @@ import com.remind.view.ClearEditText;
  * 登陆注册界面
  * 
  */
-public class LoginActivity extends BaseActivity implements OnClickListener {
-	private final static int HTTP_OVER = 0;
-	private final static int LOGIN_SUCCESS = 1;
-	private final static int LOGIN_FAIL = 2;
+public class LoginActivity extends LoginBaseActivity implements OnClickListener {
 	/**
 	 * 标题：用户登陆或者用户注册
 	 */
@@ -83,102 +65,6 @@ public class LoginActivity extends BaseActivity implements OnClickListener {
 	 * false：用户登陆； true：用户注册
 	 */
 	private boolean isRegist = false;
-	/**
-	 * 用户联系人数据库
-	 */
-	private PeopelDao peopelDao;
-	
-	/**
-	 * 用户登陆id
-	 */
-	private String from_id = "";
-	/**
-	 * 是否注册service
-	 */
-//	private boolean isRegistService = false;
-
-	private Intent mServiceIntent;
-	
-	private IBackService iBackService;
-	
-	private LoginBackReciver mReciver;
-	private IntentFilter mIntentFilter;
-	
-	private ServiceConnection conn = new ServiceConnection() {
-
-		@Override
-		public void onServiceDisconnected(ComponentName name) {
-			iBackService = null;
-
-		}
-
-		@Override
-		public void onServiceConnected(ComponentName name, IBinder service) {
-			iBackService = IBackService.Stub.asInterface(service);
-		}
-	};
-	
-	private Handler handler = new Handler() {
-		@Override
-		public void handleMessage(Message msg) {
-
-			switch (msg.what) {
-			case HTTP_OVER:
-				Bundle bundle = msg.getData();
-				String s = bundle.getString("code");
-				if (TextUtils.isEmpty(s)) {
-					// 失败
-					hideProgess();
-					Toast.makeText(LoginActivity.this, "注册失败，请重试.",
-							Toast.LENGTH_SHORT).show();
-				} else if("402".equals(s)) {
-					hideProgess();
-					Toast.makeText(LoginActivity.this, "这个号码已经注册过，请重试.",
-							Toast.LENGTH_SHORT).show();
-				} else if("200".equals(s)){
-					// 成功
-					if (!isRegist) {
-						handler.sendEmptyMessage(LOGIN_SUCCESS);
-					} else {
-						// 登陆
-						String params = HttpClient.getJsonForPost(HttpClient
-								.getUserForLogin(et_user_mobile
-										.getEditableText().toString(), et_user_psw
-										.getEditableText().toString()));
-						login(params);
-					}
-				} else {
-					// 失败
-					hideProgess();
-					Toast.makeText(LoginActivity.this, "注册失败，请重试.",
-							Toast.LENGTH_SHORT).show();
-				}
-				
-				break;
-			case LOGIN_SUCCESS:
-				// 是否记住用户名
-				if (isRemember) {
-					MySharedPreferencesLoginType.saveUserName(
-							getApplicationContext(), et_user_mobile
-									.getEditableText().toString(), et_user_psw
-									.getEditableText().toString());
-				} else {
-					MySharedPreferencesLoginType.saveUserName(
-							getApplicationContext(), "", "");
-				}
-				break;
-
-			case LOGIN_FAIL:
-				if (isProgesShow()) {
-					hideProgess();
-				}
-				Toast.makeText(LoginActivity.this, "失败，请重试",
-						Toast.LENGTH_SHORT).show();
-				break;
-			}
-
-		}
-	};
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -190,23 +76,7 @@ public class LoginActivity extends BaseActivity implements OnClickListener {
 		// .getAppExceptionHandler());
 		// AppManager.getAppManager().addActivity(this);
 
-		mReciver = new LoginBackReciver();
-		mIntentFilter = new IntentFilter();
-		mIntentFilter.addAction(MessageReceiver.LOGIN_STATE_ACTION);
-		
 		init();
-	}
-	
-	@Override
-	protected void onStart() {
-		super.onStart();
-		registerReceiver(mReciver, mIntentFilter);
-	}
-
-	@Override
-	protected void onStop() {
-		unregisterReceiver(mReciver);
-		super.onStop();
 	}
 
 	private void init() {
@@ -218,12 +88,8 @@ public class LoginActivity extends BaseActivity implements OnClickListener {
 		login_user_reg = (CheckBox) findViewById(R.id.login_user_reg);
 		btn_login = (Button) findViewById(R.id.btn_login);
 
-		peopelDao = new PeopelDaoImpl(this);
-		
-		mServiceIntent = new Intent(this, BackService.class);
-		
 		// 是否记住用户名
-		
+
 		et_user_mobile.setOnTouchListener(new OnTouchListener() {
 
 			@Override
@@ -289,7 +155,7 @@ public class LoginActivity extends BaseActivity implements OnClickListener {
 					}
 				});
 		btn_login.setOnClickListener(this);
-		
+
 		String name = MySharedPreferencesLoginType.getString(
 				getApplicationContext(), MySharedPreferencesLoginType.USERNAME);
 		if (!TextUtils.isEmpty(name)) {
@@ -302,8 +168,8 @@ public class LoginActivity extends BaseActivity implements OnClickListener {
 		switch (v.getId()) {
 		case R.id.btn_login:
 			// 登陆/注册
-			String mobile = et_user_mobile.getEditableText().toString();
-			String pwdStr = et_user_psw.getEditableText().toString();
+			mobile = et_user_mobile.getEditableText().toString();
+			pwdStr = et_user_psw.getEditableText().toString();
 			if (mobile.length() == 0) {
 				// 帐号不能为空
 				tv_tips.setText(getResources().getString(R.string.account_null));
@@ -320,11 +186,15 @@ public class LoginActivity extends BaseActivity implements OnClickListener {
 					// 登陆
 					params = HttpClient.getJsonForPost(HttpClient
 							.getUserForLogin(mobile, pwdStr));
+
+					if (!isProgesShow()) {
+						showProgess();
+					}
 					login(params);
 				} else {
 					// 注册
 					params = HttpClient.getJsonForPost(HttpClient
-							.getUserForReg(mobile, pwdStr, "User", "role_1" ));
+							.getUserForReg(mobile, pwdStr, "User", "role_1"));
 					createUser(params);
 				}
 			}
@@ -338,30 +208,30 @@ public class LoginActivity extends BaseActivity implements OnClickListener {
 	 */
 	private void createUser(final String params) {
 		if (NetWorkUtil.isAvailable(LoginActivity.this)) {
-			showProgess();
+			if (!isProgesShow()) {
+				showProgess();
+			}
 			new Thread(new Runnable() {
 
 				@Override
 				public void run() {
-					String s = HttpClient.post(
-							HttpClient.url + HttpClient.register, params);
+					String s = HttpClient.post(HttpClient.url
+							+ HttpClient.register, params);
 					String code = null;
 					try {
 						if (null == s || !s.contains("|")) {
 							s = null;
 						}
-						
+
 						code = s.split("\\|")[0];
 						s = s.split("\\|")[1];
 						JSONObject jsonObject = new JSONObject(s);
 						from_id = jsonObject.getString("id");
-						
+
 					} catch (Exception e) {
 						e.printStackTrace();
-//						handler.sendEmptyMessage(LOGIN_FAIL);
-//						return;
 					}
-					
+
 					Message msg = handler.obtainMessage();
 					msg.what = HTTP_OVER;
 					msg.obj = s;
@@ -373,133 +243,86 @@ public class LoginActivity extends BaseActivity implements OnClickListener {
 			}).start();
 		} else {
 			showToast(getResources().getString(R.string.net_null));
-		}
-	}
-
-	/**
-	 * 登陆
-	 * @param params
-	 */
-	private void login(final String params) {
-		if (NetWorkUtil.isAvailable(LoginActivity.this)) {
-			if (!isProgesShow()) {
-				showProgess();
-			}
-			new Thread(new Runnable() {
-
-				@Override
-				public void run() {
-					String s = HttpClient.post(HttpClient.url + HttpClient.login,
-							params);
-					
-					try {
-						s = s.split("\\|")[1];
-						JSONObject jsonObject = new JSONObject(s);
-						String own_info = jsonObject.getString("own_info");
-						JSONObject own_infojsonObject = new JSONObject(own_info);
-						from_id = own_infojsonObject.getString("id");
-						AppConstant.FROM_ID = from_id;
-						// 昵称
-						String nick = own_infojsonObject.getString("nick");
-						// 头像路径
-						String avatar = own_infojsonObject.getString("avatar");
-						
-						// 插入数据库
-						String num = et_user_mobile.getEditableText().toString();
-						AppConstant.USER_NUM = num;
-						PeopelEntity peopelEntity = new PeopelEntity();
-						peopelEntity.setNum(num);
-						peopelEntity.setName(nick);
-						peopelEntity.setNickName(nick);
-						peopelEntity.setImgPath(avatar);
-						peopelEntity.setLoginUser(num);
-						peopelEntity.setStatus(PeopelEntity.FRIEND);
-
-						Cursor cursor = peopelDao.queryPeopel();
-						if (cursor != null && cursor.getCount() > 0) {
-							peopelDao.updateOwner(peopelEntity);
-						} else {
-							peopelDao.insertPeopel(peopelEntity);
-						}
-						cursor.close();
-					} catch (Exception e) {
-						e.printStackTrace();
-						
-						handler.sendEmptyMessage(LOGIN_FAIL);
-						return;
-					}
-					
-					// 打开socket长连接
-					boolean isSend = RemindApplication.startLongLink();
-					
-					if (isSend) {
-						// 成功
-						Message msg = new Message();
-						msg.what = LOGIN_SUCCESS;
-						msg.obj = s;
-						handler.sendMessage(msg);
-					} else {
-						handler.sendEmptyMessage(LOGIN_FAIL);
-					}
-				}
-			}).start();
-		} else {
-			showToast(getResources().getString(R.string.net_null));
 			if (isProgesShow()) {
 				hideProgess();
 			}
-
 		}
-		
 	}
-	
-	/**
-	 * 开启长连接并注册socket
-	 * @return		注册service是否成功
-	 */
-//	private boolean startLongLink() {
-////		isRegistService = true;
-//		// 打开长连接
-////		bindService(mServiceIntent, conn, BIND_AUTO_CREATE);
-//		// 注册socket
-//		String content = HttpClient.getJsonForPost(HttpClient.getSocketRegist(HttpClient.TYPE_NOTIFICATION, 
-//				HttpClient.REGIST_MID, "", "", from_id));
-//		
-//		boolean isSend = false;
-//		try {
-//			Thread.sleep(100);
-//			isSend = RemindApplication.iBackService.sendMessage(content);
-//		} catch (RemoteException e) {
-//			e.printStackTrace();
-//		} catch (InterruptedException e) {
-//			e.printStackTrace();
-//		}
-//		
-//		return isSend;
-//	}
-	
-	class LoginBackReciver extends BroadcastReceiver {
 
-		public LoginBackReciver() {
-		}
-
-		@Override
-		public void onReceive(Context context, Intent intent) {
-			String action = intent.getAction();
-			if (action.equals(MessageReceiver.LOGIN_STATE_ACTION)) {
-				hideProgess();
-				// 登陆状态改变
-				if (RemindApplication.IS_LOGIN) {
-					Toast.makeText(context, "登陆成功", Toast.LENGTH_SHORT).show();
-					// 成功
-					MySharedPreferencesLoginType.setOnlineState(LoginActivity.this, true);
-					MySharedPreferencesLoginType.saveFromId(LoginActivity.this, AppConstant.FROM_ID);
-					finish();
-				} else {
-					Toast.makeText(context, "登陆失败，请重新登陆", Toast.LENGTH_SHORT)
+	@Override
+	public void httpOver(String s) {
+		if (TextUtils.isEmpty(s)) {
+			// 失败
+			hideProgess();
+			Toast.makeText(LoginActivity.this, "注册失败，请重试.", Toast.LENGTH_SHORT)
 					.show();
-				}
+		} else if ("402".equals(s)) {
+			hideProgess();
+			Toast.makeText(LoginActivity.this, "这个号码已经注册过，请重试.",
+					Toast.LENGTH_SHORT).show();
+		} else if ("200".equals(s)) {
+			// 成功
+			if (!isRegist) {
+				handler.sendEmptyMessage(LOGIN_SUCCESS);
+			} else {
+				// 登陆
+				String params = HttpClient.getJsonForPost(HttpClient
+						.getUserForLogin(et_user_mobile.getEditableText()
+								.toString(), et_user_psw.getEditableText()
+								.toString()));
+				login(params);
 			}
-		};
+		} else {
+			// 失败
+			hideProgess();
+			Toast.makeText(LoginActivity.this, "注册失败，请重试.", Toast.LENGTH_SHORT)
+					.show();
+		}
+	}
+
+	@Override
+	public void loginSuccess() {
+		// 是否记住用户名
+		if (isRemember) {
+			MySharedPreferencesLoginType.saveUserName(getApplicationContext(),
+					et_user_mobile.getEditableText().toString(), et_user_psw
+							.getEditableText().toString());
+		} else {
+			MySharedPreferencesLoginType.saveUserName(getApplicationContext(),
+					"", "");
+		}
+	}
+
+	@Override
+	public void loginFail() {
+		if (isProgesShow()) {
+			hideProgess();
+		}
+		Toast.makeText(LoginActivity.this, "登陆失败，请重试", Toast.LENGTH_SHORT)
+				.show();
+	}
+
+	@Override
+	public void loginBackRecevie() {
+		hideProgess();
+		// 登陆状态改变
+		if (RemindApplication.IS_LOGIN) {
+			Toast.makeText(this, "登陆成功", Toast.LENGTH_SHORT).show();
+			// 成功
+			MySharedPreferencesLoginType.setOnlineState(LoginActivity.this,
+					true);
+			MySharedPreferencesLoginType.saveFromId(LoginActivity.this,
+					AppConstant.FROM_ID);
+			finish();
+		} else {
+			Toast.makeText(this, "登陆失败，请重新登陆", Toast.LENGTH_SHORT).show();
+		}
+	}
+
+	@Override
+	public void outNet() {
+		if (isProgesShow()) {
+			hideProgess();
+		}
 	}
 }

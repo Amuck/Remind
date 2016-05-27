@@ -351,6 +351,10 @@ public class EditPeopelActivity extends BaseActivity implements OnClickListener 
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
 				RemindApplication.IS_LOGIN = false;
+				AppConstant.USER_NUM = "";
+				AppConstant.FROM_ID = "";
+				AppConstant.USER_NAME = "";
+				
 				MySharedPreferencesLoginType.setOnlineState(EditPeopelActivity.this, false);
 				try {
 					RemindApplication.iBackService.release();
