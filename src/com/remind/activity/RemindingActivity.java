@@ -9,6 +9,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.os.Message;
 import android.os.PowerManager;
 import android.os.PowerManager.WakeLock;
 import android.view.View;
@@ -24,6 +25,8 @@ import com.help.remind.R;
 import com.remind.dao.RemindDao;
 import com.remind.dao.impl.RemindDaoImpl;
 import com.remind.entity.RemindEntity;
+import com.remind.global.AppConstant;
+import com.remind.http.HttpClient;
 import com.remind.util.AppUtil;
 import com.remind.util.DataBaseParser;
 import com.remind.view.RoleDetailImageView;
@@ -34,6 +37,8 @@ import com.remind.view.RoleDetailImageView;
  *	闹铃提醒界面
  */
 public class RemindingActivity extends BaseActivity implements OnClickListener {
+	public static final int ALARM_STATUS_DELETE = 0x01;
+	public static final int ALARM_STATUS_CLOSE = 0x02;
 
 	private PowerManager pm;
 	private WakeLock mWakelock;
@@ -193,8 +198,11 @@ public class RemindingActivity extends BaseActivity implements OnClickListener {
 	 * @param day			下次响铃时间间隔天，0为没有变化
 	 * @param month			下次响铃时间间隔月，0为没有变化
 	 * @param year			下次响铃时间间隔年，0为没有变化
+	 * @param status		选择动作 小于10失效，大于10有效
+	 * 						1: 关闭; 2: 已开始; 3: 马上开始; 4: 延迟10分钟
 	 */
-	private void getNextRemindTime(int minute, int hour, int day, int month, int year) {
+	private void getNextRemindTime(int minute, int hour, int day, int month, int year, int status) {
+		int isEnable = 10;
 		// 获取本次响铃时间
 		Calendar calendar = Calendar.getInstance();
 		String remindTime = remindEntity.getRemindTime();
@@ -213,6 +221,7 @@ public class RemindingActivity extends BaseActivity implements OnClickListener {
 			if ((minute | hour | day | month | year) == 0) {
 				// 不再有下一次提醒
 				remindEntity.setIsDelete(RemindEntity.DELETED);
+				sendAlarmStatus(status);
 				return;
 			} else {
 				// 不重复提醒，则按照下次响铃时间间隔设置
@@ -240,13 +249,29 @@ public class RemindingActivity extends BaseActivity implements OnClickListener {
 		remindEntity.setRemindTime(dateFormat.format(calendar.getTime()));
 		// 设置闹铃
 		AppUtil.setAlarm(this, remindEntity.getRemindTime(), Integer.valueOf(remindEntity.getId()));
+		
+		sendAlarmStatus(isEnable + status);
 	}
 
 	/**
 	 * 发送反馈信息
 	 */
-	private void sendBackMsg() {
+	private void sendAlarmStatus(int status) {
+		final String params = HttpClient.getJsonForPost(HttpClient.alarmStatus(remindEntity.getNoticeId(), status,
+				AppConstant.FROM_ID, remindEntity.getOwnerId()));
+		new Thread(new Runnable() {
+			
+			@Override
+			public void run() {
+				String s = HttpClient.post(HttpClient.url + HttpClient.alarm_statues, params);
+				if (s == null) {
+					// TODO 失败插入数据库，重发
+					
+				} else {
 
+				}
+			}
+		}).start();
 	}
 
 	/**
@@ -287,22 +312,22 @@ public class RemindingActivity extends BaseActivity implements OnClickListener {
 			break;
 		case R.id.close:
 			// 关闭
-			getNextRemindTime(0, 0, 0, 0, 0);
+			getNextRemindTime(0, 0, 0, 0, 0, 1);
 			closeRemind();
 			break;
 		case R.id.start:
 			// 已开始
-			getNextRemindTime(0, 0, 0, 0, 0);
+			getNextRemindTime(0, 0, 0, 0, 0, 2);
 			closeRemind();
 			break;
 		case R.id.already:
 			// 马上开始
-			getNextRemindTime(0, 0, 0, 0, 0);
+			getNextRemindTime(0, 0, 0, 0, 0, 3);
 			closeRemind();
 			break;
 		case R.id.later:
 			// 延迟10分钟
-			getNextRemindTime(10, 0, 0, 0, 0);
+			getNextRemindTime(10, 0, 0, 0, 0, 4);
 			closeRemind();
 			break;
 

@@ -13,6 +13,7 @@ import com.remind.up.listener.CompleteListener;
 import com.remind.up.listener.ProgressListener;
 import com.remind.up.main.UploaderManager;
 import com.remind.up.utils.UpYunUtils;
+import com.remind.util.Utils;
 
 /**
  * @author ChenLong
@@ -21,9 +22,9 @@ import com.remind.up.utils.UpYunUtils;
  */
 public class Upload {
 	// 空间名
-	public final static String bucket = "remind";
+	public final static String bucket = "sisi0";
 	// 表单密钥
-	public final static String formApiSecret = "ELvSReGsZzgsANYPRaHnTwAtTOQ=";
+	public final static String formApiSecret = "c38bvc3A8pHQx8NYQ1rvVOSde/A=";
 	// 本地文件路径
 	public static  String localFilePath = Environment.getExternalStorageDirectory()
 			.getAbsolutePath() + File.separator;
@@ -31,6 +32,7 @@ public class Upload {
 	public static String filename = "test.txt";
 	// 保存到又拍云的路径
 	public static String savePath = "/" + filename;
+	public static String picturePath = "picture";
 	
 	public static Context context;
 	
@@ -46,8 +48,10 @@ public class Upload {
 	 * @param completeListener		完成上传时的回调
 	 * @param progressListener		过程中的回调，注意：由于在计算发送的字节数中包含了图片以外的其他信息，最终上传的大小总是大于图片实际大小，
 	 * 								为了解决这个问题，代码会判断如果实际传送的大小大于图片，就将实际传送的大小设置成'fileSize-1000'（最小为0）
+	 * @param localFilePath			文件绝对路径
 	 */
-	public static void upload(Context context, String fileName, CompleteListener completeListener, ProgressListener progressListener) {
+	public static void upload(Context context, String fileName, CompleteListener completeListener, ProgressListener progressListener, 
+			String localFilePath) {
 		Upload.context = context;
 		if (TextUtils.isEmpty(fileName)) {
 			Toast.makeText(context, "文件无效，请重新选择", Toast.LENGTH_LONG).show();
@@ -57,13 +61,17 @@ public class Upload {
 		Upload.progressListener = progressListener;
 		Upload.completeListener = completeListener;
 		Upload.filename = fileName;
-		savePath = "/" + filename;
+		Upload.localFilePath = localFilePath;
+//		savePath = "/" + filename;
+		savePath = File.separator + picturePath + File.separator + Utils.getNowDate()
+				+ File.separator + System.currentTimeMillis() + filename;
 		new UploadTask().execute();
 	}
 	
 	static class UploadTask extends AsyncTask<Void, Void, String> {
 		@Override
 		protected String doInBackground(Void... params) {
+			// TODO 需要具体实现
 			File localFile = new File(localFilePath + filename);
 			try {
 				/*
@@ -86,6 +94,7 @@ public class Upload {
 //					@Override
 //					public void result(boolean isComplete, String result, String error) {
 //						// do something...
+//				{"mimetype":"image\/jpeg","last_modified":1467881859,"file_size":148775,"image_frames":1,"bucket_name":"sisi0","image_type":"JPEG","image_width":1600,"path":"\/sisi0\/picture\/2016-07-07\/1467881810170test.jpg","image_height":1200,"code":200,"signature":"a0c8a7a28e0edc2b2e98c56457d0c35e"}
 ////						System.out.println("isComplete:"+isComplete+";result:"+result+";error:"+error);
 //						Log.e("Upload_CompleteListener", "isComplete:"+isComplete+";result:"+result+";error:"+error);
 //					}

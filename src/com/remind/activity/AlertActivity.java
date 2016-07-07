@@ -30,6 +30,11 @@ import com.remind.util.AppUtil;
 import com.remind.util.DataBaseParser;
 import com.remind.util.Utils;
 
+/**
+ * @author ChenLong
+ *	
+ * 暂时不再使用
+ */
 public class AlertActivity extends BaseActivity implements OnClickListener{
 
 	private PowerManager pm;

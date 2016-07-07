@@ -279,7 +279,7 @@ public class LoginBaseActivity extends BaseActivity {
 								String notice_id = own_noticesObject.getString("notice_id");
 								int state = own_noticesObject.getInt("state");
 								Cursor cursor2 = remindDao.queryRemindByNoticeId(notice_id);
-								if (cursor2.getCount() <= 0 && state == 1) {
+								if (cursor2.getCount() <= 0) {
 									String user_id = own_noticesObject.getString("user_id");
 									
 									String content = own_noticesObject.getString("content");
@@ -295,6 +295,12 @@ public class LoginBaseActivity extends BaseActivity {
 									String userNick = contentObject.getString("userNick");
 									String type = contentObject.getString("type");
 									String userNum = contentObject.getString("userNum");
+
+									int remindState = contentObject.getInt("remindState");
+									int remindMethod = contentObject.getInt("remindMethod");
+									String audioPath = contentObject.getString("audioPath");
+									String imagePath = contentObject.getString("imagePath");
+									String videoPath = contentObject.getString("videoPath");
 									
 									RemindEntity remindEntity = new RemindEntity();
 									remindEntity.setOwnerNum(num);
@@ -310,7 +316,11 @@ public class LoginBaseActivity extends BaseActivity {
 									remindEntity.setRemindTime(time);
 									remindEntity.setAddTime(addTime);
 									remindEntity.setIsPreview(Integer.valueOf(isPrev));
-									remindEntity.setRemindState(RemindEntity.ACCEPT);
+									remindEntity.setRemindState(remindState);
+									remindEntity.setRemindMethod(remindMethod);
+									remindEntity.setAudioPath(audioPath);
+									remindEntity.setImgPath(imagePath);
+									remindEntity.setVideoPath(videoPath);
 									
 									long id = remindDao.insertRemind(remindEntity);
 									
@@ -318,7 +328,7 @@ public class LoginBaseActivity extends BaseActivity {
 											num, 
 											userNick, userNum, addTime, 
 											MessageEntity.SEND_SUCCESS, MessageEntity.NORMAL, MessageEntity.TYPE_REMIND,
-											id + "", "", userNum, MessageEntity.TYPE_RECIEVE, remindEntity.getContent(), 
+											id + "", "", userNum, MessageEntity.TYPE_SEND, remindEntity.getContent(), 
 											MessageEntity.FEED_DEFAULT, AppConstant.USER_NUM, id + "");
 									messageDao.insert(messageEntity);
 								}
@@ -332,7 +342,73 @@ public class LoginBaseActivity extends BaseActivity {
 						if (noticesArray.length() > 0) {
 							for (int i = 0; i < noticesArray.length(); i++) {
 								JSONObject noticesObject = noticesArray.getJSONObject(i);
+								//{"content":
+								//{"noticeContent":"一起去吃饭吧",
+								//"time":"2016-07-06 17:02",
+								//"title":"刚刚","userNum":"13716022538",
+								//"isPrev":"0","userNick":"123","type":"repeat_no",
+								//"addTime":"2016-07-06 17:02:20"
+								//},
+								//"owner_id":"81a95d871f661e13bc64fe5868592b2292dd1fc2",
+								//"state":2,"user_id":"bfa3e1dd3865915333079226c19120097c437ee5",
+								//"notice_id":"2dd1a54f1d8b432713a033b7b905aa85016edd04"}
+								String notice_id = noticesObject.getString("notice_id");
+								int state = noticesObject.getInt("state");
+								String user_id = noticesObject.getString("user_id");
+								Cursor cursor3 = remindDao.queryRemindByNoticeId(notice_id);
+								if (cursor3.getCount() <= 0) {
+									String content = noticesObject.getString("content");
+									JSONObject contentObject = new JSONObject(content);
+									String isPrev = contentObject.getString("isPrev");
+									String noticeContent = contentObject.getString("noticeContent");
+									String time = contentObject.getString("time");
+									
+									String addTime = "";
+//									String addTime = contentObject.getString("addTime");
+									
+									String title = contentObject.getString("title");
+									String userNick = contentObject.getString("userNick");
+									String type = contentObject.getString("type");
+									String userNum = contentObject.getString("userNum");
+									
+									int remindState = contentObject.getInt("remindState");
+									int remindMethod = contentObject.getInt("remindMethod");
+									String audioPath = contentObject.getString("audioPath");
+									String imagePath = contentObject.getString("imagePath");
+									String videoPath = contentObject.getString("videoPath");
+									
+									RemindEntity remindEntity = new RemindEntity();
+									remindEntity.setOwnerNum(num);
+									remindEntity.setTargetNum(num);
+									remindEntity.setNoticeId(notice_id);
+									remindEntity.setOwnerId(user_id);
+									remindEntity.setTargetName(userNick);
+									remindEntity.setNickName(userNick);
+									remindEntity.setTargetNum(userNum);
+									remindEntity.setTitle(title);
+									remindEntity.setContent(noticeContent);
+									remindEntity.setRepeatType(type);
+									remindEntity.setRemindTime(time);
+									remindEntity.setAddTime(addTime);
+									remindEntity.setIsPreview(Integer.valueOf(isPrev));
+									remindEntity.setRemindState(remindState);
+									remindEntity.setRemindMethod(remindMethod);
+									remindEntity.setAudioPath(audioPath);
+									remindEntity.setImgPath(imagePath);
+									remindEntity.setVideoPath(videoPath);
+									
+									long id = remindDao.insertRemind(remindEntity);
+									
+									MessageEntity messageEntity = new MessageEntity("", nick, 
+											num, 
+											userNick, userNum, addTime, 
+											MessageEntity.SEND_SUCCESS, MessageEntity.NORMAL, MessageEntity.TYPE_REMIND,
+											id + "", "", userNum, MessageEntity.TYPE_RECIEVE, remindEntity.getContent(), 
+											MessageEntity.FEED_DEFAULT, AppConstant.USER_NUM, id + "");
+									messageDao.insert(messageEntity);
+								}
 								
+								cursor3.close();
 							}
 						}
 					} catch (Exception e) {

@@ -374,6 +374,19 @@ public class MessageReceiver extends BroadcastReceiver {
 			// 发送notification
 //			AppUtil.simpleNotify(context, Integer.valueOf(userNum), 1, userNick, userNum, title, true);
 			break;
+		case 5:
+			// 闹钟开始状态改变
+			noticeId = dataObj.getString("notice_id");
+			int statues = dataObj.getInt("status");
+			
+			// 更新数据库
+			remindDaoImpl.updateByNoticeId(noticeId, statues);
+			
+			intent.setAction(NOTICE_STATE_ACTION);
+			intent.putExtra("noticeId", noticeId);
+			intent.putExtra("statues", statues);
+			context.sendBroadcast(intent);
+			break;
 
 		default:
 			break;

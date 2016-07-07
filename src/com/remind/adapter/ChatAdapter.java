@@ -349,7 +349,7 @@ public class ChatAdapter extends BaseAdapter {
 						break;
 					case RemindEntity.LAUNCH_REFUSE:
 						// 对方已拒绝
-						changeButtonState("对方已接受", viewHolder);
+						changeButtonState("对方已拒绝", viewHolder);
 						break;
 
 					default:
@@ -358,6 +358,24 @@ public class ChatAdapter extends BaseAdapter {
 				}
 				break;
 			default:
+				// 接收后状态改变: 1: 关闭; 2: 已开始; 3: 马上开始; 4: 延迟10分钟
+				switch (remindState % 10) {
+				case 1:
+					changeButtonState("对方已关闭闹钟", viewHolder);
+					break;
+				case 2:
+					changeButtonState("对方已开始", viewHolder);
+					break;
+				case 3:
+					changeButtonState("对方马上开始", viewHolder);
+					break;
+				case 4:
+					changeButtonState("对方延迟10分钟再开始", viewHolder);
+					break;
+
+				default:
+					break;
+				}
 				break;
 			}
 		} else if (MessageEntity.TYPE_VOICE.equals(type)) {

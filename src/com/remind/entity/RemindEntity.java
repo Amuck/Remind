@@ -28,19 +28,19 @@ public class RemindEntity implements Serializable{
 	/**
 	 * 已接受的提醒
 	 */
-	public final static int ACCEPT = 0;
+	public final static int ACCEPT = 20;
 	/**
 	 * 未接受提醒
 	 */
-	public final static int NEW = 1;
+	public final static int NEW = 21;
 	/**
 	 * 拒绝的提醒
 	 */
-	public final static int REFUSE = 3;
+	public final static int REFUSE = 23;
 	/**
 	 * 我发起的提醒
 	 */
-	public final static int LAUNCH = 2;
+	public final static int LAUNCH = 22;
 	
 	/**
 	 * 等待对方接受
@@ -53,7 +53,7 @@ public class RemindEntity implements Serializable{
 	/**
 	 * 对方接受
 	 */
-	public final static int LAUNCH_ACCEPT = 2;
+	public final static int LAUNCH_ACCEPT = 10;
 	/**
 	 * 正常状态
 	 */
@@ -155,15 +155,15 @@ public class RemindEntity implements Serializable{
 	/**
 	 * 音频路径
 	 */
-	private String audioPath;
+	private String audioPath = "";
 	/**
 	 * 视频路径
 	 */
-	private String videoPath;
+	private String videoPath = "";
 	/**
 	 * 图片路径
 	 */
-	private String imgPath;
+	private String imgPath = "";
 	
 	/**
 	 * 提醒方式, 音频：{@link #AUDIO_REMIND},
@@ -186,7 +186,7 @@ public class RemindEntity implements Serializable{
 	 * 我发起的提醒的状态，
 	 * 等待对方接受：{@link #LAUNCH_WAIT},
 	 * 对方已拒绝：{@link #LAUNCH_REFUSE},
-	 * 对方已接受：{@link #LAUNCH_ACCEPT},
+	 * 对方已接受：{@link #LAUNCH_ACCEPT},接受后：LAUNCH_ACCEPT + 1: 关闭; 2: 已开始; 3: 马上开始; 4: 延迟10分钟
 	 * 默认为等待对方接受{@link #LAUNCH_WAIT}
 	 */
 	private int launchState = RemindEntity.LAUNCH_WAIT;

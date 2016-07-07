@@ -38,6 +38,7 @@ public class HttpClient {
 	public static String friend = "/user/friend";
 	public static String agree_friend = "/user/agree_friend";
 	public static String agree_notice = "/notice/agree";
+	public static String alarm_statues = "/notice/status";
 	
 	public HttpClient() {
 	}
@@ -232,6 +233,23 @@ public class HttpClient {
 		return notice;
 	}
 	
+	/**
+	 * @param notice_id
+	 * @param status		小于10失效，大于10有效
+	 * @param user_id
+	 * @param owner_id
+	 * @return
+	 */
+	public static AlarmStatus alarmStatus(String notice_id, int status, String user_id, String owner_id) {
+		AlarmStatus alarmStatus = new AlarmStatus();
+		alarmStatus.notice_id = notice_id;
+		alarmStatus.status = status;
+		alarmStatus.user_id = user_id;
+		alarmStatus.owner_id = owner_id;
+		
+		return alarmStatus;
+	}
+	
 	public static Friend friendUser(String friendNum) {
 		Friend friend = new Friend();
 		friend.user_id = AppConstant.FROM_ID;
@@ -306,6 +324,12 @@ public class HttpClient {
 		public String userNum;
 		public String userNick;
 		public String noticeContent;
+
+		public int remindState;
+		public int remindMethod;
+		public String audioPath;
+		public String imagePath;
+		public String videoPath;
 		
 //		@Override
 //		public String toString() {
@@ -330,6 +354,20 @@ public class HttpClient {
 		public String app_id;
 		public String version;
 		public String from_id;
+	}
+	
+	/**
+	 * @author ChenLong
+	 *curl -XPOST http://127.0.0.1:8008/notice/status -d 
+	 *"{\"user_id\":\"bfa3e1dd3865915333079226c19120097c437ee5\",
+	 *\"notice_id\":\"a02cc9804c2e8b52657db406c624c8c00f4ba8e7\",
+	 *\”status\":1,\"owner_id\":\"81a95d871f661e13bc64fe5868592b2292dd1fc2\"}" -v
+	 */
+	static class AlarmStatus {
+		public String user_id;
+		public String notice_id;
+		public String owner_id;
+		public int status;
 	}
 	
 	/**
@@ -368,10 +406,17 @@ public class HttpClient {
 	 * @param userNum		登陆用户手机号
 	 * @param userNick		登陆用户昵称
 	 * @param noticeContent		提醒内容
+	 * @param addTime
+	 * @param remindState	状态
+	 * @param remindMethod	提醒方式
+	 * @param audioPath		音频路径
+	 * @param imagePath		图片路径
+	 * @param videoPath		视频路径
 	 * @return
 	 */
 	public static String getCreateNofiJsonForPost(String user_id, String owner_id, String title, String isPrev,
-			String time, String type, String userNum, String userNick, String noticeContent, String addTime) {
+			String time, String type, String userNum, String userNick, String noticeContent, String addTime,
+			int remindState,int remindMethod,String audioPath,String imagePath,String videoPath) {
 		Gson gson = new Gson();
 		String result = "";
 		Notify notify = new Notify();
@@ -386,6 +431,13 @@ public class HttpClient {
 		content.userNum = userNum;
 		content.userNick = userNick;
 		content.noticeContent = noticeContent;
+		
+		content.remindState = remindState;
+		content.remindMethod = remindMethod;
+		content.audioPath = audioPath;
+		content.imagePath = imagePath;
+		content.videoPath = videoPath;
+		
 		notify.content = content;
 //		JSONArray jsonObject = new JSONArray();
 //		jsonObject.
