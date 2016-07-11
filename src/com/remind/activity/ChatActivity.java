@@ -14,6 +14,7 @@ import android.database.Cursor;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
+import android.os.Looper;
 import android.os.Message;
 import android.os.RemoteException;
 import android.support.v4.content.LocalBroadcastManager;
@@ -24,11 +25,13 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnTouchListener;
+import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
 import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AbsListView;
 import android.widget.AbsListView.OnScrollListener;
 import android.widget.Button;
@@ -72,6 +75,9 @@ import com.remind.util.DataBaseParser;
  *         聊天界面, 展示message数据库中的数据{@link com.remind.dao.msg.MessageMsg}
  */
 public class ChatActivity extends BaseActivity implements OnClickListener, OnScrollListener{
+	public final static int ActivityID=0;
+	public static String currentTabTag="face";
+	public static Handler chatHandler=null;
 	/**
 	 * 添加一个提醒
 	 */
@@ -114,6 +120,15 @@ public class ChatActivity extends BaseActivity implements OnClickListener, OnScr
 	 * 联系人信息
 	 */
 	private ImageButton contactInfo;
+	/**
+	 * 添加表情
+	 */
+	private ImageView addFaceBtn;
+	/**
+	 * 表情选择是否打开
+	 */
+	private boolean expanded = false;
+	private RelativeLayout faceLayout=null;
 	/**
 	 * 联系人
 	 */
@@ -232,6 +247,8 @@ public class ChatActivity extends BaseActivity implements OnClickListener, OnScr
 		getWindow().setSoftInputMode(
 				WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
 
+		chatHandler=new MyChatHandler(Looper.myLooper());
+		
 		messageIndexDao = new MessageIndexDaoImpl(this);
 		messageDao = new MessageDaoImpl(this);
 		remindDao = new RemindDaoImpl(this);
@@ -300,12 +317,15 @@ public class ChatActivity extends BaseActivity implements OnClickListener, OnScr
 		sendMsgEidt = (EditText) findViewById(R.id.msg_edit);
 		contactName = (TextView) findViewById(R.id.title_text);
 		contactInfo = (ImageButton) findViewById(R.id.title_info);
+		addFaceBtn = (ImageView) findViewById(R.id.add_face);
+		faceLayout=(RelativeLayout)findViewById(R.id.faceLayout);
 		initRecord();
 		contactName.setText(peopelEntity.getName());
 		sendMsgBtn.setOnClickListener(this);
 		sendRemindBtn.setOnClickListener(this);
 		contactInfo.setOnClickListener(this);
 		backBtn.setOnClickListener(this);
+		addFaceBtn.setOnClickListener(this);
 		sendMsgEidt.setOnEditorActionListener(new OnEditorActionListener() {
 			
 			@Override
@@ -586,6 +606,10 @@ public class ChatActivity extends BaseActivity implements OnClickListener, OnScr
 		case R.id.title_info:
 			// 联系人信息
 			break;
+		case R.id.add_face:
+			// 表情
+			showFaceView();
+			break;
 		case R.id.title_icon:
 			// 关闭
 			finish();
@@ -593,6 +617,76 @@ public class ChatActivity extends BaseActivity implements OnClickListener, OnScr
 
 		default:
 			break;
+		}
+	}
+	
+	/**
+	 * 打开表情选择框
+	 */
+	private void showFaceView() {
+		if(expanded){
+			setFaceLayoutExpandState(false);
+			
+			
+			
+			InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);  
+			imm.toggleSoftInput(0, InputMethodManager.HIDE_NOT_ALWAYS);  
+
+			/**height不设为0是因为，希望可以使再次打开时viewFlipper已经初始化为第一页 避免
+			*再次打开ViewFlipper时画面在动的结果,
+			*为了避免因为1dip的高度产生一个白缝，所以这里在ViewFlipper所在的RelativeLayout
+			*最上面添加了一个1dip高的黑色色块
+			*/
+			
+			
+		}
+		else{
+
+			setFaceLayoutExpandState(true);  
+		    
+
+		}
+	}
+	
+	private void setFaceLayoutExpandState(boolean isexpand){
+		expanded=isexpand;
+		if(isexpand==false){
+
+				
+			ViewGroup.LayoutParams params=faceLayout.getLayoutParams();
+			params.height=1;
+			faceLayout.setLayoutParams(params);	
+			
+			addFaceBtn.setBackgroundResource(R.drawable.add_face);
+			Message msg=new Message();
+			msg.what= 0;
+			msg.obj="collapse";
+			if(MyFaceActivity.faceHandler!=null)
+				MyFaceActivity.faceHandler.sendMessage(msg);
+			
+			Message msg2=new Message();
+			msg2.what=0;
+			msg2.obj="collapse";
+			if(FaceHistoryActivity.faceHistoryHandler!=null)
+				FaceHistoryActivity.faceHistoryHandler.sendMessage(msg2);
+	
+//			chatListView.setSelection(chatList.size()-1);//使会话列表自动滑动到最低端
+			
+		}
+		else{
+			
+			((InputMethodManager)getSystemService(INPUT_METHOD_SERVICE)).hideSoftInputFromWindow
+			(ChatActivity.this.getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+			ViewGroup.LayoutParams params=faceLayout.getLayoutParams();
+			params.height=185;
+		//	faceLayout.setLayoutParams(new RelativeLayout.LayoutParams( ));    
+		    RelativeLayout.LayoutParams relativeParams=new RelativeLayout.LayoutParams(LayoutParams.MATCH_PARENT,LayoutParams.WRAP_CONTENT);
+		    relativeParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM, RelativeLayout.TRUE);
+			faceLayout.setLayoutParams(relativeParams);
+		    
+		    
+			addFaceBtn.setBackgroundResource(R.drawable.keyboard);
+
 		}
 	}
 
@@ -1044,6 +1138,27 @@ public class ChatActivity extends BaseActivity implements OnClickListener, OnScr
 					}
 				}
 			}
+			
+		}
+		
+		public class MyChatHandler extends Handler{
+			
+			public MyChatHandler(Looper looper){
+				super(looper);
+			}
+
+			@Override
+			public void handleMessage(Message msg) {
+				switch(msg.what){
+				case MyFaceActivity.ActivityId:
+					if(msg.arg1==0){            //添加表情字符串
+						sendMsgEidt.append(msg.obj.toString());
+					}
+				
+				}
+			}
+			
+			
 			
 		}
 }

@@ -248,4 +248,56 @@
             layout="@layout/voice_rcd_hint_window" />
     </LinearLayout>
 
+    <RelativeLayout 
+        android:id="@+id/faceLayout"
+        android:layout_width="match_parent"
+        android:layout_height="1dip"
+        android:layout_alignParentBottom="true">
+        
+        <TabHost 
+        	android:id="@android:id/tabhost"
+        	android:layout_width="match_parent"
+        	android:layout_height="wrap_content"
+        	>
+        	
+            <LinearLayout 
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                >
+                
+                
+                
+                <FrameLayout 
+                    android:id="@android:id/tabcontent"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" 
+                   >
+                    
+                </FrameLayout>
+                
+                <TabWidget 
+                    android:id="@android:id/tabs"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    >
+                    
+                </TabWidget>  
+                
+                
+            </LinearLayout>
+            
+        </TabHost>
+        
+        <LinearLayout 
+            android:id="@+id/fill_the_gap"
+            android:layout_width="match_parent"
+            android:layout_height="1dip"
+            android:background="#272b34"
+            android:orientation="horizontal">
+            
+        </LinearLayout>
+        
+   		
+    </RelativeLayout>
 </RelativeLayout>

@@ -21,6 +21,10 @@ public class MySharedPreferencesLoginType {
 	 * 用户登陆的id
 	 */
 	public static final String FROM_ID = "from_id";
+	/**
+	 * 是否记住用户名
+	 */
+	public static final String IS_REMEMBER = "is_remember";
 	
 	/**
 	 * 登陆用户id
@@ -64,6 +68,28 @@ public class MySharedPreferencesLoginType {
 	public static boolean isOnline(Context context) {
 		SharedPreferences pref = context.getSharedPreferences(PREFERENCES_NAME, Context.MODE_APPEND);
 		boolean value = pref.getBoolean(IS_ONLINE, false);
+		return value;
+	}
+	/**
+	 * 是否记住用户名
+	 * @param context
+	 * @param isRemember
+	 */
+	public static void setIsRemember(Context context,boolean isRemember){
+		SharedPreferences pref = context.getSharedPreferences(PREFERENCES_NAME, Context.MODE_APPEND);
+		Editor editor = pref.edit();
+		editor.putBoolean(IS_REMEMBER, isRemember);
+		
+		editor.commit();
+	}
+	
+	/**
+	 * @param context
+	 * @return		是否记住用户名
+	 */
+	public static boolean isRemember(Context context) {
+		SharedPreferences pref = context.getSharedPreferences(PREFERENCES_NAME, Context.MODE_APPEND);
+		boolean value = pref.getBoolean(IS_REMEMBER, false);
 		return value;
 	}
 

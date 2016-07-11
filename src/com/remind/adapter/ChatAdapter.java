@@ -1,14 +1,23 @@
 package com.remind.adapter;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnCompletionListener;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.text.Spannable;
+import android.text.SpannableString;
+import android.text.SpannableStringBuilder;
+import android.text.style.ImageSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -35,6 +44,13 @@ import com.remind.util.Utils;
 import com.remind.view.RoleDetailImageView;
 
 public class ChatAdapter extends BaseAdapter {
+	int[] faceId={R.drawable.f_static_000,R.drawable.f_static_001,R.drawable.f_static_002,R.drawable.f_static_003
+			,R.drawable.f_static_004,R.drawable.f_static_005,R.drawable.f_static_006,R.drawable.f_static_009,R.drawable.f_static_010,R.drawable.f_static_011
+			,R.drawable.f_static_012,R.drawable.f_static_013,R.drawable.f_static_014,R.drawable.f_static_015,R.drawable.f_static_017,R.drawable.f_static_018};
+	String[] faceName={"\\呲牙","\\淘气","\\流汗","\\偷笑","\\再见","\\敲打","\\擦汗","\\流泪","\\掉泪","\\小声","\\炫酷","\\发狂"
+			 ,"\\委屈","\\便便","\\菜刀","\\微笑","\\色色","\\害羞"};
+	
+	HashMap<String,Integer> faceMap=null;
 	/**
 	 * 刷新界面
 	 */
@@ -117,6 +133,13 @@ public class ChatAdapter extends BaseAdapter {
 		peopelDao = new PeopelDaoImpl(this.context);
 		remindDao = new RemindDaoImpl(context);
 		historyCount = datas.size();
+		faceMap=new HashMap<String,Integer>();	
+		/**
+		 * 为表情Map添加数据
+		 */
+		for(int i=0; i<faceId.length; i++){
+			faceMap.put(faceName[i], faceId[i]);
+		}
 	}
 
 	@Override
@@ -245,6 +268,49 @@ public class ChatAdapter extends BaseAdapter {
 		
 		return convertView;
 	}
+	
+	private void setFaceText(TextView textView,String text){
+		SpannableString spanStr=parseString(text);
+		textView.setText(spanStr);
+	}
+	
+	private SpannableString parseString(String inputStr){
+		SpannableStringBuilder spb=new SpannableStringBuilder();
+		Pattern mPattern= Pattern.compile("\\\\..");
+		Matcher mMatcher=mPattern.matcher(inputStr);
+		String tempStr=inputStr;
+		
+		while(mMatcher.find()){
+			int start=mMatcher.start();
+			int end=mMatcher.end();
+			spb.append(tempStr.substring(0,start));
+			String faceName=mMatcher.group();
+			setFace(spb, faceName);
+			tempStr=tempStr.substring(end, tempStr.length());
+			/**
+			 * 更新查找的字符串
+			 */
+			mMatcher.reset(tempStr);
+		}
+		spb.append(tempStr);
+		return new SpannableString(spb);
+	}
+	
+	private void setFace(SpannableStringBuilder spb, String faceName){
+		Integer faceId=faceMap.get(faceName);
+		if(faceId!=null){
+			Bitmap bitmap=BitmapFactory.decodeResource(context.getResources(), faceId);
+			bitmap=Bitmap.createScaledBitmap(bitmap, 30, 30, true);
+			ImageSpan imageSpan=new ImageSpan(context,bitmap);
+			SpannableString spanStr=new SpannableString(faceName);
+			spanStr.setSpan(imageSpan, 0, faceName.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+			spb.append(spanStr);	
+		}
+		else{
+			spb.append(faceName);
+		}
+		
+	}
 
 	private class ViewHolder {
 		LinearLayout chatPanel;
@@ -268,7 +334,12 @@ public class ChatAdapter extends BaseAdapter {
 		viewHolder.content.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
 		if (MessageEntity.TYPE_TEXT.equals(type)) {
 			// 正常文字消息
-			viewHolder.content.setText(chatMessage.getContent());
+			String text = chatMessage.getContent();
+			if (text.contains("\\")) {
+				setFaceText(viewHolder.content, text);
+			} else {
+				viewHolder.content.setText(text);
+			}
 			
 //			viewHolder.contentImg.setImageBitmap(null);
 			viewHolder.remindState.setVisibility(View.GONE);

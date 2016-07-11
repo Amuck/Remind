@@ -2,6 +2,7 @@ package com.remind.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.widget.Toast;
 
 import com.help.remind.R;
@@ -38,18 +39,22 @@ public class WelcomeActivity extends LoginBaseActivity {
 
 	@Override
 	public void initFinish() {
-		if (isLogin) {
+		mobile = MySharedPreferencesLoginType.getString(this,
+				MySharedPreferencesLoginType.USERNAME);
+		pwdStr = MySharedPreferencesLoginType.getString(this,
+				MySharedPreferencesLoginType.PASSWORD);
+		if (isLogin && !TextUtils.isEmpty(mobile) && !TextUtils.isEmpty(pwdStr)) {
 			// 登陆没有退出
-			mobile = MySharedPreferencesLoginType.getString(this,
-					MySharedPreferencesLoginType.USERNAME);
-			pwdStr = MySharedPreferencesLoginType.getString(this,
-					MySharedPreferencesLoginType.PASSWORD);
 			// 登陆
 			String params = HttpClient.getJsonForPost(HttpClient
 					.getUserForLogin(mobile, pwdStr));
 			login(params);
 		} else {
 			// 退出了
+			if (isLogin) {
+				MySharedPreferencesLoginType.setOnlineState(this, false);
+				Toast.makeText(this, "用户登录信息失效，请重新登陆", Toast.LENGTH_SHORT).show();
+			}
 			mIntent.setClass(WelcomeActivity.this, HomeActivity.class);
 			startActivity(mIntent);
 			finish();

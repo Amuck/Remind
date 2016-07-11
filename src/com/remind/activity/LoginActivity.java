@@ -88,6 +88,8 @@ public class LoginActivity extends LoginBaseActivity implements OnClickListener 
 		login_user_reg = (CheckBox) findViewById(R.id.login_user_reg);
 		btn_login = (Button) findViewById(R.id.btn_login);
 
+		isRemember = MySharedPreferencesLoginType.isRemember(this);
+		login_remember.setChecked(isRemember);
 		// 是否记住用户名
 
 		et_user_mobile.setOnTouchListener(new OnTouchListener() {
@@ -118,6 +120,7 @@ public class LoginActivity extends LoginBaseActivity implements OnClickListener 
 						} else {
 							isRemember = false;
 						}
+						MySharedPreferencesLoginType.setIsRemember(LoginActivity.this, isRemember);
 					}
 				});
 		login_user_reg
