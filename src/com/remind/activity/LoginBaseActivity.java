@@ -32,7 +32,7 @@ import com.remind.sevice.BackService;
 import com.remind.sevice.IBackService;
 import com.remind.util.NetWorkUtil;
 
-public class LoginBaseActivity extends BaseActivity {
+public abstract class LoginBaseActivity extends BaseActivity {
 	public final static int HTTP_OVER = 0;
 	public final static int LOGIN_SUCCESS = 1;
 	public final static int LOGIN_FAIL = 2;
@@ -115,28 +115,28 @@ public class LoginBaseActivity extends BaseActivity {
 	/**
 	 * 初始化完成
 	 */
-	public void initFinish(){};
+	abstract void initFinish();
 	/**
 	 * 注册
 	 * @param s
 	 */
-	public void httpOver(String s){};
+	abstract void httpOver(String s);
 	/**
 	 * 登陆成功
 	 */
-	public void loginSuccess(){};
+	abstract void loginSuccess();
 	/**
 	 * 登陆失败
 	 */
-	public void loginFail(){};
+	abstract void loginFail();
 	/**
 	 * 注册socket返回
 	 */
-	public void loginBackRecevie(){};
+	abstract void loginBackRecevie();
 	/**
 	 * 无网络
 	 */
-	public void outNet(){};
+	abstract void outNet();
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {

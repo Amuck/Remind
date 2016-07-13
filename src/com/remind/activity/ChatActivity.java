@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.json.JSONObject;
+
 import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -17,6 +19,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
 import android.os.RemoteException;
+import android.support.v4.app.FragmentTabHost;
 import android.support.v4.content.LocalBroadcastManager;
 import android.text.TextUtils;
 import android.view.Gravity;
@@ -24,6 +27,7 @@ import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.View.OnFocusChangeListener;
 import android.view.View.OnTouchListener;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
@@ -42,6 +46,10 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
+import android.widget.TabHost;
+import android.widget.TabHost.OnTabChangeListener;
+import android.widget.TabHost.TabSpec;
+import android.widget.TabWidget;
 import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
 import android.widget.Toast;
@@ -62,10 +70,15 @@ import com.remind.entity.MessageEntity;
 import com.remind.entity.MessageIndexEntity;
 import com.remind.entity.PeopelEntity;
 import com.remind.entity.RemindEntity;
+import com.remind.fragment.FaceFragment;
+import com.remind.fragment.FaceHistoryFragment;
 import com.remind.global.AppConstant;
 import com.remind.http.HttpClient;
 import com.remind.receiver.MessageReceiver;
 import com.remind.record.SoundMeter;
+import com.remind.up.Upload;
+import com.remind.up.listener.CompleteListener;
+import com.remind.up.listener.ProgressListener;
 import com.remind.util.AppUtil;
 import com.remind.util.DataBaseParser;
 
@@ -99,6 +112,7 @@ public class ChatActivity extends BaseActivity implements OnClickListener, OnScr
 	 * 发送消息按钮
 	 */
 	private Button sendMsgBtn;
+	private Button sendImgBtn;
 	/**
 	 * 发送提醒按钮
 	 */
@@ -129,6 +143,7 @@ public class ChatActivity extends BaseActivity implements OnClickListener, OnScr
 	 */
 	private boolean expanded = false;
 	private RelativeLayout faceLayout=null;
+	private InputMethodManager imm;
 	/**
 	 * 联系人
 	 */
@@ -201,6 +216,16 @@ public class ChatActivity extends BaseActivity implements OnClickListener, OnScr
 	private String voiceName;
 	private long startVoiceT, endVoiceT;
 	
+	public TabSpec tabSpecFaceHistory,tabSpecFace;
+	protected View tabFaceHistory=null,tabFace=null;
+	protected ImageView tabFaceHistoryImage=null,tabFaceImage=null;
+	protected TabHost tabHost=null;
+	protected TabWidget tabWidget=null;
+	
+	private String texts[] = { "face", "faceHistory" };
+	private int imageButton[] = { R.drawable.face_selector,R.drawable.face_history_selector};
+	private FragmentTabHost fragmentTabHost;
+	private Class<?> fragmentArray[] = {FaceFragment.class,FaceHistoryFragment.class};
 	/**
 	 * 所属提醒的id
 	 */
@@ -247,6 +272,8 @@ public class ChatActivity extends BaseActivity implements OnClickListener, OnScr
 		getWindow().setSoftInputMode(
 				WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
 
+		imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+		
 		chatHandler=new MyChatHandler(Looper.myLooper());
 		
 		messageIndexDao = new MessageIndexDaoImpl(this);
@@ -312,6 +339,7 @@ public class ChatActivity extends BaseActivity implements OnClickListener, OnScr
 	private void initView() {
 		chatList = (ListView) findViewById(R.id.chat_list);
 		sendMsgBtn = (Button) findViewById(R.id.send_msg);
+		sendImgBtn = (Button) findViewById(R.id.face_msg);
 		backBtn = (ImageView) findViewById(R.id.title_icon);
 		sendRemindBtn = (ImageView) findViewById(R.id.add_remind);
 		sendMsgEidt = (EditText) findViewById(R.id.msg_edit);
@@ -319,13 +347,17 @@ public class ChatActivity extends BaseActivity implements OnClickListener, OnScr
 		contactInfo = (ImageButton) findViewById(R.id.title_info);
 		addFaceBtn = (ImageView) findViewById(R.id.add_face);
 		faceLayout=(RelativeLayout)findViewById(R.id.faceLayout);
+		
+		initTab();
 		initRecord();
+		
 		contactName.setText(peopelEntity.getName());
 		sendMsgBtn.setOnClickListener(this);
 		sendRemindBtn.setOnClickListener(this);
 		contactInfo.setOnClickListener(this);
 		backBtn.setOnClickListener(this);
 		addFaceBtn.setOnClickListener(this);
+		sendImgBtn.setOnClickListener(this);
 		sendMsgEidt.setOnEditorActionListener(new OnEditorActionListener() {
 			
 			@Override
@@ -343,10 +375,86 @@ public class ChatActivity extends BaseActivity implements OnClickListener, OnScr
 				return false;
 			}
 		});
+		sendMsgEidt.setOnTouchListener(new OnTouchListener() {
+			
+			@Override
+			public boolean onTouch(View v, MotionEvent event) {
+				if(expanded){
+					setFaceLayoutExpandState(false);
+				}
+				return false;
+			}
+		});
 		
 		setupChatList();
 	}
 	
+	private View getView(int i) {
+		// 取得布局实例
+		View view = View.inflate(this, R.layout.tabwidget_image_disselected,
+				null);
+
+		// 取得布局对象
+		ImageView imageView = (ImageView) view
+				.findViewById(R.id.tabImage_disselected);
+		// TextView textView=(TextView) view.findViewById(R.id.text);
+
+		// 设置图标
+		imageView.setImageResource(imageButton[i]);
+		// 设置标题
+		// textView.setText(texts[i]);
+		return view;
+	}
+
+	private void initTab() {
+		fragmentTabHost = (FragmentTabHost) findViewById(android.R.id.tabhost);
+		fragmentTabHost.setup(this, getSupportFragmentManager(),
+				R.id.maincontent);
+
+		for (int i = 0; i < texts.length; i++) {
+			TabSpec spec = fragmentTabHost.newTabSpec(texts[i]).setIndicator(
+					getView(i));
+
+			fragmentTabHost.addTab(spec, fragmentArray[i], null);
+			fragmentTabHost.setOnTabChangedListener(new OnTabChangeListener() {
+
+				@Override
+				public void onTabChanged(String tabId) {
+					if (texts[0].equals(tabId)) {
+						// 设置背景(必须在addTab之后，由于需要子节点（底部菜单按钮）否则会出现空指针异常)
+						fragmentTabHost
+								.getTabWidget()
+								.getChildAt(0)
+								.setBackgroundResource(
+										R.drawable.tabwidget_selected);
+						fragmentTabHost
+								.getTabWidget()
+								.getChildAt(1)
+								.setBackgroundResource(
+										R.drawable.tabwidget_disselected);
+					} else if (texts[1].equals(tabId)) {
+						fragmentTabHost
+								.getTabWidget()
+								.getChildAt(0)
+								.setBackgroundResource(
+										R.drawable.tabwidget_disselected);
+						fragmentTabHost
+								.getTabWidget()
+								.getChildAt(1)
+								.setBackgroundResource(
+										R.drawable.tabwidget_selected);
+					}
+
+				}
+			});
+		}
+		
+		
+		
+		fragmentTabHost.getTabWidget().getChildAt(0)
+				.setBackgroundResource(R.drawable.tabwidget_selected);
+	}
+
 	/**
 	 * 初始化录音相关
 	 */
@@ -371,7 +479,8 @@ public class ChatActivity extends BaseActivity implements OnClickListener, OnScr
 		chatting_mode_btn.setOnClickListener(new OnClickListener() {
 
 			public void onClick(View v) {
-
+				hideKeyboard();
+				
 				if (btn_vocie) {
 					mBtnRcd.setVisibility(View.GONE);
 					mBottom.setVisibility(View.VISIBLE);
@@ -398,10 +507,26 @@ public class ChatActivity extends BaseActivity implements OnClickListener, OnScr
 	}
 	
 	/**
+	 * 隐藏表情和键盘
+	 */
+	private void hideKeyboard() {
+		// 隐藏表情
+		if(expanded){
+			setFaceLayoutExpandState(false);
+		}
+		if(imm.isActive(sendMsgEidt)){
+			// 隐藏键盘
+			imm.hideSoftInputFromWindow(ChatActivity.this
+					.getCurrentFocus().getWindowToken(),
+					InputMethodManager.HIDE_NOT_ALWAYS);
+			imm.restartInput(sendMsgEidt);
+		}
+	}
+	
+	/**
 	 * 初始化消息实例, 需要更新的数据为：时间，发送状态，发送消息的类型，非文字信息的消息id与路径，发送的内容
 	 */
 	private void initMessageEntity() {
-		// TODO 发送状态的改变
 		userMessageEntity = new MessageEntity("", peopelEntity.getName(), 
 				peopelEntity.getNum(), user.getName(),
 				user.getNum(), AppUtil.getNowTime(), 
@@ -471,6 +596,15 @@ public class ChatActivity extends BaseActivity implements OnClickListener, OnScr
 		if (allRecorders <= 10) {
 			chatList.removeHeaderView(loadLayout);
 		}
+		
+		chatList.setOnTouchListener(new OnTouchListener() {
+			
+			@Override
+			public boolean onTouch(View v, MotionEvent event) {
+				hideKeyboard();
+				return false;
+			}
+		});
 	}
 	
 	/**
@@ -499,12 +633,6 @@ public class ChatActivity extends BaseActivity implements OnClickListener, OnScr
 		String msg = sendMsgEidt.getText().toString();
 		
 		String time = AppUtil.getNowTime();
-		// TODO 发送状态的改变
-		// 更新MessageIndexEntity内的数据
-//		messageIndexEntity.setMessage(msg);
-//		messageIndexEntity.setTime(time);
-//		messageIndexEntity.setSendState(MessageIndexEntity.SEND_SUCCESS);
-//		messageIndexEntity.setIsDelete(MessageIndexEntity.NORMAL);
 		// 需要更新的数据为：时间，发送状态，发送消息的类型，非文字信息的消息id与路径，发送的内容
 		userMessageEntity.setTime(time);
 		userMessageEntity.setContent(msg);
@@ -515,89 +643,112 @@ public class ChatActivity extends BaseActivity implements OnClickListener, OnScr
 		// 插入数据库
 		long mid = messageDao.insert(userMessageEntity);
 		userMessageEntity.setId(String.valueOf(mid));
-//		messageIndexDao.update(messageIndexEntity);
 		// 添加到listview中显示，通过线程发送
-//		datas.add(userMessageEntity.clone());
-//		chatAdapter.notifyDataSetChanged();
 		chatAdapter.getNewMsg(userMessageEntity.clone(), chatList);
 		
-		String param = HttpClient.getJsonForPost(HttpClient.sendMsg1(mid + "", peopelEntity.getFriendId(), msg, remindId));
-//		String param = HttpClient.getJsonForPost(HttpClient.sendMsg1(mid + "", "13716022538", msg, ""));
-//		if (AppConstant.USER_NUM.equals("13716022538")) {
-//			param = HttpClient.getJsonForPost(HttpClient.sendMsg2(mid + "", "13716022537", msg, ""));
-//		}
-		String state = MessageEntity.SEND_FAIL;
+		String param = HttpClient.getJsonForPost(HttpClient.sendMsg1(mid + "", peopelEntity.getFriendId(), msg, remindId, "", ""));
+		boolean isSend = false;
 		try {
-			boolean isSend = RemindApplication.iBackService.sendMessage(param);//Send Content by socket
-			Toast.makeText(this, isSend ? "success" : "fail",
-					Toast.LENGTH_SHORT).show();
-			if (isSend) {
-				// success
-				state = MessageEntity.SEND_SUCCESS;
-			} else {
-				// fail
-				state = MessageEntity.SEND_FAIL;
-			}
+			isSend = RemindApplication.iBackService.sendMessage(param);//Send Content by socket
 		} catch (RemoteException e) {
-			state = MessageEntity.SEND_FAIL;
 			e.printStackTrace();
+			isSend = false;
 		} catch (Exception e){
-			state = MessageEntity.SEND_FAIL;
 			e.printStackTrace();
+			isSend = false;
 		}
-		messageDao.updateSendState(mid, state);
-		// listview滚动到底部
-//		chatList.setSelection(ListView.FOCUS_DOWN);
+		if (!isSend) {
+			messageDao.updateSendState(Long.valueOf(mid),
+					MessageEntity.SEND_FAIL);
+		}
 		// 清除编辑框内容
 		sendMsgEidt.setText("");
+		hideKeyboard();
 	}
 	
 	/**
-	 * 新消息来到
+	 * 发送语音
+	 * 
+	 * @param voiceTime		语音时长，共几秒
+	 * @param path			语音路径
 	 */
-	public void newMsg() {
+	public void sendVoiceMsg(String voiceTime, String fileName, String path) {
 		String time = AppUtil.getNowTime();
-		String msg = "知道了知道了知道了知道了知道了知道了知道了知道了知道了知道了";
-		// 更新MessageIndexEntity内的数据
-//		messageIndexEntity.setMessage(msg);
-//		messageIndexEntity.setTime(time);
-//		messageIndexEntity.setSendState(MessageIndexEntity.SEND_SUCCESS);
-//		messageIndexEntity.setIsDelete(MessageIndexEntity.NORMAL);
-		// TODO 接受消息的类型
 		// 需要更新的数据为：时间，发送状态，发送消息的类型，非文字信息的消息id与路径，发送的内容
-		contactMessageEntity.setTime(time);
-		contactMessageEntity.setContent(msg);
-		contactMessageEntity.setMsgType(MessageEntity.TYPE_TEXT);
-		contactMessageEntity.setOtherTypeId("");
-		contactMessageEntity.setMsgPath("");
+		userMessageEntity.setTime(time);
+		userMessageEntity.setContent(voiceTime);
+		userMessageEntity.setMsgType(MessageEntity.TYPE_VOICE);
+		userMessageEntity.setOtherTypeId("");
+		userMessageEntity.setMsgPath(path);
+		userMessageEntity.setSendState(MessageEntity.SENDING);
 		// 插入数据库
-		messageDao.insert(contactMessageEntity);
-//		messageIndexDao.update(messageIndexEntity);
-		userMessageEntity.setMsgType(MessageEntity.TYPE_TEXT);
+		final long mid = messageDao.insert(userMessageEntity);
+		userMessageEntity.setId(String.valueOf(mid));
+		// 添加到listview中显示，通过线程发送
+		chatAdapter.getNewMsg(userMessageEntity.clone(), chatList);
+		// 清除编辑框内容
+		sendMsgEidt.setText("");
 		
-		// 添加到listview中显示
-//		datas.add(userMessageEntity.clone());
-//		chatAdapter.notifyDataSetChanged();
-		chatAdapter.getNewMsg(contactMessageEntity.clone(), chatList);
-		// listview滚动到底部
-//		chatList.setSelection(ListView.FOCUS_DOWN);
+		// 上传音频
+		/*
+		 * 设置进度条回掉函数
+		 * 
+		 * 注意：由于在计算发送的字节数中包含了图片以外的其他信息，最终上传的大小总是大于图片实际大小，
+		 * 为了解决这个问题，代码会判断如果实际传送的大小大于图片
+		 * ，就将实际传送的大小设置成'fileSize-1000'（最小为0）
+		 */
+		ProgressListener progressListener = new ProgressListener() {
+			@Override
+			public void transferred(long transferedBytes, long totalBytes) {
+			}
+		};
+		
+		CompleteListener completeListener = new CompleteListener() {
+			@Override
+			public void result(boolean isComplete, String result, String error) {
+//				{"mimetype":"image\/jpeg","last_modified":1467881859,"file_size":148775,"image_frames":1,"bucket_name":"sisi0","image_type":"JPEG","image_width":1600,"path":"\/sisi0\/picture\/2016-07-07\/1467881810170test.jpg","image_height":1200,"code":200,"signature":"a0c8a7a28e0edc2b2e98c56457d0c35e"}
+				// 成功/失败修改数据库
+				if (isComplete) {
+					// 发送消息
+					boolean isSend = false;
+					try {
+						JSONObject jsonObject = new JSONObject(result);
+						String path = jsonObject.getString("path");
+						String param = HttpClient.getJsonForPost(HttpClient.sendMsg1(mid + "", peopelEntity.getFriendId(), "", remindId, MessageEntity.TYPE_VOICE, path));
+						isSend = RemindApplication.iBackService.sendMessage(param);//Send Content by socket
+					} catch (RemoteException e) {
+						isSend = false;
+						e.printStackTrace();
+					} catch (Exception e){
+						isSend = false;
+						e.printStackTrace();
+					}
+					if (!isSend) {
+						messageDao.updateSendState(Long.valueOf(mid),
+								MessageEntity.SEND_FAIL);
+					}
+				} else {
+					// fail
+					messageDao.updateSendState(Long.valueOf(mid),
+							MessageEntity.SEND_FAIL);
+				}
+			}
+		};
+		Upload.upload(this, fileName, completeListener, progressListener, path);
 	}
 
 	@Override
 	public void onClick(View v) {
 		switch (v.getId()) {
-		case R.id.send_msg:
+		case R.id.face_msg:
 			if (null == sendMsgEidt.getText() || sendMsgEidt.getText().toString().trim().length() <= 0) {
 				AppUtil.showToast(this, "您还没有输入内容哦！");
 				return;
 			}
 			// 发送消息
 			sendMsg();
-			// TODO 测试接受
-//			newMsg();
 			break;
 		case R.id.add_remind:
-			// 添加提醒
 			// 添加提醒
 			Intent intent = new Intent(ChatActivity.this, AddRemindActivity.class);
 			intent.putExtra("targetPeopel", peopelEntity);
@@ -624,67 +775,61 @@ public class ChatActivity extends BaseActivity implements OnClickListener, OnScr
 	 * 打开表情选择框
 	 */
 	private void showFaceView() {
-		if(expanded){
+		if (expanded) {
 			setFaceLayoutExpandState(false);
-			
-			
-			
-			InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);  
-			imm.toggleSoftInput(0, InputMethodManager.HIDE_NOT_ALWAYS);  
+			imm.toggleSoftInput(0, InputMethodManager.HIDE_NOT_ALWAYS);
+			sendMsgEidt.requestFocus();
 
-			/**height不设为0是因为，希望可以使再次打开时viewFlipper已经初始化为第一页 避免
-			*再次打开ViewFlipper时画面在动的结果,
-			*为了避免因为1dip的高度产生一个白缝，所以这里在ViewFlipper所在的RelativeLayout
-			*最上面添加了一个1dip高的黑色色块
-			*/
-			
-			
-		}
-		else{
+			/**
+			 * height不设为0是因为，希望可以使再次打开时viewFlipper已经初始化为第一页 避免
+			 * 再次打开ViewFlipper时画面在动的结果,
+			 * 为了避免因为1dip的高度产生一个白缝，所以这里在ViewFlipper所在的RelativeLayout
+			 * 最上面添加了一个1dip高的黑色色块
+			 */
 
-			setFaceLayoutExpandState(true);  
-		    
-
+		} else {
+			setFaceLayoutExpandState(true);
 		}
 	}
 	
-	private void setFaceLayoutExpandState(boolean isexpand){
-		expanded=isexpand;
-		if(isexpand==false){
+	private void setFaceLayoutExpandState(boolean isexpand) {
+		expanded = isexpand;
+		if (isexpand == false) {
 
-				
-			ViewGroup.LayoutParams params=faceLayout.getLayoutParams();
-			params.height=1;
-			faceLayout.setLayoutParams(params);	
-			
+			ViewGroup.LayoutParams params = faceLayout.getLayoutParams();
+			params.height = 1;
+			faceLayout.setLayoutParams(params);
+
 			addFaceBtn.setBackgroundResource(R.drawable.add_face);
-			Message msg=new Message();
-			msg.what= 0;
-			msg.obj="collapse";
-			if(MyFaceActivity.faceHandler!=null)
-				MyFaceActivity.faceHandler.sendMessage(msg);
-			
-			Message msg2=new Message();
-			msg2.what=0;
-			msg2.obj="collapse";
-			if(FaceHistoryActivity.faceHistoryHandler!=null)
-				FaceHistoryActivity.faceHistoryHandler.sendMessage(msg2);
-	
-//			chatListView.setSelection(chatList.size()-1);//使会话列表自动滑动到最低端
-			
-		}
-		else{
-			
-			((InputMethodManager)getSystemService(INPUT_METHOD_SERVICE)).hideSoftInputFromWindow
-			(ChatActivity.this.getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
-			ViewGroup.LayoutParams params=faceLayout.getLayoutParams();
-			params.height=185;
-		//	faceLayout.setLayoutParams(new RelativeLayout.LayoutParams( ));    
-		    RelativeLayout.LayoutParams relativeParams=new RelativeLayout.LayoutParams(LayoutParams.MATCH_PARENT,LayoutParams.WRAP_CONTENT);
-		    relativeParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM, RelativeLayout.TRUE);
+			Message msg = new Message();
+			msg.what = 0;
+			msg.obj = "collapse";
+			if (FaceFragment.faceHandler != null)
+				FaceFragment.faceHandler.sendMessage(msg);
+
+			Message msg2 = new Message();
+			msg2.what = 0;
+			msg2.obj = "collapse";
+			if (FaceHistoryFragment.faceHistoryHandler != null)
+				FaceHistoryFragment.faceHistoryHandler.sendMessage(msg2);
+
+			// chatListView.setSelection(chatList.size()-1);//使会话列表自动滑动到最低端
+
+		} else {
+
+			imm.hideSoftInputFromWindow(ChatActivity.this
+							.getCurrentFocus().getWindowToken(),
+							InputMethodManager.HIDE_NOT_ALWAYS);
+			ViewGroup.LayoutParams params = faceLayout.getLayoutParams();
+			params.height = LayoutParams.WRAP_CONTENT;
+//			params.height = 185;
+			// faceLayout.setLayoutParams(new RelativeLayout.LayoutParams( ));
+			RelativeLayout.LayoutParams relativeParams = new RelativeLayout.LayoutParams(
+					LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
+			relativeParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM,
+					RelativeLayout.TRUE);
 			faceLayout.setLayoutParams(relativeParams);
-		    
-		    
+
 			addFaceBtn.setBackgroundResource(R.drawable.keyboard);
 
 		}
@@ -704,6 +849,18 @@ public class ChatActivity extends BaseActivity implements OnClickListener, OnScr
 	public void onScroll(AbsListView view, int firstVisibleItem,
 			int visibleItemCount, int totalItemCount) {
 		firstItem=firstVisibleItem;
+	}
+	
+	@Override
+	public boolean onKeyDown(int keyCode, KeyEvent event) {
+		if (keyCode == KeyEvent.KEYCODE_BACK
+				&& event.getAction() == KeyEvent.ACTION_DOWN) {
+			if (expanded) {
+				setFaceLayoutExpandState(false);
+				return true;
+			}
+		}
+		return super.onKeyDown(keyCode, event);
 	}
 	
 	/**
@@ -756,24 +913,6 @@ public class ChatActivity extends BaseActivity implements OnClickListener, OnScr
      * 发送提醒类的消息
      */
 	private void setRemindMsg(RemindEntity remindEntity) {
-//		String msg = remindEntity.getTitle();
-
-//		String time = remindEntity.getAddTime();
-		// TODO 发送状态的改变
-		// 更新MessageIndexEntity内的数据
-//		messageIndexEntity.setMessage(msg);
-//		messageIndexEntity.setTime(time);
-//		messageIndexEntity.setSendState(MessageIndexEntity.SEND_SUCCESS);
-//		messageIndexEntity.setIsDelete(MessageIndexEntity.NORMAL);
-		// 需要更新的数据为：时间，发送状态，发送消息的类型，非文字信息的消息id与路径，发送的内容
-//		userMessageEntity.setTime(time);
-//		userMessageEntity.setContent(msg);
-//		userMessageEntity.setMsgType(MessageEntity.TYPE_REMIND);
-//		userMessageEntity.setOtherTypeId(remindEntity.getId());
-//		userMessageEntity.setMsgPath("");
-		// 插入数据库
-//		messageDao.insert(userMessageEntity);
-//		messageIndexDao.update(messageIndexEntity);
 		Cursor cursor = messageDao.queryByOtherTypeId(remindEntity.getId());
 		MessageEntity entity = DataBaseParser.getMessage(cursor).get(0);
 		cursor.close();
@@ -783,40 +922,7 @@ public class ChatActivity extends BaseActivity implements OnClickListener, OnScr
 		sendMsgEidt.setText("");
 	}
 	
-	/**
-	 * 发送语音
-	 * 
-	 * @param voiceTime		语音时长
-	 * @param path			语音路径
-	 */
-	public void sendVoiceMsg(String voiceTime, String path) {
-//		String msg = voiceTime;
-		
-		String time = AppUtil.getNowTime();
-		// TODO 发送状态的改变
-		// 更新MessageIndexEntity内的数据
-//		messageIndexEntity.setMessage("[语音]");
-//		messageIndexEntity.setTime(time);
-//		messageIndexEntity.setSendState(MessageIndexEntity.SEND_SUCCESS);
-//		messageIndexEntity.setIsDelete(MessageIndexEntity.NORMAL);
-		// 需要更新的数据为：时间，发送状态，发送消息的类型，非文字信息的消息id与路径，发送的内容
-		userMessageEntity.setTime(time);
-		userMessageEntity.setContent(voiceTime);
-		userMessageEntity.setMsgType(MessageEntity.TYPE_VOICE);
-		userMessageEntity.setOtherTypeId("");
-		userMessageEntity.setMsgPath(path);
-		// 插入数据库
-		messageDao.insert(userMessageEntity);
-//		messageIndexDao.update(messageIndexEntity);
-		// 添加到listview中显示，通过线程发送
-//		datas.add(userMessageEntity.clone());
-//		chatAdapter.notifyDataSetChanged();
-		chatAdapter.getNewMsg(userMessageEntity.clone(), chatList);
-		// listview滚动到底部
-//		chatList.setSelection(ListView.FOCUS_DOWN);
-		// 清除编辑框内容
-		sendMsgEidt.setText("");
-	}
+	
 	
 	//按下语音录制按钮时
 		@Override
@@ -915,7 +1021,7 @@ public class ChatActivity extends BaseActivity implements OnClickListener, OnScr
 //						entity.setMsgType(false);
 //						entity.setTime(time+"\"");
 //						entity.setText(voiceName);
-						sendVoiceMsg(time+"\"", AppConstant.MNT + AppConstant.FILE_PATH + AppConstant.EDITED_AUDIO_PATH +"/" + voiceName);
+						sendVoiceMsg(time+"\"", voiceName, AppConstant.MNT + AppConstant.FILE_PATH + AppConstant.EDITED_AUDIO_PATH +"/" + voiceName);
 						rcChat_popup.setVisibility(View.GONE);
 
 					}
@@ -1150,7 +1256,7 @@ public class ChatActivity extends BaseActivity implements OnClickListener, OnScr
 			@Override
 			public void handleMessage(Message msg) {
 				switch(msg.what){
-				case MyFaceActivity.ActivityId:
+				case FaceFragment.ActivityId:
 					if(msg.arg1==0){            //添加表情字符串
 						sendMsgEidt.append(msg.obj.toString());
 					}

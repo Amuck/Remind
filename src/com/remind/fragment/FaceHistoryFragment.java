@@ -1,9 +1,8 @@
-package com.remind.activity;
+package com.remind.fragment;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -11,6 +10,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
+import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -25,33 +25,43 @@ import android.widget.LinearLayout;
 import android.widget.ViewFlipper;
 
 import com.help.remind.R;
+import com.remind.activity.ChatActivity;
 import com.remind.entity.FaceHistoryData;
 
-public class FaceHistoryActivity extends Activity{
-
+public class FaceHistoryFragment extends Fragment {
+	private View view;
 	int[] faceId;
 	String[] faceName;
-	
-	protected ViewFlipper viewFlipper=null;
-	protected LinearLayout pagePoint=null;
-	ArrayList<ArrayList<HashMap<String,Object>>> listGrid=null;
-	ArrayList<ImageView> pointList=null;
-	
-	public static final int ActivityId=2;
-	public static Handler faceHistoryHandler=null;  
 
-	
+	protected ViewFlipper viewFlipper = null;
+	protected LinearLayout pagePoint = null;
+	ArrayList<ArrayList<HashMap<String, Object>>> listGrid = null;
+	ArrayList<ImageView> pointList = null;
+
+	public static final int ActivityId = 2;
+	public static Handler faceHistoryHandler = null;
+
 	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		// TODO Auto-generated method stub
-		super.onCreate(savedInstanceState);
-		setContentView(R.layout.myface_layout);
+	public View onCreateView(LayoutInflater inflater, ViewGroup container,
+			Bundle savedInstanceState) {
+		if (null != view) {
+			ViewGroup parent = (ViewGroup) view.getParent();
+			if (null != parent) {
+				parent.removeView(view);
+			}
+		} else {
+			view = inflater.inflate(R.layout.myface_layout, null);
+			setViewUp(view);
+		}
+
+		return view;
+	}
+
+	private void setViewUp(View view) {
+		faceHistoryHandler=new FaceHistoryHandler(Looper.myLooper());
 		
-		
-        faceHistoryHandler=new FaceHistoryHandler(Looper.myLooper());
-	
-		viewFlipper=(ViewFlipper)findViewById(R.id.faceFlipper);
-		pagePoint=(LinearLayout)findViewById(R.id.pagePoint);
+		viewFlipper=(ViewFlipper)view.findViewById(R.id.faceFlipper);
+		pagePoint=(LinearLayout)view.findViewById(R.id.pagePoint);
 		listGrid=new ArrayList<ArrayList<HashMap<String,Object>>>();
 		pointList=new ArrayList<ImageView>();
 		
@@ -61,8 +71,7 @@ public class FaceHistoryActivity extends Activity{
 		addFaceData();
 		addGridView();
 		setPointEffect(0);
-	}  
-	
+	}
 	
 	public class FaceHistoryHandler extends Handler{
 
@@ -140,11 +149,11 @@ public class FaceHistoryActivity extends Activity{
 		}
 		
 		for(int i=0; i< listGrid.size();i++){
-			View view=LayoutInflater.from(this).inflate(R.layout.view_item, null);
+			View view=LayoutInflater.from(getActivity()).inflate(R.layout.view_item, null);
 			GridView gv=(GridView)view.findViewById(R.id.myGridView);
 			gv.setNumColumns(4);
 			gv.setSelector(new ColorDrawable(Color.TRANSPARENT));
-			MyGridAdapter adapter=new MyGridAdapter(this, listGrid.get(i), R.layout.chat_grid_item, new String[]{"image"}, new int[]{R.id.gridImage});
+			MyGridAdapter adapter=new MyGridAdapter(getActivity(), listGrid.get(i), R.layout.chat_grid_item, new String[]{"image"}, new int[]{R.id.gridImage});
 			gv.setAdapter(adapter);
 			gv.setOnTouchListener(new MyTouchListener(viewFlipper));
 			viewFlipper.addView(view);
@@ -153,7 +162,7 @@ public class FaceHistoryActivity extends Activity{
             /**
              * 这里不喜欢用Java代码设置Image的边框大小等，所以单独配置了一个ImageView的布局文件
              */
-			View pointView=LayoutInflater.from(this).inflate(R.layout.point_image_layout, null);
+			View pointView=LayoutInflater.from(getActivity()).inflate(R.layout.point_image_layout, null);
 			ImageView image=(ImageView)pointView.findViewById(R.id.pointImageView);
 			image.setBackgroundResource(R.drawable.qian_point);
 			pagePoint.addView(pointView);   
@@ -213,8 +222,8 @@ public class FaceHistoryActivity extends Activity{
 						 * 这里的这个if检测是防止表情列表循环滑动
 						 */
 						if(childIndex>0){
-						    viewFlipper.setInAnimation(AnimationUtils.loadAnimation(FaceHistoryActivity.this, R.anim.left_in));
-						    viewFlipper.setOutAnimation(AnimationUtils.loadAnimation(FaceHistoryActivity.this, R.anim.right_out));						
+						    viewFlipper.setInAnimation(AnimationUtils.loadAnimation(getActivity(), R.anim.left_in));
+						    viewFlipper.setOutAnimation(AnimationUtils.loadAnimation(getActivity(), R.anim.right_out));						
 							viewFlipper.showPrevious();
 							setPointEffect(childIndex-1);
 						}
@@ -226,8 +235,8 @@ public class FaceHistoryActivity extends Activity{
 						 * 这里的这个if检测是防止表情列表循环滑动
 						 */
 						if(childIndex<listGrid.size()-1){
-							viewFlipper.setInAnimation(AnimationUtils.loadAnimation(FaceHistoryActivity.this, R.anim.right_in));
-							viewFlipper.setOutAnimation(AnimationUtils.loadAnimation(FaceHistoryActivity.this, R.anim.left_out));
+							viewFlipper.setInAnimation(AnimationUtils.loadAnimation(getActivity(), R.anim.right_in));
+							viewFlipper.setOutAnimation(AnimationUtils.loadAnimation(getActivity(), R.anim.left_out));
 							viewFlipper.showNext();
 							setPointEffect(childIndex+1);
 						}
@@ -320,7 +329,7 @@ public class FaceHistoryActivity extends Activity{
 					// TODO Auto-generated method stub
 					//editText.append((String)list.get(position).get("faceName"));
 					Message msg=new Message();
-					msg.what=MyFaceActivity.ActivityId;
+					msg.what=FaceFragment.ActivityId;
 					msg.arg1=0;
 					msg.obj=(String)list.get(position).get("faceName");
 					ChatActivity.chatHandler.sendMessage(msg);
@@ -338,39 +347,12 @@ public class FaceHistoryActivity extends Activity{
 		
 	}
 
-
-
-
 	@Override
-	protected void onPause() {
-		// TODO Auto-generated method stub
-		
-		super.onPause();
-	}
-
-	@Override
-	protected void onResume() {
-		// TODO Auto-generated method stub
+	public void onResume() {
 		parseFaceHistoryList();    //首先得更新数组！！
 		addFaceData();
 		addGridView();
 		setPointEffect(0);
 		super.onResume();
 	}
-
-
-
-
-
-	@Override
-	protected void onStart() {
-		// TODO Auto-generated method stub
-	
-		super.onStart();
-	}
-	
-	
-	
-
 }
-

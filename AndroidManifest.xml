@@ -58,15 +58,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity 
-            android:name="com.remind.activity.MyFaceActivity">
-            
-        </activity>
-        
-        <activity 
-            android:name="com.remind.activity.FaceHistoryActivity">
-            
-        </activity>
         <activity
             android:name="com.remind.activity.HomeActivity"
             android:configChanges="orientation|keyboardHidden|screenSize" >

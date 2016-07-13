@@ -328,4 +328,9 @@ public class LoginActivity extends LoginBaseActivity implements OnClickListener 
 			hideProgess();
 		}
 	}
+
+	@Override
+	void initFinish() {
+		
+	}
 }

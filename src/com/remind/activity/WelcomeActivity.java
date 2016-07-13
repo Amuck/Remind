@@ -93,4 +93,9 @@ public class WelcomeActivity extends LoginBaseActivity {
 		startActivity(mIntent);
 		finish();
 	}
+
+	@Override
+	void httpOver(String s) {
+		
+	}
 }

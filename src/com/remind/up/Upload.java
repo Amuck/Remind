@@ -9,6 +9,7 @@ import android.os.Environment;
 import android.text.TextUtils;
 import android.widget.Toast;
 
+import com.remind.global.AppConstant;
 import com.remind.up.listener.CompleteListener;
 import com.remind.up.listener.ProgressListener;
 import com.remind.up.main.UploaderManager;
@@ -44,7 +45,7 @@ public class Upload {
 	 * 上传文件
 	 * 
 	 * @param context
-	 * @param fileName				文件名称
+	 * @param fileName				唯一的文件名称
 	 * @param completeListener		完成上传时的回调
 	 * @param progressListener		过程中的回调，注意：由于在计算发送的字节数中包含了图片以外的其他信息，最终上传的大小总是大于图片实际大小，
 	 * 								为了解决这个问题，代码会判断如果实际传送的大小大于图片，就将实际传送的大小设置成'fileSize-1000'（最小为0）
@@ -64,7 +65,7 @@ public class Upload {
 		Upload.localFilePath = localFilePath;
 //		savePath = "/" + filename;
 		savePath = File.separator + picturePath + File.separator + Utils.getNowDate()
-				+ File.separator + System.currentTimeMillis() + filename;
+				+ File.separator + AppConstant.USER_NUM + "_" + filename;
 		new UploadTask().execute();
 	}
 	
@@ -72,7 +73,7 @@ public class Upload {
 		@Override
 		protected String doInBackground(Void... params) {
 			// TODO 需要具体实现
-			File localFile = new File(localFilePath + filename);
+			File localFile = new File(localFilePath);
 			try {
 				/*
 				 * 设置进度条回掉函数

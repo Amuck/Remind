@@ -2,12 +2,13 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:orientation="vertical"
-    android:background="@drawable/img_frame_background" >
+    android:background="@drawable/img_frame_background"
+    android:orientation="vertical" >
 
     <LinearLayout
         android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@+id/faceLayout"
         android:orientation="vertical" >
 
         <RelativeLayout
@@ -73,7 +74,8 @@
             </LinearLayout>
 
             <!-- 底部按钮以及 编辑框 -->
-	<RelativeLayout
+
+            <RelativeLayout
                 android:id="@+id/rl_bottom"
                 android:layout_width="fill_parent"
                 android:layout_height="48dp"
@@ -92,12 +94,12 @@
                     android:id="@+id/ivPopUp"
                     android:layout_width="24dp"
                     android:layout_height="24dp"
+                    android:layout_alignParentLeft="true"
                     android:layout_centerVertical="true"
                     android:layout_marginLeft="16dip"
                     android:layout_marginRight="8dp"
-                    android:layout_alignParentLeft="true"
                     android:src="@drawable/chatting_setmode_msg_btn" />
-                
+
                 <ImageView
                     android:id="@+id/add_img"
                     android:layout_width="24dp"
@@ -106,23 +108,24 @@
                     android:layout_marginRight="16dp"
                     android:layout_toRightOf="@+id/ivPopUp"
                     android:src="@drawable/add_img" />
+
                 <ImageView
                     android:id="@+id/add_face"
                     android:layout_width="24dp"
                     android:layout_height="24dp"
                     android:layout_centerVertical="true"
-                    android:layout_marginRight="8dip"
                     android:layout_marginLeft="16dp"
+                    android:layout_marginRight="8dip"
                     android:layout_toLeftOf="@+id/add_remind"
-                    android:src="@drawable/add_face" />
+                    android:background="@drawable/add_face" />
 
                 <RelativeLayout
                     android:id="@+id/btn_bottom"
                     android:layout_width="match_parent"
                     android:layout_height="32dp"
-                    android:layout_toRightOf="@+id/add_img"
+                    android:layout_centerVertical="true"
                     android:layout_toLeftOf="@+id/add_face"
-                    android:layout_centerVertical="true" >
+                    android:layout_toRightOf="@+id/add_img" >
 
                     <Button
                         android:id="@+id/send_msg"
@@ -131,8 +134,8 @@
                         android:layout_alignParentRight="true"
                         android:layout_centerVertical="true"
                         android:background="@drawable/chat_send_btn"
-                        android:visibility="gone"
-                        android:text="发送" />
+                        android:text="发送"
+                        android:visibility="gone" />
 
                     <EditText
                         android:id="@+id/msg_edit"
@@ -141,9 +144,9 @@
                         android:layout_centerVertical="true"
                         android:layout_toLeftOf="@id/send_msg"
                         android:background="@drawable/send_voice_bg"
-                        android:singleLine="true"
-                        android:paddingLeft="8dp"
                         android:imeOptions="actionSend"
+                        android:paddingLeft="8dp"
+                        android:singleLine="true"
                         android:textSize="18sp" />
                 </RelativeLayout>
 
@@ -152,8 +155,8 @@
                     android:layout_width="fill_parent"
                     android:layout_height="32dp"
                     android:layout_centerVertical="true"
-                    android:layout_toRightOf="@+id/add_img"
                     android:layout_toLeftOf="@+id/add_face"
+                    android:layout_toRightOf="@+id/add_img"
                     android:background="@drawable/send_voice_bg"
                     android:gravity="center"
                     android:text="按住说话"
@@ -161,75 +164,6 @@
                     android:textSize="14sp"
                     android:visibility="gone" />
             </RelativeLayout>
-            <!-- <RelativeLayout
-                android:id="@+id/rl_bottom"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:background="@drawable/chat_footer_bg" >
-
-                <Button
-                    android:id="@+id/add_remind"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentLeft="true"
-                    android:layout_centerVertical="true"
-                    android:layout_marginLeft="10dip"
-                    android:text="@string/add_remind" />
-
-                <ImageView
-                    android:id="@+id/ivPopUp"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_centerVertical="true"
-                    android:layout_marginLeft="10dip"
-                    android:layout_toRightOf="@+id/add_remind"
-                    android:src="@drawable/chatting_setmode_msg_btn" />
-
-                <RelativeLayout
-                    android:id="@+id/btn_bottom"
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentRight="true"
-                    android:layout_centerVertical="true"
-                    android:layout_toRightOf="@+id/ivPopUp" >
-
-                    <Button
-                        android:id="@+id/send_msg"
-                        android:layout_width="60dp"
-                        android:layout_height="40dp"
-                        android:layout_alignParentRight="true"
-                        android:layout_centerVertical="true"
-                        android:layout_marginRight="10dp"
-                        android:background="@drawable/chat_send_btn"
-                        android:text="发送" />
-
-                    <EditText
-                        android:id="@+id/msg_edit"
-                        android:layout_width="fill_parent"
-                        android:layout_height="40dp"
-                        android:layout_centerVertical="true"
-                        android:layout_marginLeft="10dp"
-                        android:layout_marginRight="10dp"
-                        android:layout_toLeftOf="@id/send_msg"
-                        android:background="@drawable/login_edit_normal"
-                        android:singleLine="true"
-                        android:textSize="18sp" />
-                </RelativeLayout>
-
-                <TextView
-                    android:id="@+id/btn_rcd"
-                    android:layout_width="fill_parent"
-                    android:layout_height="40dp"
-                    android:layout_alignParentRight="true"
-                    android:layout_centerVertical="true"
-                    android:layout_marginLeft="10dp"
-                    android:layout_marginRight="10dp"
-                    android:layout_toRightOf="@+id/ivPopUp"
-                    android:background="@drawable/chat_send_btn"
-                    android:gravity="center"
-                    android:text="按住说话"
-                    android:visibility="gone" />
-            </RelativeLayout> -->
         </LinearLayout>
     </LinearLayout>
     <!-- 录音显示UI层 -->
@@ -248,56 +182,60 @@
             layout="@layout/voice_rcd_hint_window" />
     </LinearLayout>
 
-    <RelativeLayout 
+    <RelativeLayout
         android:id="@+id/faceLayout"
         android:layout_width="match_parent"
         android:layout_height="1dip"
-        android:layout_alignParentBottom="true">
-        
-        <TabHost 
-        	android:id="@android:id/tabhost"
-        	android:layout_width="match_parent"
-        	android:layout_height="wrap_content"
-        	>
-        	
-            <LinearLayout 
+        android:layout_alignParentBottom="true" >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" >
+
+            <FrameLayout
+                android:id="@+id/maincontent"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content" >
+            </FrameLayout>
+
+            <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                >
-                
-                
-                
-                <FrameLayout 
-                    android:id="@android:id/tabcontent"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content" 
-                   >
-                    
-                </FrameLayout>
-                
-                <TabWidget 
-                    android:id="@android:id/tabs"
+                android:orientation="horizontal" >
+
+                <android.support.v4.app.FragmentTabHost
+                    android:id="@android:id/tabhost"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    >
-                    
-                </TabWidget>  
-                
-                
-            </LinearLayout>
-            
-        </TabHost>
-        
-        <LinearLayout 
+                    android:layout_alignParentLeft="true"
+                    android:layout_toLeftOf="@+id/face_msg" >
+
+                    <FrameLayout
+                        android:id="@android:id/tabcontent"
+                        android:layout_width="0dp"
+                        android:layout_height="0dp"
+                        android:layout_weight="0" >
+                    </FrameLayout>
+                </android.support.v4.app.FragmentTabHost>
+
+                <Button
+                    android:id="@+id/face_msg"
+                    android:layout_width="80dp"
+                    android:layout_height="45dp"
+                    android:background="@drawable/chat_send_btn"
+                    android:layout_alignParentRight="true"
+                    android:text="发送" />
+            </RelativeLayout>
+        </LinearLayout>
+
+        <LinearLayout
             android:id="@+id/fill_the_gap"
             android:layout_width="match_parent"
             android:layout_height="1dip"
             android:background="#272b34"
-            android:orientation="horizontal">
-            
+            android:orientation="horizontal" >
         </LinearLayout>
-        
-   		
     </RelativeLayout>
+
 </RelativeLayout>

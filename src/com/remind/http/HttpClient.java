@@ -82,6 +82,8 @@ public class HttpClient {
 		static class Content {
 			public String content;
 			public String remindId;
+			public String msgType;
+			public String msgPath ;
 		}
 	}
 	
@@ -137,7 +139,7 @@ public class HttpClient {
 	 * @param remindId		所属提醒的id，没有的话为空串
 	 * @return
 	 */
-	public static Message sendMsg1(String mid, String to, String content, String remindId) {
+	public static Message sendMsg1(String mid, String to, String content, String remindId, String msgType, String msgPath) {
 		Message message = new Message();
 		message.type = "message";
 		message.mid = mid;
@@ -147,6 +149,8 @@ public class HttpClient {
 		Message.Content content2 = new Message.Content();
 		content2.content = content;
 		content2.remindId = remindId;
+		content2.msgType = msgType;
+		content2.msgPath = msgPath;
 		message.content = content2;
 		
 		return message;
@@ -157,8 +161,8 @@ public class HttpClient {
 		message.type = "message";
 		message.mid = mid;
 		message.from_id = AppConstant.FROM_ID;
-//		message.to = to;
-		message.to = "bfa3e1dd3865915333079226c19120097c437ee5";
+		message.to = to;
+//		message.to = "bfa3e1dd3865915333079226c19120097c437ee5";
 		Message.Content content2 = new Message.Content();
 		content2.content = content;
 		content2.remindId = remindId;

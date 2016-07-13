@@ -154,8 +154,8 @@ public class MessageReceiver extends BroadcastReceiver {
 			MessageEntity messageEntity = new MessageEntity("", "", "", 
 					entity.getNickName(), entity.getNum(), AppUtil.getNowTime(), 
 					MessageEntity.SEND_SUCCESS, MessageEntity.NORMAL, 
-					MessageEntity.TYPE_TEXT, 
-					"", "", 
+					contentObj.getString("msgType"), 
+					"", contentObj.getString("msgPath"), 
 					entity.getNum(), MessageEntity.TYPE_RECIEVE, 
 					contentObj.getString("content"), feed, AppConstant.USER_NUM, contentObj.getString("remindId"));
 			// 插入数据库
