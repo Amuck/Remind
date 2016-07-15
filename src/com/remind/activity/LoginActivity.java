@@ -285,15 +285,6 @@ public class LoginActivity extends LoginBaseActivity implements OnClickListener 
 
 	@Override
 	public void loginSuccess() {
-		// 是否记住用户名
-		if (isRemember) {
-			MySharedPreferencesLoginType.saveUserName(getApplicationContext(),
-					et_user_mobile.getEditableText().toString(), et_user_psw
-							.getEditableText().toString());
-		} else {
-			MySharedPreferencesLoginType.saveUserName(getApplicationContext(),
-					"", "");
-		}
 	}
 
 	@Override
@@ -311,6 +302,16 @@ public class LoginActivity extends LoginBaseActivity implements OnClickListener 
 		// 登陆状态改变
 		if (RemindApplication.IS_LOGIN) {
 			Toast.makeText(this, "登陆成功", Toast.LENGTH_SHORT).show();
+			
+			// 是否记住用户名
+			if (isRemember) {
+				MySharedPreferencesLoginType.saveUserName(getApplicationContext(),
+						et_user_mobile.getEditableText().toString(), et_user_psw
+								.getEditableText().toString());
+			} else {
+				MySharedPreferencesLoginType.saveUserName(getApplicationContext(),
+						"", "");
+			}
 			// 成功
 			MySharedPreferencesLoginType.setOnlineState(LoginActivity.this,
 					true);

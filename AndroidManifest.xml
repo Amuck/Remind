@@ -60,7 +60,8 @@
         </activity>
         <activity
             android:name="com.remind.activity.HomeActivity"
-            android:configChanges="orientation|keyboardHidden|screenSize" >
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:launchMode="singleTop" >
         </activity>
         <activity
             android:name="com.remind.activity.ChatActivity"
