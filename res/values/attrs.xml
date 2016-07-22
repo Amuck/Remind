@@ -1,6 +1,9 @@
-<resources>
+<resources  xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:ignore="MissingTranslation">
 
-    <string-array name="remind_type">
+    <string-array name="remind_type"
+        >
         <item>已接受的提醒</item>
         <item>新的提醒</item>
         <item>我发起的提醒</item>

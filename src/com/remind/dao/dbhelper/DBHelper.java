@@ -17,7 +17,7 @@ public class DBHelper extends SQLiteOpenHelper {
 	/**
 	 * 数据库版本号
 	 */
-	public static final int DB_FILE_VERSION = 3;
+	public static final int DB_FILE_VERSION = 4;
 
 	private static final String TAG = "DBHelper";
 
