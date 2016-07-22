@@ -645,7 +645,7 @@ public class ChatActivity extends BaseActivity implements OnClickListener, OnScr
 		// 添加到listview中显示，通过线程发送
 		chatAdapter.getNewMsg(userMessageEntity.clone(), chatList);
 		
-		String param = HttpClient.getJsonForPost(HttpClient.sendMsg1(mid + "", peopelEntity.getFriendId(), msg, remindId, "", ""));
+		String param = HttpClient.getJsonForPost(HttpClient.sendMsg1(mid + "", peopelEntity.getFriendId(), msg, remindId, MessageEntity.TYPE_TEXT, ""));
 		boolean isSend = false;
 		try {
 			isSend = RemindApplication.iBackService.sendMessage(param);//Send Content by socket

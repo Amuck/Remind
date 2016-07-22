@@ -74,8 +74,8 @@ public class MessageReceiver extends BroadcastReceiver {
 		String action = intent.getAction();
 		
 		if (action.equals(BackService.HEART_BEAT_ACTION)) {
-			Toast.makeText(context, "Get a heart heat", Toast.LENGTH_SHORT)
-					.show();
+//			Toast.makeText(context, "Get a heart heat", Toast.LENGTH_SHORT)
+//					.show();
 		} else {
 			messageDaoImpl = new MessageDaoImpl(context);
 			remindDaoImpl = new RemindDaoImpl(context);
@@ -125,7 +125,7 @@ public class MessageReceiver extends BroadcastReceiver {
 		boolean isSuccess = RemindApplication.iBackService.sendMessage(param);
 		if (isSuccess) {
 			feed = MessageEntity.FEED_SUCCESS;
-			Toast.makeText(context, "回馈成功", Toast.LENGTH_SHORT).show();
+//			Toast.makeText(context, "回馈成功", Toast.LENGTH_SHORT).show();
 		} else {
 			feed = MessageEntity.FEED_FAIL;
 			Toast.makeText(context, "回馈fail", Toast.LENGTH_SHORT).show();
