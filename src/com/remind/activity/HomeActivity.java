@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import android.animation.ObjectAnimator;
+import android.animation.PropertyValuesHolder;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
@@ -53,6 +55,8 @@ import com.remind.sevice.IBackService;
 import com.remind.sp.WeatherSp;
 import com.remind.util.AppUtil;
 import com.remind.util.DataBaseParser;
+import com.remind.view.floatingbtn.FloatingActionMenu;
+import com.remind.view.floatingbtn.SubActionButton;
 
 /**
  * @author ChenLong
@@ -208,6 +212,9 @@ public class HomeActivity extends BaseActivity implements OnClickListener {
 		peopelDao = new PeopelDaoImpl(this);
 		today = dateFormat.format(new Date());
 		
+		// init floating button
+		initFloatingBtn();
+		
 		mReciver = new RemindBackReciver();
 		mIntentFilter = new IntentFilter();
 		mIntentFilter.addAction(MessageReceiver.GET_MESSAGE_ACTION);
@@ -217,6 +224,93 @@ public class HomeActivity extends BaseActivity implements OnClickListener {
 		initWeather();
 		getLocationAndWeather();
 		setUpView();
+	}
+	
+	/**
+	 * 初始化浮动按钮
+	 */
+	private void initFloatingBtn() {
+//		final ImageView fabIconNew = new ImageView(this);
+//        fabIconNew.setImageDrawable(getResources().getDrawable(R.drawable.more_nor));
+//        final FloatingActionButton rightLowerButton = new FloatingActionButton.Builder(this)
+//                .setContentView(fabIconNew)
+//                .setPosition(FloatingActionButton.POSITION_TOP_RIGHT)
+//                .build();
+
+        SubActionButton.Builder rLSubBuilder = new SubActionButton.Builder(this);
+        ImageView rlIcon1 = new ImageView(this);
+        ImageView rlIcon2 = new ImageView(this);
+        ImageView rlIcon3 = new ImageView(this);
+        ImageView rlIcon4 = new ImageView(this);
+
+        // 添加提醒
+        rlIcon1.setImageDrawable(getResources().getDrawable(R.drawable.ic_action_chat_light));
+        rlIcon2.setImageDrawable(getResources().getDrawable(R.drawable.ic_action_camera_light));
+        rlIcon3.setImageDrawable(getResources().getDrawable(R.drawable.ic_action_video_light));
+        // 添加好友
+        rlIcon4.setImageDrawable(getResources().getDrawable(R.drawable.ic_action_new_light));
+        
+        SubActionButton tcSub1 = rLSubBuilder.setContentView(rlIcon1).build();
+        SubActionButton tcSub4 = rLSubBuilder.setContentView(rlIcon4).build();
+        
+        tcSub1.setOnClickListener(new OnClickListener() {
+            
+            @Override
+            public void onClick(View v) {
+                if (!RemindApplication.IS_LOGIN) {
+                    // 未登录
+                    Toast.makeText(HomeActivity.this, "请先登陆。", Toast.LENGTH_LONG).show();
+                } else {
+                    startActivity(new Intent(HomeActivity.this, AddRemindActivity.class));
+                }
+            }
+        });
+        tcSub4.setOnClickListener(new OnClickListener() {
+            
+            @Override
+            public void onClick(View v) {
+                if (!RemindApplication.IS_LOGIN) {
+                    // 未登录
+                    Toast.makeText(HomeActivity.this, "请先登陆。", Toast.LENGTH_LONG).show();
+                } else {
+                    startActivity(new Intent(HomeActivity.this, MainActivity1.class));
+                }
+            }
+        });
+
+        // Build the menu with default options: light theme, 90 degrees, 72dp radius.
+        // Set 4 default SubActionButtons
+        final FloatingActionMenu rightLowerMenu = new FloatingActionMenu.Builder(this)
+                                                .setStartAngle(90)
+                                                .setEndAngle(180)
+                                                .setRadius(getResources().getDimensionPixelSize(R.dimen.radius_medium))
+                                                .addSubActionView(tcSub1)
+                                                .addSubActionView(rLSubBuilder.setContentView(rlIcon2).build())
+                                                .addSubActionView(rLSubBuilder.setContentView(rlIcon3).build())
+                                                .addSubActionView(tcSub4)
+                                                .attachTo(moreBtn)
+                                                .build();
+
+        // Listen menu open and close events to animate the button content view
+        rightLowerMenu.setStateChangeListener(new FloatingActionMenu.MenuStateChangeListener() {
+            @Override
+            public void onMenuOpened(FloatingActionMenu menu) {
+                // Rotate the icon of rightLowerButton 45 degrees clockwise
+                moreBtn.setRotation(0);
+                PropertyValuesHolder pvhR = PropertyValuesHolder.ofFloat(View.ROTATION, 45);
+                ObjectAnimator animation = ObjectAnimator.ofPropertyValuesHolder(moreBtn, pvhR);
+                animation.start();
+            }
+
+            @Override
+            public void onMenuClosed(FloatingActionMenu menu) {
+                // Rotate the icon of rightLowerButton 45 degrees counter-clockwise
+                moreBtn.setRotation(45);
+                PropertyValuesHolder pvhR = PropertyValuesHolder.ofFloat(View.ROTATION, 0);
+                ObjectAnimator animation = ObjectAnimator.ofPropertyValuesHolder(moreBtn, pvhR);
+                animation.start();
+            }
+        });
 	}
 	
 	private void addPopView() {
@@ -320,7 +414,7 @@ public class HomeActivity extends BaseActivity implements OnClickListener {
 
 		// set up title view
 		userInfoBtn.setOnClickListener(this);
-		moreBtn.setOnClickListener(this);
+//		moreBtn.setOnClickListener(this);
 		dateTxt.setText(AppUtil.getToday());
 	}
 
