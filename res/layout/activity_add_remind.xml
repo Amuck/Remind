@@ -148,7 +148,6 @@
                 android:layout_height="27dp"
                 android:background="@drawable/right_board"
                 android:gravity="center"
-                android:text="2015/08/26"
                 android:textColor="@color/white"
                 android:textSize="10sp" />
         </LinearLayout>
