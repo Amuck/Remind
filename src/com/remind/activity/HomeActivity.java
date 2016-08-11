@@ -283,7 +283,8 @@ public class HomeActivity extends BaseActivity implements OnClickListener {
         final FloatingActionMenu rightLowerMenu = new FloatingActionMenu.Builder(this).setStartAngle(90).setEndAngle(180)
                 .setRadius(getResources().getDimensionPixelSize(R.dimen.radius_medium)).addSubActionView(tcSub1)
                 .addSubActionView(rLSubBuilder.setContentView(rlIcon2).build())
-                .addSubActionView(rLSubBuilder.setContentView(rlIcon3).build()).addSubActionView(tcSub4).attachTo(moreBtn).build();
+                .addSubActionView(rLSubBuilder.setContentView(rlIcon3).build()).addSubActionView(tcSub4).attachTo(moreBtn)
+                .build();
 
         // Listen menu open and close events to animate the button content view
         rightLowerMenu.setStateChangeListener(new FloatingActionMenu.MenuStateChangeListener() {
@@ -629,6 +630,9 @@ public class HomeActivity extends BaseActivity implements OnClickListener {
         // 显示其他天的提醒
         cursor = remindDao.getOtherdayReadRemind(today);
         datas.addAll(DataBaseParser.getRemindDetail(cursor));
+        // 显示已完成（失效）的提醒
+        cursor = remindDao.getDeletedRemind();
+        datas.addAll(DataBaseParser.getRemindDetail(cursor));
         cursor.close();
     }
 
@@ -733,7 +737,8 @@ public class HomeActivity extends BaseActivity implements OnClickListener {
                 cursor1.close();
             } else {
                 // 今天提醒全部显示
-                Cursor cursor1 = remindDao.getOtherdayRemind(today, (page - 1) * number - notAcceptCount - todayCount, number);
+                Cursor cursor1 = remindDao.getOtherdayRemind(today, (page - 1) * number - notAcceptCount - todayCount,
+                        number);
                 temp = DataBaseParser.getRemindDetail(cursor1);
                 cursor1.close();
             }

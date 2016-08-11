@@ -3,21 +3,28 @@ package com.remind.activity;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Date;
 
+import android.app.Service;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.database.Cursor;
+import android.media.MediaPlayer;
+import android.media.MediaPlayer.OnCompletionListener;
+import android.media.RingtoneManager;
+import android.net.Uri;
 import android.os.Bundle;
-import android.os.Message;
 import android.os.PowerManager;
 import android.os.PowerManager.WakeLock;
+import android.os.Vibrator;
+import android.telephony.PhoneStateListener;
+import android.telephony.TelephonyManager;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.KeyEvent;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -29,332 +36,492 @@ import com.remind.global.AppConstant;
 import com.remind.http.HttpClient;
 import com.remind.util.AppUtil;
 import com.remind.util.DataBaseParser;
-import com.remind.view.RoleDetailImageView;
 
 /**
  * @author ChenLong
- *
- *	闹铃提醒界面
+ * 
+ *         闹铃提醒界面
  */
 public class RemindingActivity extends BaseActivity implements OnClickListener {
-	public static final int ALARM_STATUS_DELETE = 0x01;
-	public static final int ALARM_STATUS_CLOSE = 0x02;
+    public static final int ALARM_STATUS_DELETE = 0x01;
+    public static final int ALARM_STATUS_CLOSE = 0x02;
 
-	private PowerManager pm;
-	private WakeLock mWakelock;
+    private PowerManager pm;
+    private WakeLock mWakelock;
 
-	private Window win;
+    private Window win;
 
-	/**
-	 * 标题
-	 */
-	private TextView title;
-	/**
-	 * 内容
-	 */
-	private TextView content;
-	/**
-	 * 姓名
-	 */
-	private TextView name;
-	/**
-	 * 时间
-	 */
-	private TextView time;
-	
-	/**
-	 * 头像
-	 */
-	private RoleDetailImageView img;
-	/**
-	 * 图片
-	 */
-	private ImageView contentImg;
-	/**
-	 * 已经开始
-	 */
-	private TextView startBtn;
-	/**
-	 * 马上开始
-	 */
-	private TextView readyBtn;
-	/**
-	 * 10分钟后提醒
-	 */
-	private TextView laterBtn;
-	/**
-	 * 其他
-	 */
-	private TextView otherBtn;
-	
-	/**
-	 * 删除
-	 */
-	private TextView deleteBtn;
-	/**
-	 * 关闭
-	 */
-	private TextView closeBtn;
+    /**
+     * 标题
+     */
+    private TextView title;
+    /**
+     * 内容
+     */
+    private TextView content;
+    /**
+     * 姓名
+     */
+    private TextView name;
+    /**
+     * 时间
+     */
+    private TextView time;
 
-	private LinearLayout alertPenal;
-	private LinearLayout otherPenal;
-	/**
-	 * 提醒的id
-	 */
-	private int remindId;
-	private RemindDao remindDao;
-	private RemindEntity remindEntity = null;
-	private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+    /**
+     * 头像
+     */
+    // private RoleDetailImageView img;
+    /**
+     * 图片
+     */
+    // private ImageView contentImg;
+    /**
+     * 已经开始
+     */
+    private TextView startBtn;
+    /**
+     * 马上开始
+     */
+    private TextView readyBtn;
+    /**
+     * 10分钟后提醒
+     */
+    private TextView laterBtn;
+    /**
+     * 其他
+     */
+    private TextView otherBtn;
 
-	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
+    /**
+     * 删除
+     */
+    private TextView deleteBtn;
+    /**
+     * 关闭
+     */
+    private TextView closeBtn;
 
-		// 在锁屏上显示
-		win = getWindow();
-		win.addFlags(WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED
-				| WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD);
-		win.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON
-				| WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON);
+    private LinearLayout alertPenal;
+    private LinearLayout otherPenal;
+    /**
+     * 提醒的id
+     */
+    private int remindId;
+    private RemindDao remindDao;
+    private RemindEntity remindEntity = null;
+    private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
 
-		setContentView(R.layout.new_activity_alert);
-		// 获取闹钟id
-		Intent intent = getIntent();
-		remindId = intent.getIntExtra("requestCode", -1);
+    // 播放铃声
+    private MediaPlayer player;
 
-		if (-1 == remindId) {
-			AppUtil.showToast(this, "播放提醒失败");
-			finish();
-		}
+    private BroadcastReceiver myReceiver;
+    /**
+     * 振动器
+     */
+    private Vibrator vb;
 
-		init();
-	}
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
 
-	private void init() {
-		contentImg = (ImageView) findViewById(R.id.alert_img);
-		startBtn = (TextView) findViewById(R.id.start);
-		readyBtn = (TextView) findViewById(R.id.already);
-		laterBtn = (TextView) findViewById(R.id.later);
-		otherBtn = (TextView) findViewById(R.id.other);
-		deleteBtn = (TextView) findViewById(R.id.delete);
-		closeBtn = (TextView) findViewById(R.id.close);
-		alertPenal = (LinearLayout) findViewById(R.id.alert_panel);
-		otherPenal = (LinearLayout) findViewById(R.id.other_panel);
-		
-		title = (TextView) findViewById(R.id.remind_title_txt);
-		content = (TextView) findViewById(R.id.remind_content_txt);
-		name = (TextView) findViewById(R.id.remind_name_txt);
-		time = (TextView) findViewById(R.id.remind_time_txt);
-		img = (RoleDetailImageView) findViewById(R.id.remind_img);
+        // 在锁屏上显示
+        win = getWindow();
+        win.addFlags(WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED | WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD);
+        win.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON | WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON);
 
-		remindDao = new RemindDaoImpl(this);
-		getRemindData();
+        setContentView(R.layout.new_activity_alert);
+        // 获取闹钟id
+        Intent intent = getIntent();
+        remindId = intent.getIntExtra("requestCode", -1);
 
-		otherBtn.setOnClickListener(this);
-		deleteBtn.setOnClickListener(this);
-		closeBtn.setOnClickListener(this);
-		startBtn.setOnClickListener(this);
-		readyBtn.setOnClickListener(this);
-		laterBtn.setOnClickListener(this);
-	}
+        if (-1 == remindId) {
+            AppUtil.showToast(this, "播放提醒失败");
+            finish();
+        }
 
-	private void changePanelState() {
-		if (alertPenal.getVisibility() == View.VISIBLE) {
-			alertPenal.setVisibility(View.GONE);
-			otherPenal.setVisibility(View.VISIBLE);
-		} else {
-			alertPenal.setVisibility(View.VISIBLE);
-			otherPenal.setVisibility(View.GONE);
-		}
-	}
-	
-	
-	/**
-	 * 获取提醒数据
-	 */
-	private void getRemindData() {
-		try {
-			RemindEntity r = new RemindEntity();
-			r.setId(remindId + "");
-			Cursor cursor = remindDao.queryRemind(r);
-			remindEntity = DataBaseParser.getRemindDetail(cursor).get(0);
-			cursor.close();
-			// 初始化页面数据
-			title.setText(remindEntity.getTitle());
-			content.setText(remindEntity.getContent());
-			name.setText(remindEntity.getNickName());
-			time.setText(remindEntity.getRemindTime().split(" ")[1]);
-		} catch (Exception e) {
-			AppUtil.showToast(this, "播放提醒失败");
-			finish();
-		}
-	}
+        init();
+    }
 
-	/**
-	 * 
-	 * 获取下一次提醒时间
-	 * @param minute		下次响铃时间间隔分钟，0为没有变化
-	 * @param hour			下次响铃时间间隔小时，0为没有变化
-	 * @param day			下次响铃时间间隔天，0为没有变化
-	 * @param month			下次响铃时间间隔月，0为没有变化
-	 * @param year			下次响铃时间间隔年，0为没有变化
-	 * @param status		选择动作 小于10失效，大于10有效
-	 * 						1: 关闭; 2: 已开始; 3: 马上开始; 4: 延迟10分钟
-	 */
-	private void getNextRemindTime(int minute, int hour, int day, int month, int year, int status) {
-		int isEnable = 10;
-		// 获取本次响铃时间
-		Calendar calendar = Calendar.getInstance();
-		String remindTime = remindEntity.getRemindTime();
-		try {
-			calendar.setTime(dateFormat.parse(remindTime));
-		} catch (ParseException e) {
-			AppUtil.showToast(this, "时间错误，接受任务失败。");
-			e.printStackTrace();
-			return;
-		}
-		
-		// 获取重复类型
-		String repeatType = remindEntity.getRepeatType();
-		// 计算下一次响铃时间
-		if (RemindEntity.REPEAT_NO.equals(repeatType)) {
-			if ((minute | hour | day | month | year) == 0) {
-				// 不再有下一次提醒
-				remindEntity.setIsDelete(RemindEntity.DELETED);
-				sendAlarmStatus(status);
-				return;
-			} else {
-				// 不重复提醒，则按照下次响铃时间间隔设置
-				calendar.add(Calendar.MINUTE, minute);
-				calendar.add(Calendar.HOUR_OF_DAY, hour);
-				calendar.add(Calendar.DAY_OF_YEAR, day);
-				calendar.add(Calendar.MONTH, month);
-				calendar.add(Calendar.YEAR, year);
-			}
-		} else if (RemindEntity.REPEAT_DAY.equals(repeatType)) {
-			// 每天重复提醒，下一次为明天
-			calendar.add(Calendar.DAY_OF_YEAR, 1);
-		} else if (RemindEntity.REPEAT_WEEK.equals(repeatType)) {
-			// 每周重复，下一次为下周周几
-			calendar.add(Calendar.DAY_OF_WEEK_IN_MONTH, 1);
-		} else if (RemindEntity.REPEAT_MONTH.equals(repeatType)) {
-			// 每月重复,下一次为下月本号, 如果下个月没有本号，则为月末那天
-			calendar.add(Calendar.MONTH, 1);
-		} else if (RemindEntity.REPEAT_YEAR.equals(repeatType)) {
-			// 每年提醒，下一次为明年这个日期
-			calendar.add(Calendar.YEAR, 1);
-		}
-		
-		remindEntity.setRemindTimeMiLi(calendar.getTimeInMillis() + "");
-		remindEntity.setRemindTime(dateFormat.format(calendar.getTime()));
-		// 设置闹铃
-		AppUtil.setAlarm(this, remindEntity.getRemindTime(), Integer.valueOf(remindEntity.getId()));
-		
-		sendAlarmStatus(isEnable + status);
-	}
+    private void init() {
+        // contentImg = (ImageView) findViewById(R.id.alert_img);
+        startBtn = (TextView) findViewById(R.id.start);
+        readyBtn = (TextView) findViewById(R.id.already);
+        laterBtn = (TextView) findViewById(R.id.later);
+        otherBtn = (TextView) findViewById(R.id.other);
+        deleteBtn = (TextView) findViewById(R.id.delete);
+        closeBtn = (TextView) findViewById(R.id.close);
+        alertPenal = (LinearLayout) findViewById(R.id.alert_panel);
+        otherPenal = (LinearLayout) findViewById(R.id.other_panel);
 
-	/**
-	 * 发送反馈信息
-	 */
-	private void sendAlarmStatus(int status) {
-		final String params = HttpClient.getJsonForPost(HttpClient.alarmStatus(remindEntity.getNoticeId(), status,
-				AppConstant.FROM_ID, remindEntity.getOwnerId()));
-		new Thread(new Runnable() {
-			
-			@Override
-			public void run() {
-				String s = HttpClient.post(HttpClient.url + HttpClient.alarm_statues, params);
-				if (s == null) {
-					// TODO 失败插入数据库，重发
-					
-				} else {
+        title = (TextView) findViewById(R.id.remind_title_txt);
+        content = (TextView) findViewById(R.id.remind_content_txt);
+        name = (TextView) findViewById(R.id.remind_name_txt);
+        time = (TextView) findViewById(R.id.remind_time_txt);
+        // img = (RoleDetailImageView) findViewById(R.id.remind_img);
 
-				}
-			}
-		}).start();
-	}
+        remindDao = new RemindDaoImpl(this);
+        getRemindData();
 
-	/**
-	 * 在锁屏下点亮屏幕
-	 */
-	@SuppressWarnings("deprecation")
-	private void getWakeLock() {
-		pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
-		mWakelock = pm.newWakeLock(PowerManager.ACQUIRE_CAUSES_WAKEUP
-				| PowerManager.SCREEN_DIM_WAKE_LOCK, "Remind");
-	}
+        otherBtn.setOnClickListener(this);
+        deleteBtn.setOnClickListener(this);
+        closeBtn.setOnClickListener(this);
+        startBtn.setOnClickListener(this);
+        readyBtn.setOnClickListener(this);
+        laterBtn.setOnClickListener(this);
 
-	@Override
-	protected void onResume() {
-		super.onResume();
-		if (null == mWakelock) {
-			getWakeLock();
-		}
-		mWakelock.acquire();
-	}
+        vb = (Vibrator) getSystemService(Service.VIBRATOR_SERVICE);
 
-	@Override
-	protected void onPause() {
-		mWakelock.release();
-		super.onPause();
-	}
+        initRingtone();
+        startVB();
+    }
 
-	@Override
-	public void onClick(View v) {
-		switch (v.getId()) {
-		case R.id.other:
-			// 其他
-			changePanelState();
-			break;
-		case R.id.delete:
-			// 删除
-			closeRemind();
-			break;
-		case R.id.close:
-			// 关闭
-			getNextRemindTime(0, 0, 0, 0, 0, 1);
-			closeRemind();
-			break;
-		case R.id.start:
-			// 已开始
-			getNextRemindTime(0, 0, 0, 0, 0, 2);
-			closeRemind();
-			break;
-		case R.id.already:
-			// 马上开始
-			getNextRemindTime(0, 0, 0, 0, 0, 3);
-			closeRemind();
-			break;
-		case R.id.later:
-			// 延迟10分钟
-			getNextRemindTime(10, 0, 0, 0, 0, 4);
-			closeRemind();
-			break;
+    /**
+     * 开始化震动
+     */
+    private void startVB() {
+        if (vb.hasVibrator()) {
+            vb.vibrate(new long[] { 500, 100, 500, 100, 500, 100 }, 0);
+        }
+    }
 
-		default:
-			break;
-		}
-	}
-	
-	@Override
-	public boolean onKeyDown(int keyCode, KeyEvent event) {
-		if (keyCode == KeyEvent.KEYCODE_BACK) {
-			return true;
-		} else {
-			return super.onKeyDown(keyCode, event);
-		}
-		
-	}
-	
-	/**
-	 * 关闭闹铃
-	 */
-	private void closeRemind() {
-		int remindCount = remindEntity.getRemindCount();
-		// 响铃次数加一
-		remindEntity.setRemindCount(++remindCount);
-		remindDao.updateRemind(remindEntity);
-		finish();
-	}
+    /**
+     * 初始化铃声播放
+     */
+    private void initRingtone() {
+        // 创建一个音乐播放器
+        player = new MediaPlayer();
+
+        myReceiver = new PhoneListener();
+        // 意图过滤器
+        IntentFilter filter = new IntentFilter();
+        // 播出电话暂停音乐播放
+        filter.addAction("android.intent.action.NEW_OUTGOING_CALL");
+        registerReceiver(myReceiver, filter);
+        // 创建一个电话服务
+        TelephonyManager manager = (TelephonyManager) getSystemService(TELEPHONY_SERVICE);
+        // 监听电话状态，接电话时停止播放
+        manager.listen(new MyPhoneStateListener(), PhoneStateListener.LISTEN_CALL_STATE);
+        // 播放器监听器
+        player.setOnCompletionListener(new MyPlayerListener());
+        initPlayer(getSystemDefultRingtoneUri().toString());
+        // 播放
+        play();
+    }
+
+    // 获取系统默认铃声的Uri
+    private Uri getSystemDefultRingtoneUri() {
+        return RingtoneManager.getActualDefaultRingtoneUri(this, RingtoneManager.TYPE_ALARM);
+    }
+
+    /**
+     * 收到广播时暂停
+     * 
+     * @author ChenLong
+     * 
+     */
+    private final class PhoneListener extends BroadcastReceiver {
+        public void onReceive(Context context, Intent intent) {
+            pause();
+        }
+    }
+
+    /**
+     * 监听电话状态
+     * 
+     * @author ChenLong
+     * 
+     */
+    private final class MyPhoneStateListener extends PhoneStateListener {
+        public void onCallStateChanged(int state, String incomingNumber) {
+            pause();
+        }
+    }
+
+    /**
+     * 播放器监听器
+     * 
+     * @author ChenLong
+     * 
+     */
+    private final class MyPlayerListener implements OnCompletionListener {
+        // 歌曲播放完后改变按钮状态
+        public void onCompletion(MediaPlayer mp) {
+        }
+    }
+
+    private void initPlayer(String path) {
+        try {
+            // 重播
+            player.reset();
+            // 获取歌曲路径
+            player.setDataSource(path);
+            // 缓冲
+            player.prepare();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * 开始播放
+     * 
+     * @param path
+     */
+    private void play() {
+        try {
+            // 开始播放
+            player.start();
+
+            player.setLooping(false);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * 暂停播放
+     */
+    private void pause() {
+        if (player != null) {
+            if (player.isPlaying()) {
+                // AppUtil.showAcgToast(AddAcgActivity.this, "暂停");
+                player.pause();
+                vb.cancel();
+            } else {
+                // AppUtil.showAcgToast(AddAcgActivity.this, "播放");
+                player.start();
+                startVB();
+            }
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        if (null != myReceiver) {
+            unregisterReceiver(myReceiver);
+        }
+        if (null != player) {
+            player.release();
+        }
+        vb.cancel();
+        super.onDestroy();
+    }
+
+    /**
+     * 停止播放
+     */
+    public void stop() {
+        if (player.isPlaying()) {
+            player.stop();
+        }
+        vb.cancel();
+    }
+
+    private void changePanelState() {
+        if (alertPenal.getVisibility() == View.VISIBLE) {
+            alertPenal.setVisibility(View.GONE);
+            otherPenal.setVisibility(View.VISIBLE);
+        } else {
+            alertPenal.setVisibility(View.VISIBLE);
+            otherPenal.setVisibility(View.GONE);
+        }
+    }
+
+    /**
+     * 获取提醒数据
+     */
+    private void getRemindData() {
+        try {
+            RemindEntity r = new RemindEntity();
+            r.setId(remindId + "");
+            Cursor cursor = remindDao.queryRemind(r);
+            remindEntity = DataBaseParser.getRemindDetail(cursor).get(0);
+            cursor.close();
+            // 初始化页面数据
+            title.setText(remindEntity.getTitle());
+            content.setText(remindEntity.getContent());
+            name.setText(remindEntity.getNickName());
+            time.setText(remindEntity.getRemindTime().split(" ")[1]);
+        } catch (Exception e) {
+            AppUtil.showToast(this, "播放提醒失败");
+            finish();
+        }
+    }
+
+    /**
+     * 
+     * 获取下一次提醒时间
+     * 
+     * @param minute
+     *            下次响铃时间间隔分钟，0为没有变化
+     * @param hour
+     *            下次响铃时间间隔小时，0为没有变化
+     * @param day
+     *            下次响铃时间间隔天，0为没有变化
+     * @param month
+     *            下次响铃时间间隔月，0为没有变化
+     * @param year
+     *            下次响铃时间间隔年，0为没有变化
+     * @param status
+     *            选择动作 小于10失效，大于10有效 1: 关闭; 2: 已开始; 3: 马上开始; 4: 延迟10分钟
+     */
+    private void getNextRemindTime(int minute, int hour, int day, int month, int year, int status) {
+        int isEnable = 10;
+        // 获取本次响铃时间
+        Calendar calendar = Calendar.getInstance();
+        String remindTime = remindEntity.getRemindTime();
+        try {
+            calendar.setTime(dateFormat.parse(remindTime));
+        } catch (ParseException e) {
+            AppUtil.showToast(this, "时间错误，接受任务失败。");
+            e.printStackTrace();
+            return;
+        }
+
+        // 获取重复类型
+        String repeatType = remindEntity.getRepeatType();
+        // 计算下一次响铃时间
+        if (RemindEntity.REPEAT_NO.equals(repeatType)) {
+            if ((minute | hour | day | month | year) == 0) {
+                // 不再有下一次提醒
+                remindEntity.setIsDelete(RemindEntity.DELETED);
+                sendAlarmStatus(status);
+                return;
+            } else {
+                // 不重复提醒，则按照下次响铃时间间隔设置
+                calendar.add(Calendar.MINUTE, minute);
+                calendar.add(Calendar.HOUR_OF_DAY, hour);
+                calendar.add(Calendar.DAY_OF_YEAR, day);
+                calendar.add(Calendar.MONTH, month);
+                calendar.add(Calendar.YEAR, year);
+            }
+        } else if (RemindEntity.REPEAT_DAY.equals(repeatType)) {
+            // 每天重复提醒，下一次为明天
+            calendar.add(Calendar.DAY_OF_YEAR, 1);
+        } else if (RemindEntity.REPEAT_WEEK.equals(repeatType)) {
+            // 每周重复，下一次为下周周几
+            calendar.add(Calendar.DAY_OF_WEEK_IN_MONTH, 1);
+        } else if (RemindEntity.REPEAT_MONTH.equals(repeatType)) {
+            // 每月重复,下一次为下月本号, 如果下个月没有本号，则为月末那天
+            calendar.add(Calendar.MONTH, 1);
+        } else if (RemindEntity.REPEAT_YEAR.equals(repeatType)) {
+            // 每年提醒，下一次为明年这个日期
+            calendar.add(Calendar.YEAR, 1);
+        }
+
+        remindEntity.setRemindTimeMiLi(calendar.getTimeInMillis() + "");
+        remindEntity.setRemindTime(dateFormat.format(calendar.getTime()));
+        // 设置闹铃
+        AppUtil.setAlarm(this, remindEntity.getRemindTime(), Integer.valueOf(remindEntity.getId()));
+
+        sendAlarmStatus(isEnable + status);
+    }
+
+    /**
+     * 发送反馈信息
+     */
+    private void sendAlarmStatus(int status) {
+        final String params = HttpClient.getJsonForPost(HttpClient.alarmStatus(remindEntity.getNoticeId(), status,
+                AppConstant.FROM_ID, remindEntity.getOwnerId()));
+        new Thread(new Runnable() {
+
+            @Override
+            public void run() {
+                String s = HttpClient.post(HttpClient.url + HttpClient.alarm_statues, params);
+                if (s == null) {
+                    // TODO 失败插入数据库，重发
+
+                } else {
+
+                }
+            }
+        }).start();
+    }
+
+    /**
+     * 在锁屏下点亮屏幕
+     */
+    @SuppressWarnings("deprecation")
+    private void getWakeLock() {
+        pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
+        mWakelock = pm.newWakeLock(PowerManager.ACQUIRE_CAUSES_WAKEUP | PowerManager.SCREEN_DIM_WAKE_LOCK, "Remind");
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (null == mWakelock) {
+            getWakeLock();
+        }
+        mWakelock.acquire();
+        pause();
+    }
+
+    @Override
+    protected void onPause() {
+        mWakelock.release();
+        super.onPause();
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+        case R.id.other:
+            // 其他
+            changePanelState();
+            break;
+        case R.id.delete:
+            // 删除
+            closeRemind();
+            break;
+        case R.id.close:
+            // 关闭
+            getNextRemindTime(0, 0, 0, 0, 0, 1);
+            closeRemind();
+            break;
+        case R.id.start:
+            // 已开始
+            getNextRemindTime(0, 0, 0, 0, 0, 2);
+            closeRemind();
+            break;
+        case R.id.already:
+            // 马上开始
+            getNextRemindTime(0, 0, 0, 0, 0, 3);
+            closeRemind();
+            break;
+        case R.id.later:
+            // 延迟10分钟
+            getNextRemindTime(10, 0, 0, 0, 0, 4);
+            closeRemind();
+            break;
+
+        default:
+            break;
+        }
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
+            return true;
+        } else {
+            return super.onKeyDown(keyCode, event);
+        }
+
+    }
+
+    /**
+     * 关闭闹铃
+     */
+    private void closeRemind() {
+        int remindCount = remindEntity.getRemindCount();
+        // 响铃次数加一
+        remindEntity.setRemindCount(++remindCount);
+        remindDao.updateRemind(remindEntity);
+        finish();
+    }
 
 }

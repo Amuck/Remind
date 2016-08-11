@@ -64,9 +64,9 @@ public class MainActivity1 extends AbActivity {
 		pagerItemList = new ArrayList<Fragment>();
 		pagerItemList.add(new ContentFragment());
 		pagerItemList.add(new PeopelFragment());
-		pagerItemList.add(new DiscoeryFragment());
+//		pagerItemList.add(new DiscoeryFragment());
 //		pagerItemList.add(new UserFragment());
-		pagerItemList.add(new SettingFragment());
+//		pagerItemList.add(new SettingFragment());
 
 		FragmentManager mFragmentManager = this.getSupportFragmentManager();
 		AbFragmentPagerAdapter mFragmentPagerAdapter = new AbFragmentPagerAdapter(
@@ -78,23 +78,24 @@ public class MainActivity1 extends AbActivity {
 
 		mTab1 = (ImageView) findViewById(R.id.img_1);
 		mTab2 = (ImageView) findViewById(R.id.img_2);
-		mTab3 = (ImageView) findViewById(R.id.img_3);
-		mTab4 = (ImageView) findViewById(R.id.img_4);
+//		mTab3 = (ImageView) findViewById(R.id.img_3);
+//		mTab4 = (ImageView) findViewById(R.id.img_4);
 //		mTab5 = (ImageView) findViewById(R.id.img_5);
 		mTab1.setOnClickListener(new MyOnClickListener(0));
 		mTab2.setOnClickListener(new MyOnClickListener(1));
-		mTab3.setOnClickListener(new MyOnClickListener(2));
-		mTab4.setOnClickListener(new MyOnClickListener(3));
+//		mTab3.setOnClickListener(new MyOnClickListener(2));
+//		mTab4.setOnClickListener(new MyOnClickListener(3));
 //		mTab5.setOnClickListener(new MyOnClickListener(4));
 
 		// 获取屏幕的分辨率，以计算偏移量
 		Display display = getWindowManager().getDefaultDisplay();
 		int width = display.getWidth();
-		int s = width / 4;
+//		int s = width / 4;
+		int s = width / 2;
 		one = s;
 		two = one * 2;
-		three = one * 3;
-		four = one * 4;
+//		three = one * 3;
+//		four = one * 4;
 
 		// 是否去掉notification
 		int id = getIntent().getIntExtra("num", 0);
@@ -125,11 +126,11 @@ public class MainActivity1 extends AbActivity {
 					anim = new TranslateAnimation(one, 0, 0, 0);
 					mTab2.setImageDrawable(getResources().getDrawable(R.drawable.tab_find_frd_normal));
 				} else if (currIndex == 2) {
-					anim = new TranslateAnimation(two, 0, 0, 0);
-					mTab3.setImageDrawable(getResources().getDrawable(R.drawable.tab_address_normal));
+//					anim = new TranslateAnimation(two, 0, 0, 0);
+//					mTab3.setImageDrawable(getResources().getDrawable(R.drawable.tab_address_normal));
 				} else if (currIndex == 3) {
-					anim = new TranslateAnimation(three, 0, 0, 0);
-					mTab4.setImageDrawable(getResources().getDrawable(R.drawable.tab_settings_normal));
+//					anim = new TranslateAnimation(three, 0, 0, 0);
+//					mTab4.setImageDrawable(getResources().getDrawable(R.drawable.tab_settings_normal));
 				} else if (currIndex == 4) {
 //					anim = new TranslateAnimation(four, 0, 0, 0);
 //					mTab5.setImageDrawable(getResources().getDrawable(R.drawable.more_n));
@@ -142,11 +143,11 @@ public class MainActivity1 extends AbActivity {
 					anim = new TranslateAnimation(zero, one, 0, 0);
 					mTab1.setImageDrawable(getResources().getDrawable(R.drawable.tab_weixin_normal));
 				} else if (currIndex == 2) {
-					anim = new TranslateAnimation(two, one, 0, 0);
-					mTab3.setImageDrawable(getResources().getDrawable(R.drawable.tab_address_normal));
+//					anim = new TranslateAnimation(two, one, 0, 0);
+//					mTab3.setImageDrawable(getResources().getDrawable(R.drawable.tab_address_normal));
 				} else if (currIndex == 3) {
-					anim = new TranslateAnimation(three, one, 0, 0);
-					mTab4.setImageDrawable(getResources().getDrawable(R.drawable.tab_settings_normal));
+//					anim = new TranslateAnimation(three, one, 0, 0);
+//					mTab4.setImageDrawable(getResources().getDrawable(R.drawable.tab_settings_normal));
 				} else if (currIndex == 4) {
 //					anim = new TranslateAnimation(four, one, 0, 0);
 //					mTab5.setImageDrawable(getResources().getDrawable(R.drawable.more_n));
@@ -162,8 +163,8 @@ public class MainActivity1 extends AbActivity {
 					anim = new TranslateAnimation(one, two, 0, 0);
 					mTab2.setImageDrawable(getResources().getDrawable(R.drawable.tab_find_frd_normal));
 				} else if (currIndex == 3) {
-					anim = new TranslateAnimation(three, two, 0, 0);
-					mTab4.setImageDrawable(getResources().getDrawable(R.drawable.tab_settings_normal));
+//					anim = new TranslateAnimation(three, two, 0, 0);
+//					mTab4.setImageDrawable(getResources().getDrawable(R.drawable.tab_settings_normal));
 				} else if (currIndex == 4) {
 //					anim = new TranslateAnimation(four, two, 0, 0);
 //					mTab5.setImageDrawable(getResources().getDrawable(R.drawable.more_n));
@@ -179,8 +180,8 @@ public class MainActivity1 extends AbActivity {
 					anim = new TranslateAnimation(one, three, 0, 0);
 					mTab2.setImageDrawable(getResources().getDrawable(R.drawable.tab_find_frd_normal));
 				} else if (currIndex == 2) {
-					anim = new TranslateAnimation(two, three, 0, 0);
-					mTab3.setImageDrawable(getResources().getDrawable(R.drawable.tab_address_normal));
+//					anim = new TranslateAnimation(two, three, 0, 0);
+//					mTab3.setImageDrawable(getResources().getDrawable(R.drawable.tab_address_normal));
 				} else if (currIndex == 4) {
 //					anim = new TranslateAnimation(four, three, 0, 0);
 //					mTab5.setImageDrawable(getResources().getDrawable(R.drawable.more_n));
@@ -196,8 +197,8 @@ public class MainActivity1 extends AbActivity {
 					anim = new TranslateAnimation(one, four, 0, 0);
 					mTab2.setImageDrawable(getResources().getDrawable(R.drawable.up_n));
 				} else if (currIndex == 2) {
-					anim = new TranslateAnimation(two, four, 0, 0);
-					mTab3.setImageDrawable(getResources().getDrawable(R.drawable.measure_n));
+//					anim = new TranslateAnimation(two, four, 0, 0);
+//					mTab3.setImageDrawable(getResources().getDrawable(R.drawable.measure_n));
 				} else if (currIndex == 3) {
 //					anim = new TranslateAnimation(three, four, 0, 0);
 //					mTab4.setImageDrawable(getResources().getDrawable(R.drawable.look_n));
@@ -260,44 +261,44 @@ public class MainActivity1 extends AbActivity {
 	 * @return
 	 */
 	public void createFile() {
-		if (Environment.getExternalStorageState().equals(
-				Environment.MEDIA_MOUNTED)) {
-			// SdCard可用
-			
-		} else {
-			// SdCard不可用
-			AppConstant.MNT = Environment.getRootDirectory().getAbsolutePath();
-		}
-		// 创建数据库文件夹
-		File dbFile = new File(AppConstant.MNT + AppConstant.FILE_PATH
-				+ AppConstant.DB_FILE_PATH);
-		if (!dbFile.exists()) {
-			dbFile.mkdirs();
-		}
-		// 创建音频文件夹
-		File audio = new File(AppConstant.MNT + AppConstant.FILE_PATH
-				+ AppConstant.EDITED_AUDIO_PATH);
-		if (!audio.exists()) {
-			audio.mkdirs();
-		}
-		// 创建图片文件夹
-		File img = new File(AppConstant.MNT + AppConstant.FILE_PATH
-				+ AppConstant.EDITED_IMG_PATH);
-		if (!img.exists()) {
-			img.mkdirs();
-		}
-		// 创建视频文件夹
-		File video = new File(AppConstant.MNT + AppConstant.FILE_PATH
-				+ AppConstant.EDITED_VEDIO_PATH);
-		if (!video.exists()) {
-			video.mkdirs();
-		}
-		// 创建日志文件夹
-		File log = new File(AppConstant.MNT + AppConstant.FILE_PATH
-				+ AppConstant.ERROR_PATH);
-		if (!log.exists()) {
-			log.mkdirs();
-		}
+//		if (Environment.getExternalStorageState().equals(
+//				Environment.MEDIA_MOUNTED)) {
+//			// SdCard可用
+//			
+//		} else {
+//			// SdCard不可用
+//			AppConstant.MNT = Environment.getRootDirectory().getAbsolutePath();
+//		}
+//		// 创建数据库文件夹
+//		File dbFile = new File(AppConstant.MNT + AppConstant.FILE_PATH
+//				+ AppConstant.DB_FILE_PATH);
+//		if (!dbFile.exists()) {
+//			dbFile.mkdirs();
+//		}
+//		// 创建音频文件夹
+//		File audio = new File(AppConstant.MNT + AppConstant.FILE_PATH
+//				+ AppConstant.EDITED_AUDIO_PATH);
+//		if (!audio.exists()) {
+//			audio.mkdirs();
+//		}
+//		// 创建图片文件夹
+//		File img = new File(AppConstant.MNT + AppConstant.FILE_PATH
+//				+ AppConstant.EDITED_IMG_PATH);
+//		if (!img.exists()) {
+//			img.mkdirs();
+//		}
+//		// 创建视频文件夹
+//		File video = new File(AppConstant.MNT + AppConstant.FILE_PATH
+//				+ AppConstant.EDITED_VEDIO_PATH);
+//		if (!video.exists()) {
+//			video.mkdirs();
+//		}
+//		// 创建日志文件夹
+//		File log = new File(AppConstant.MNT + AppConstant.FILE_PATH
+//				+ AppConstant.ERROR_PATH);
+//		if (!log.exists()) {
+//			log.mkdirs();
+//		}
 	}
 
 	@Override

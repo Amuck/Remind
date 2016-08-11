@@ -2,8 +2,16 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/bhz_welcome" >
+    android:background="@drawable/dark_blue_btn_n" >
 
+    <TextView
+        android:id="@+id/welcome_txt"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:text="欢迎使用"
+        android:textColor="@color/white"
+        android:textSize="40sp" />
     <TextView
         android:id="@+id/versionNumber"
         android:layout_width="wrap_content"

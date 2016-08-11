@@ -72,6 +72,11 @@
             android:configChanges="orientation|keyboardHidden|screenSize" >
         </activity>
         <activity
+            android:name="com.remind.activity.ChooseRoleActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:theme="@android:style/Theme.NoTitleBar" >
+        </activity>
+        <activity
             android:name="com.remind.activity.AddPeopleActivity"
             android:configChanges="orientation|keyboardHidden|screenSize" >
         </activity>

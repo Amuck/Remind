@@ -97,6 +97,29 @@
                          >
                     </com.remind.view.ClearEditText>
                 </LinearLayout>
+                <LinearLayout
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dip"
+                    android:focusable="true"
+                    android:focusableInTouchMode="true"
+                    android:orientation="horizontal" >
+
+                    <com.remind.view.ClearEditText
+                        android:id="@+id/et_user_nick"
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="10dip"
+                        android:layout_marginRight="10dip"
+                        android:layout_marginTop="10dip"
+                        android:background="@drawable/login_edittext_bg"
+                        android:drawableLeft="@drawable/login_user"
+                        android:drawableRight="@drawable/delete_selector"
+                        android:hint="@string/user_nick"
+                        android:visibility="invisible"
+                        android:singleLine="true" >
+                    </com.remind.view.ClearEditText>
+                </LinearLayout>
             </LinearLayout>
 
             <TextView

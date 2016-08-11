@@ -16,7 +16,7 @@
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
             android:layout_alignParentBottom="true"
-            android:weightSum="4"
+            android:weightSum="2"
             android:orientation="horizontal" >
 
             <ImageView
@@ -35,12 +35,14 @@
             <ImageView
                 android:layout_width="0dp"
                 android:layout_height="fill_parent"
-                android:layout_weight="1" />
+                android:layout_weight="1"
+                android:visibility="gone" />
 
             <ImageView
                 android:layout_width="0dp"
                 android:layout_height="fill_parent"
-                android:layout_weight="1" />
+                android:layout_weight="1"
+                android:visibility="gone" />
 
             <ImageView
                 android:layout_width="0dp"
@@ -53,7 +55,7 @@
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
-            android:weightSum="4"
+            android:weightSum="2"
             android:orientation="horizontal" >
 
             <LinearLayout
@@ -102,6 +104,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                android:visibility="gone"
                 android:gravity="center_horizontal"
                 android:orientation="vertical" >
 
@@ -120,6 +123,7 @@
                 android:id="@+id/img_4_layout"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:visibility="gone"
                 android:layout_weight="1"
                 android:gravity="center_horizontal"
                 android:orientation="vertical"
