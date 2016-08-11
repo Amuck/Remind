@@ -584,19 +584,19 @@ public class ChatActivity extends BaseActivity implements OnClickListener, OnScr
         userMessageEntity.setId(String.valueOf(mid));
         // 添加到listview中显示，通过线程发送
         chatAdapter.getNewMsg(userMessageEntity.clone(), chatList);
-        
+
         // 更新索引
         MessageIndexEntity messageIndexEntity = null;
         Cursor cursor = messageIndexDao.queryByNum(peopelEntity.getNum());
         if (cursor.getCount() > 0) {
-           MessageIndexEntity messageIndexEntitiy =
-                    DataBaseParser.getMessageIndex(cursor).get(0);
-           messageIndexEntitiy.setTime(time);
-           messageIndexEntitiy.setMessage(msg);
-           messageIndexDao.update(messageIndexEntitiy);
+            MessageIndexEntity messageIndexEntitiy = DataBaseParser.getMessageIndex(cursor).get(0);
+            messageIndexEntitiy.setTime(time);
+            messageIndexEntitiy.setMessage(msg);
+            messageIndexDao.update(messageIndexEntitiy);
         } else {
             messageIndexEntity = new MessageIndexEntity("", peopelEntity.getNum(), msg, time, AppUtil.getName(peopelEntity),
-                    peopelEntity.getImgPath(), 0, MessageIndexEntity.NORMAL, MessageIndexEntity.SEND_SUCCESS, AppConstant.USER_NUM);
+                    peopelEntity.getImgPath(), 0, MessageIndexEntity.NORMAL, MessageIndexEntity.SEND_SUCCESS,
+                    AppConstant.USER_NUM);
             messageIndexDao.insert(messageIndexEntity);
         }
         cursor.close();
@@ -631,6 +631,7 @@ public class ChatActivity extends BaseActivity implements OnClickListener, OnScr
      *            语音路径
      */
     public void sendVoiceMsg(String voiceTime, String fileName, String path) {
+        String msg = "[语音聊天]";
         String time = AppUtil.getNowTime();
         // 需要更新的数据为：时间，发送状态，发送消息的类型，非文字信息的消息id与路径，发送的内容
         userMessageEntity.setTime(time);
@@ -646,6 +647,22 @@ public class ChatActivity extends BaseActivity implements OnClickListener, OnScr
         chatAdapter.getNewMsg(userMessageEntity.clone(), chatList);
         // 清除编辑框内容
         sendMsgEidt.setText("");
+
+        // 更新索引
+        MessageIndexEntity messageIndexEntity = null;
+        Cursor cursor = messageIndexDao.queryByNum(peopelEntity.getNum());
+        if (cursor.getCount() > 0) {
+            MessageIndexEntity messageIndexEntitiy = DataBaseParser.getMessageIndex(cursor).get(0);
+            messageIndexEntitiy.setTime(time);
+            messageIndexEntitiy.setMessage(msg);
+            messageIndexDao.update(messageIndexEntitiy);
+        } else {
+            messageIndexEntity = new MessageIndexEntity("", peopelEntity.getNum(), msg, time, AppUtil.getName(peopelEntity),
+                    peopelEntity.getImgPath(), 0, MessageIndexEntity.NORMAL, MessageIndexEntity.SEND_SUCCESS,
+                    AppConstant.USER_NUM);
+            messageIndexDao.insert(messageIndexEntity);
+        }
+        cursor.close();
 
         // 上传音频
         /*
@@ -673,10 +690,8 @@ public class ChatActivity extends BaseActivity implements OnClickListener, OnScr
                         String path = jsonObject.getString("path");
                         String param = HttpClient.getJsonForPost(HttpClient.sendMsg1(mid + "", peopelEntity.getFriendId(),
                                 "", noticeId, MessageEntity.TYPE_VOICE, path));
-                        isSend = RemindApplication.iBackService.sendMessage(param);// Send
-                                                                                   // Content
-                                                                                   // by
-                                                                                   // socket
+                        // Send Content by socket
+                        isSend = RemindApplication.iBackService.sendMessage(param);
                     } catch (RemoteException e) {
                         isSend = false;
                         e.printStackTrace();

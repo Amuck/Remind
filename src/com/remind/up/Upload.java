@@ -33,7 +33,14 @@ public class Upload {
 	public static String filename = "test.txt";
 	// 保存到又拍云的路径
 	public static String savePath = "/" + filename;
-	public static String picturePath = "picture";
+	/**
+	 * 保存文件路径
+	 */
+	public static String PICTURE_PATH = "picture";
+	/**
+	 * 保存头像路径
+	 */
+	public static String ROLE_PATH = "role";
 	
 	public static Context context;
 	
@@ -64,9 +71,36 @@ public class Upload {
 		Upload.filename = fileName;
 		Upload.localFilePath = localFilePath;
 //		savePath = "/" + filename;
-		savePath = File.separator + picturePath + File.separator + Utils.getNowDate()
+		savePath = File.separator + PICTURE_PATH + File.separator + Utils.getNowDate()
 				+ File.separator + AppConstant.USER_NUM + "_" + filename;
 		new UploadTask().execute();
+	}
+	
+	/**
+	 * 上传头像
+	 * 
+	 * @param context
+	 * @param fileName				唯一的文件名称
+	 * @param completeListener		完成上传时的回调
+	 * @param progressListener		过程中的回调，注意：由于在计算发送的字节数中包含了图片以外的其他信息，最终上传的大小总是大于图片实际大小，
+	 * 								为了解决这个问题，代码会判断如果实际传送的大小大于图片，就将实际传送的大小设置成'fileSize-1000'（最小为0）
+	 * @param localFilePath			文件绝对路径
+	 */
+	public static void uploadRole(Context context, String fileName, CompleteListener completeListener, ProgressListener progressListener, 
+	        String localFilePath) {
+	    Upload.context = context;
+	    if (TextUtils.isEmpty(fileName)) {
+	        Toast.makeText(context, "文件无效，请重新选择", Toast.LENGTH_LONG).show();
+	        return;
+	    }
+	    
+	    Upload.progressListener = progressListener;
+	    Upload.completeListener = completeListener;
+	    Upload.filename = fileName;
+	    Upload.localFilePath = localFilePath;
+//		savePath = "/" + filename;
+	    savePath = File.separator + ROLE_PATH + File.separator + AppConstant.USER_NUM + "_" + filename;
+	    new UploadTask().execute();
 	}
 	
 	static class UploadTask extends AsyncTask<Void, Void, String> {
