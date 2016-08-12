@@ -193,7 +193,7 @@ public class AddRemindActivity extends BaseActivity implements OnClickListener {
     /**
      * 插入的消息的id
      */
-//    private long msgId;
+    // private long msgId;
     /**
      * 重复类型,默认为只响一次
      */

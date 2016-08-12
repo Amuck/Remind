@@ -10,37 +10,40 @@ import android.graphics.RectF;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 
-
 /**
  * The Class CropImageView.
  */
 public class CropImageView extends CropViewBase {
-    
+
     /** The m highlight views. */
     public ArrayList<HighlightView> mHighlightViews = new ArrayList<HighlightView>();
-    
+
     /** The m motion highlight view. */
     HighlightView mMotionHighlightView = null;
-    
+
     /** The m last y. */
     float mLastX, mLastY;
-    
+
     /** The m motion edge. */
     int mMotionEdge;
-    
+
     /** The m crop image. */
     private CropImage mCropImage;
 
     /**
-     * 描述：TODO.
-     *
-     * @param changed the changed
-     * @param left the left
-     * @param top the top
-     * @param right the right
-     * @param bottom the bottom
-     * @see com.ab.view.cropimage.CropViewBase#onLayout(boolean, int, int, int, int)
-     * @author: zhaoqp
+     * 
+     * @param changed
+     *            the changed
+     * @param left
+     *            the left
+     * @param top
+     *            the top
+     * @param right
+     *            the right
+     * @param bottom
+     *            the bottom
+     * @see com.ab.view.cropimage.CropViewBase#onLayout(boolean, int, int, int,
+     *      int)
      * @date：2013-6-17 上午9:04:49
      * @version v1.0
      */
@@ -60,22 +63,25 @@ public class CropImageView extends CropViewBase {
 
     /**
      * Instantiates a new crop image view.
-     *
-     * @param context the context
-     * @param attrs the attrs
+     * 
+     * @param context
+     *            the context
+     * @param attrs
+     *            the attrs
      */
     public CropImageView(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
 
     /**
-     * 描述：TODO.
-     *
-     * @param scale the scale
-     * @param centerX the center x
-     * @param centerY the center y
+     * 
+     * @param scale
+     *            the scale
+     * @param centerX
+     *            the center x
+     * @param centerY
+     *            the center y
      * @see com.ab.view.cropimage.CropViewBase#zoomTo(float, float, float)
-     * @author: zhaoqp
      * @date：2013-6-17 上午9:04:49
      * @version v1.0
      */
@@ -89,10 +95,8 @@ public class CropImageView extends CropViewBase {
     }
 
     /**
-     * 描述：TODO.
-     *
+     * 
      * @see com.ab.view.cropimage.CropViewBase#zoomIn()
-     * @author: zhaoqp
      * @date：2013-6-17 上午9:04:49
      * @version v1.0
      */
@@ -106,10 +110,8 @@ public class CropImageView extends CropViewBase {
     }
 
     /**
-     * 描述：TODO.
-     *
+     * 
      * @see com.ab.view.cropimage.CropViewBase#zoomOut()
-     * @author: zhaoqp
      * @date：2013-6-17 上午9:04:49
      * @version v1.0
      */
@@ -123,12 +125,12 @@ public class CropImageView extends CropViewBase {
     }
 
     /**
-     * 描述：TODO.
-     *
-     * @param deltaX the delta x
-     * @param deltaY the delta y
+     * 
+     * @param deltaX
+     *            the delta x
+     * @param deltaY
+     *            the delta y
      * @see com.ab.view.cropimage.CropViewBase#postTranslate(float, float)
-     * @author: zhaoqp
      * @date：2013-6-17 上午9:04:49
      * @version v1.0
      */
@@ -146,8 +148,9 @@ public class CropImageView extends CropViewBase {
     // hitting cropping rectangle.
     /**
      * Recompute focus.
-     *
-     * @param event the event
+     * 
+     * @param event
+     *            the event
      */
     private void recomputeFocus(MotionEvent event) {
         for (int i = 0; i < mHighlightViews.size(); i++) {
@@ -171,29 +174,28 @@ public class CropImageView extends CropViewBase {
     }
 
     /**
-     * 描述：TODO.
-     *
-     * @param event the event
+     * 
+     * @param event
+     *            the event
      * @return true, if successful
      * @see android.view.View#onTouchEvent(android.view.MotionEvent)
-     * @author: zhaoqp
      * @date：2013-6-17 上午9:04:49
      * @version v1.0
      */
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-    	CropImage cropImage = mCropImage;
+        CropImage cropImage = mCropImage;
         if (cropImage.mSaving) {
             return false;
         }
 
         switch (event.getAction()) {
         // CR: inline case blocks.
-        case MotionEvent.ACTION_DOWN: 
+        case MotionEvent.ACTION_DOWN:
             if (cropImage.mWaitingToPick) {
                 recomputeFocus(event);
             } else {
-                for (int i = 0; i < mHighlightViews.size(); i++) { 
+                for (int i = 0; i < mHighlightViews.size(); i++) {
                     HighlightView hv = mHighlightViews.get(i);
                     int edge = hv.getHit(event.getX(), event.getY());
                     if (edge != HighlightView.GROW_NONE) {
@@ -217,8 +219,8 @@ public class CropImageView extends CropViewBase {
                     if (hv.hasFocus()) {
                         cropImage.mCrop = hv;
                         for (int j = 0; j < mHighlightViews.size(); j++) {
-                            if (j == i) { 
-                            	 //if j != i do your shit; no need,for continue.
+                            if (j == i) {
+                                // if j != i do your shit; no need,for continue.
                                 continue;
                             }
                             mHighlightViews.get(j).setHidden(true);
@@ -263,9 +265,9 @@ public class CropImageView extends CropViewBase {
             // the user to move the image around. This call to center puts
             // it back to the normalized location (with false meaning don't
             // animate).
-			//if (getScale() == 1F) {
-			//center(true, true);
-			//}
+            // if (getScale() == 1F) {
+            // center(true, true);
+            // }
             center(true, true);
             break;
         }
@@ -276,8 +278,9 @@ public class CropImageView extends CropViewBase {
     // Pan the displayed image to make sure the cropping rectangle is visible.
     /**
      * Ensure visible.
-     *
-     * @param hv the hv
+     * 
+     * @param hv
+     *            the hv
      */
     private void ensureVisible(HighlightView hv) {
         Rect r = hv.mDrawRect;
@@ -298,15 +301,16 @@ public class CropImageView extends CropViewBase {
 
     // If the cropping rectangle's size changed significantly, change the
     // view's center and scale according to the cropping rectangle.
-    //hv.mDrawRect.width<0.54*thisWidth||width>0.66*thisWidth,need to zoom
+    // hv.mDrawRect.width<0.54*thisWidth||width>0.66*thisWidth,need to zoom
     /**
      * Center based on highlight view.
-     *
-     * @param hv the hv
+     * 
+     * @param hv
+     *            the hv
      */
     private void centerBasedOnHighlightView(HighlightView hv) {
         Rect drawRect = hv.mDrawRect;
-        
+
         float width = drawRect.width();
         float height = drawRect.height();
 
@@ -318,7 +322,7 @@ public class CropImageView extends CropViewBase {
 
         float zoom = Math.min(z1, z2);
         zoom = zoom * this.getScale();
-        zoom = Math.max(1F, zoom);//assure getScale()>1
+        zoom = Math.max(1F, zoom);// assure getScale()>1
 
         if ((Math.abs(zoom - getScale()) / zoom) > 0.1) {
             float[] coordinates = new float[] { hv.mCropRect.centerX(), hv.mCropRect.centerY() };
@@ -330,11 +334,10 @@ public class CropImageView extends CropViewBase {
     }
 
     /**
-     * 描述：TODO.
-     *
-     * @param canvas the canvas
+     * 
+     * @param canvas
+     *            the canvas
      * @see android.widget.ImageView#onDraw(android.graphics.Canvas)
-     * @author: zhaoqp
      * @date：2013-6-17 上午9:04:49
      * @version v1.0
      */
@@ -348,34 +351,37 @@ public class CropImageView extends CropViewBase {
 
     /**
      * Adds the.
-     *
-     * @param hv the hv
+     * 
+     * @param hv
+     *            the hv
      */
     public void add(HighlightView hv) {
-    	mHighlightViews.clear();
+        mHighlightViews.clear();
         mHighlightViews.add(hv);
         invalidate();
     }
-    
+
     /**
      * Sets the crop image.
-     *
-     * @param cropImage the new crop image
+     * 
+     * @param cropImage
+     *            the new crop image
      */
-    public void setCropImage(CropImage cropImage){
-    	mCropImage = cropImage;
+    public void setCropImage(CropImage cropImage) {
+        mCropImage = cropImage;
     }
-    
+
     /**
      * Reset view.
-     *
-     * @param b the b
+     * 
+     * @param b
+     *            the b
      */
-    public void resetView(Bitmap b){
-    	setImageBitmap(b);
-		setImageBitmapResetBase(b, true);
-		setImageMatrix(getImageViewMatrix());
-		int width = mBitmapDisplayed.getWidth();
+    public void resetView(Bitmap b) {
+        setImageBitmap(b);
+        setImageBitmapResetBase(b, true);
+        setImageMatrix(getImageViewMatrix());
+        int width = mBitmapDisplayed.getWidth();
         int height = mBitmapDisplayed.getHeight();
         Rect imageRect = new Rect(0, 0, width, height);
         int cropWidth = Math.min(width, height) * 4 / 5;
@@ -386,11 +392,11 @@ public class CropImageView extends CropViewBase {
         HighlightView hv = new HighlightView(this);
         hv.setup(getImageViewMatrix(), imageRect, cropRect, false, true);
         hv.setFocus(true);
-		add(hv);
-		centerBasedOnHighlightView(hv);
-		hv.setMode(HighlightView.ModifyMode.None);
-		center(true, true);
-		invalidate();
+        add(hv);
+        centerBasedOnHighlightView(hv);
+        hv.setMode(HighlightView.ModifyMode.None);
+        center(true, true);
+        invalidate();
     }
-    
+
 }

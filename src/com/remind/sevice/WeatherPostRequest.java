@@ -13,38 +13,35 @@ import java.io.UnsupportedEncodingException;
 import java.util.Map;
 
 public class WeatherPostRequest extends Request<String> {
-	private Map<String, String> mMap;
-	private Listener<String> mListener;
+    private Map<String, String> mMap;
+    private Listener<String> mListener;
 
-	public WeatherPostRequest(String url, Listener<String> listener,
-							  ErrorListener errorListener, Map<String, String> map) {
-		super(Method.POST, url, errorListener);
+    public WeatherPostRequest(String url, Listener<String> listener, ErrorListener errorListener, Map<String, String> map) {
+        super(Method.POST, url, errorListener);
 
-		mListener = listener;
-		mMap = map;
-	}
+        mListener = listener;
+        mMap = map;
+    }
 
-	// mMap是已经按照前面的方式,设置了参数的实例
-	@Override
-	protected Map<String, String> getParams() throws AuthFailureError {
-		return mMap;
-	}
+    // mMap是已经按照前面的方式,设置了参数的实例
+    @Override
+    protected Map<String, String> getParams() throws AuthFailureError {
+        return mMap;
+    }
 
-	@Override
-	protected Response<String> parseNetworkResponse(NetworkResponse response) {
-		try {
-			String jsonString = new String(response.data,
-					HttpHeaderParser.parseCharset(response.headers));
-			return Response.success(new String(jsonString),
-					HttpHeaderParser.parseCacheHeaders(response));
-		} catch (UnsupportedEncodingException e) {
-			return Response.error(new ParseError(e));
-		}
-	}
+    @Override
+    protected Response<String> parseNetworkResponse(NetworkResponse response) {
+        try {
+            String jsonString = new String(response.data, HttpHeaderParser.parseCharset(response.headers));
+            return Response.success(new String(jsonString), HttpHeaderParser.parseCacheHeaders(response));
+        } catch (UnsupportedEncodingException e) {
+            return Response.error(new ParseError(e));
+        }
+    }
 
-	@Override
-	protected void deliverResponse(String response) {
-		mListener.onResponse(response);
-	}
+    @Override
+    protected void deliverResponse(String response) {
+        mListener.onResponse(response);
+    }
 
 }

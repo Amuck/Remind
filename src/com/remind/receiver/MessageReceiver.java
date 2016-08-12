@@ -24,6 +24,7 @@ import com.remind.entity.RemindEntity;
 import com.remind.global.AppConstant;
 import com.remind.http.HttpClient;
 import com.remind.sevice.BackService;
+import com.remind.up.Download;
 import com.remind.util.AppUtil;
 import com.remind.util.DataBaseParser;
 
@@ -155,7 +156,7 @@ public class MessageReceiver extends BroadcastReceiver {
                     "", contentObj.getString("msgPath"), entity.getNum(), MessageEntity.TYPE_RECIEVE,
                     contentObj.getString("content"), feed, AppConstant.USER_NUM, contentObj.getString("remindId"));
             // 插入数据库
-            messageDaoImpl.insert(messageEntity);
+            long id = messageDaoImpl.insert(messageEntity);
 
             cursor = messageIndexDao.queryByNum(entity.getNum());
             if (cursor.getCount() > 0) {
@@ -174,10 +175,21 @@ public class MessageReceiver extends BroadcastReceiver {
             Intent intent = new Intent(GET_MESSAGE_ACTION);
             intent.putExtra("messageEntity", messageEntity);
             context.sendBroadcast(intent);
+
+            String msg = contentObj.getString("content");
+            if (MessageEntity.TYPE_TEXT.equals(messageEntity.getMsgType())) {
+                // 文字信息
+            } else if (MessageEntity.TYPE_VOICE.equals(messageEntity.getMsgType())){
+                // 语音消息, 下载语音
+                msg = "[语音聊天]";
+                Download download = Download.getInstance();
+                download.downLoadAmr(messageEntity.getMsgPath(), id);
+            }
+            
             // 发送notification
             if (!RemindApplication.IS_CHAT_VIEW_SHOW) {
                 AppUtil.simpleNotify(context, entity.getNum(), 0, entity.getNickName(), entity.getNum(),
-                        contentObj.getString("content"), true);
+                        msg, true);
             }
         }
     }

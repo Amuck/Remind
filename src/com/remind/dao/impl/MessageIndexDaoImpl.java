@@ -13,106 +13,105 @@ import com.remind.entity.MessageIndexEntity;
 import com.remind.global.AppConstant;
 
 public class MessageIndexDaoImpl implements MessageIndexDao {
-	private static final String TAG = "MessageIndexDaoImpl";
-	private DBHelper mDBHelper;
-	
-	public MessageIndexDaoImpl(Context context) {
-		mDBHelper = DBHelper.getInstance(context);
-	}
+    private static final String TAG = "MessageIndexDaoImpl";
+    private DBHelper mDBHelper;
 
-	@Override
-	public synchronized void insert(MessageIndexEntity entity) {
-		if (null == entity) {
-			return;
-		}
+    public MessageIndexDaoImpl(Context context) {
+        mDBHelper = DBHelper.getInstance(context);
+    }
 
-		SQLiteDatabase db = mDBHelper.getWritableDatabase();
-		ContentValues values = new ContentValues();
-		values.put(MessageIndexMsg.NUM, entity.getNum());
-		values.put(MessageIndexMsg.TIME, entity.getTime());
-		
-		values.put(MessageIndexMsg.NAME, entity.getName());
-		values.put(MessageIndexMsg.IMG_PATH, entity.getImgPath());
-		values.put(MessageIndexMsg.LOGIN_USER, entity.getLoginUser());
-		
-		values.put(MessageIndexMsg.MESSAGE, entity.getMessage());
-		values.put(MessageIndexMsg.ISDELETE, entity.getIsDelete());
-		values.put(MessageIndexMsg.UNREAND_COUNT, entity.getUnReadCount());
-		values.put(MessageIndexMsg.SEND_STATE, entity.getSendState());
+    @Override
+    public synchronized void insert(MessageIndexEntity entity) {
+        if (null == entity) {
+            return;
+        }
 
-		db.insert(MessageIndexMsg.TABLENAME, null, values);
-	}
+        SQLiteDatabase db = mDBHelper.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(MessageIndexMsg.NUM, entity.getNum());
+        values.put(MessageIndexMsg.TIME, entity.getTime());
 
-	@Override
-	public synchronized void delete(String id) {
-		String sql = "update " + MessageIndexMsg.TABLENAME + " set "
-				+ MessageIndexMsg.ISDELETE + "='" + "1" + "'" + " where "
-				+ MessageIndexMsg.ID + "='" + id + "'";
-		SQLiteDatabase db = mDBHelper.getWritableDatabase();
-		Log.d(TAG, sql);
-		db.execSQL(sql);
-	}
+        values.put(MessageIndexMsg.NAME, entity.getName());
+        values.put(MessageIndexMsg.IMG_PATH, entity.getImgPath());
+        values.put(MessageIndexMsg.LOGIN_USER, entity.getLoginUser());
 
-	@Override
-	public Cursor queryAll() {
-		SQLiteDatabase db = mDBHelper.getWritableDatabase();
-		String sql = "select * from " + MessageIndexMsg.TABLENAME + " where "
-				+ MessageIndexMsg.ISDELETE + " = 0 "  + " and " + MessageIndexMsg.LOGIN_USER + " = '" + AppConstant.USER_NUM + "' "
-				+ " order by " + MessageIndexMsg.TIME + " DESC";
-		Cursor mCursor = null;
-		mCursor = db.rawQuery(sql, null);
-		return mCursor;
-	}
+        values.put(MessageIndexMsg.MESSAGE, entity.getMessage());
+        values.put(MessageIndexMsg.ISDELETE, entity.getIsDelete());
+        values.put(MessageIndexMsg.UNREAND_COUNT, entity.getUnReadCount());
+        values.put(MessageIndexMsg.SEND_STATE, entity.getSendState());
 
-	@Override
-	public synchronized void update(MessageIndexEntity entity) {
-		if (null == entity) {
-			return;
-		}
+        db.insert(MessageIndexMsg.TABLENAME, null, values);
+    }
 
-		SQLiteDatabase db = mDBHelper.getWritableDatabase();
-		StringBuffer sb = new StringBuffer();
-		sb.append("update " + MessageIndexMsg.TABLENAME + " set ");
-		sb.append(MessageIndexMsg.NUM + "	= '" + entity.getNum() + "',");
-		sb.append(MessageIndexMsg.TIME + "	= '" + entity.getTime() + "',");
-		
-		sb.append(MessageIndexMsg.NAME + "	= '" + entity.getName() + "',");
-		sb.append(MessageIndexMsg.IMG_PATH + "	= '" + entity.getImgPath() + "',");
-		
-		sb.append(MessageIndexMsg.MESSAGE + "	= '" + entity.getMessage() + "',");
-		sb.append(MessageIndexMsg.UNREAND_COUNT + "	= '" + entity.getUnReadCount() + "',");
-		sb.append(MessageIndexMsg.ISDELETE + "	= '" + entity.getIsDelete() + "',");
-		sb.append(MessageIndexMsg.SEND_STATE + "	= '" + entity.getSendState() + "' ");
-		sb.append(" where " + MessageIndexMsg.ID + " = '" + entity.getId() + "'");
-		String sql = sb.toString();
+    @Override
+    public synchronized void delete(String id) {
+        String sql = "update " + MessageIndexMsg.TABLENAME + " set " + MessageIndexMsg.ISDELETE + "='" + "1" + "'"
+                + " where " + MessageIndexMsg.ID + "='" + id + "'";
+        SQLiteDatabase db = mDBHelper.getWritableDatabase();
+        Log.d(TAG, sql);
+        db.execSQL(sql);
+    }
 
-		Log.d(TAG, sql);
-		db.execSQL(sql);
-	}
+    @Override
+    public Cursor queryAll() {
+        SQLiteDatabase db = mDBHelper.getWritableDatabase();
+        String sql = "select * from " + MessageIndexMsg.TABLENAME + " where " + MessageIndexMsg.ISDELETE + " = 0 " + " and "
+                + MessageIndexMsg.LOGIN_USER + " = '" + AppConstant.USER_NUM + "' " + " order by " + MessageIndexMsg.TIME
+                + " DESC";
+        Cursor mCursor = null;
+        mCursor = db.rawQuery(sql, null);
+        return mCursor;
+    }
 
-	@Override
-	public Cursor queryByNum(String num) {
-		SQLiteDatabase db = mDBHelper.getWritableDatabase();
-		String sql = "select * from " + MessageIndexMsg.TABLENAME + " where "
-				+ MessageIndexMsg.NUM + " =  '"  + num + "' " + " and " + MessageIndexMsg.LOGIN_USER + " = '" + AppConstant.USER_NUM + "' ";
-		Cursor mCursor = null;
-		mCursor = db.rawQuery(sql, null);
-		return mCursor;
-	}
+    @Override
+    public synchronized void update(MessageIndexEntity entity) {
+        if (null == entity) {
+            return;
+        }
 
-	@Override
-	public int queryIdByNum(String num) {
-		SQLiteDatabase db = mDBHelper.getWritableDatabase();
-        String sql = "select id from " + MessageIndexMsg.TABLENAME + " where "
-				+ MessageIndexMsg.ISDELETE + " = 0 and " + MessageIndexMsg.NUM
-				+ " = " + num + " and " + MessageIndexMsg.LOGIN_USER + " = '" + AppConstant.USER_NUM + "' ";
+        SQLiteDatabase db = mDBHelper.getWritableDatabase();
+        StringBuffer sb = new StringBuffer();
+        sb.append("update " + MessageIndexMsg.TABLENAME + " set ");
+        sb.append(MessageIndexMsg.NUM + "	= '" + entity.getNum() + "',");
+        sb.append(MessageIndexMsg.TIME + "	= '" + entity.getTime() + "',");
+
+        sb.append(MessageIndexMsg.NAME + "	= '" + entity.getName() + "',");
+        sb.append(MessageIndexMsg.IMG_PATH + "	= '" + entity.getImgPath() + "',");
+
+        sb.append(MessageIndexMsg.MESSAGE + "	= '" + entity.getMessage() + "',");
+        sb.append(MessageIndexMsg.UNREAND_COUNT + "	= '" + entity.getUnReadCount() + "',");
+        sb.append(MessageIndexMsg.ISDELETE + "	= '" + entity.getIsDelete() + "',");
+        sb.append(MessageIndexMsg.SEND_STATE + "	= '" + entity.getSendState() + "' ");
+        sb.append(" where " + MessageIndexMsg.ID + " = '" + entity.getId() + "'");
+        String sql = sb.toString();
+
+        Log.d(TAG, sql);
+        db.execSQL(sql);
+    }
+
+    @Override
+    public Cursor queryByNum(String num) {
+        SQLiteDatabase db = mDBHelper.getWritableDatabase();
+        String sql = "select * from " + MessageIndexMsg.TABLENAME + " where " + MessageIndexMsg.NUM + " =  '" + num + "' "
+                + " and " + MessageIndexMsg.LOGIN_USER + " = '" + AppConstant.USER_NUM + "' ";
+        Cursor mCursor = null;
+        mCursor = db.rawQuery(sql, null);
+        return mCursor;
+    }
+
+    @Override
+    public int queryIdByNum(String num) {
+        SQLiteDatabase db = mDBHelper.getWritableDatabase();
+        String sql = "select id from " + MessageIndexMsg.TABLENAME + " where " + MessageIndexMsg.ISDELETE + " = 0 and "
+                + MessageIndexMsg.NUM + " = " + num + " and " + MessageIndexMsg.LOGIN_USER + " = '" + AppConstant.USER_NUM
+                + "' ";
         Cursor c = db.rawQuery(sql, null);
         int length = 0;
         if (c.getCount() > 0) {
-        	c.moveToFirst();
-        	length = c.getInt(0);
-		}
+            c.moveToFirst();
+            length = c.getInt(0);
+        }
         c.close();
         return length;
-	}
+    }
 }

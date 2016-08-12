@@ -1,6 +1,3 @@
-/*
- *   Copyright 2014 Oguz Bilgener
- */
 package com.remind.view.floatingbtn.animation;
 
 import android.animation.Animator;
@@ -17,7 +14,9 @@ import com.remind.view.floatingbtn.FloatingActionMenu;
 public abstract class MenuAnimationHandler {
 
     // There are only two distinct animations at the moment.
-    protected enum ActionType {OPENING, CLOSING}
+    protected enum ActionType {
+        OPENING, CLOSING
+    }
 
     protected FloatingActionMenu menu;
 
@@ -29,31 +28,32 @@ public abstract class MenuAnimationHandler {
     }
 
     /**
-     * Starts the opening animation
-     * Should be overriden by children
+     * Starts the opening animation Should be overriden by children
+     * 
      * @param center
      */
     public void animateMenuOpening(Point center) {
-        if(menu == null) {
+        if (menu == null) {
             throw new NullPointerException("MenuAnimationHandler cannot animate without a valid FloatingActionMenu.");
         }
 
     }
 
     /**
-     * Ends the opening animation
-     * Should be overriden by children
+     * Ends the opening animation Should be overriden by children
+     * 
      * @param center
      */
     public void animateMenuClosing(Point center) {
-        if(menu == null) {
+        if (menu == null) {
             throw new NullPointerException("MenuAnimationHandler cannot animate without a valid FloatingActionMenu.");
         }
     }
 
     /**
-     * Restores the specified sub action view to its final state, according to the current actionType
-     * Should be called after an animation finishes.
+     * Restores the specified sub action view to its final state, according to
+     * the current actionType Should be called after an animation finishes.
+     * 
      * @param subActionItem
      * @param actionType
      */
@@ -65,31 +65,31 @@ public abstract class MenuAnimationHandler {
         subActionItem.view.setScaleX(1);
         subActionItem.view.setScaleY(1);
         subActionItem.view.setAlpha(1);
-        if(actionType == ActionType.OPENING) {
+        if (actionType == ActionType.OPENING) {
             FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams) params;
-            if(menu.isSystemOverlay()) {
-                WindowManager.LayoutParams overlayParams = (WindowManager.LayoutParams) menu.getOverlayContainer().getLayoutParams();
+            if (menu.isSystemOverlay()) {
+                WindowManager.LayoutParams overlayParams = (WindowManager.LayoutParams) menu.getOverlayContainer()
+                        .getLayoutParams();
                 lp.setMargins(subActionItem.x - overlayParams.x, subActionItem.y - overlayParams.y, 0, 0);
-            }
-            else {
+            } else {
                 lp.setMargins(subActionItem.x, subActionItem.y, 0, 0);
             }
             subActionItem.view.setLayoutParams(lp);
-        }
-        else if(actionType == ActionType.CLOSING) {
+        } else if (actionType == ActionType.CLOSING) {
             Point center = menu.getActionViewCenter();
             FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams) params;
-            if(menu.isSystemOverlay()) {
-                WindowManager.LayoutParams overlayParams = (WindowManager.LayoutParams) menu.getOverlayContainer().getLayoutParams();
-                lp.setMargins(center.x - overlayParams.x - subActionItem.width / 2, center.y - overlayParams.y - subActionItem.height / 2, 0, 0);
-            }
-            else {
+            if (menu.isSystemOverlay()) {
+                WindowManager.LayoutParams overlayParams = (WindowManager.LayoutParams) menu.getOverlayContainer()
+                        .getLayoutParams();
+                lp.setMargins(center.x - overlayParams.x - subActionItem.width / 2, center.y - overlayParams.y
+                        - subActionItem.height / 2, 0, 0);
+            } else {
                 lp.setMargins(center.x - subActionItem.width / 2, center.y - subActionItem.height / 2, 0, 0);
             }
             subActionItem.view.setLayoutParams(lp);
             menu.removeViewFromCurrentContainer(subActionItem.view);
 
-            if(menu.isSystemOverlay()) {
+            if (menu.isSystemOverlay()) {
                 // When all the views are removed from the overlay container,
                 // we also need to detach it
                 if (menu.getOverlayContainer().getChildCount() == 0) {
@@ -100,8 +100,8 @@ public abstract class MenuAnimationHandler {
     }
 
     /**
-     * A special animation listener that is intended to listen the last of the sequential animations.
-     * Changes the animating property of children.
+     * A special animation listener that is intended to listen the last of the
+     * sequential animations. Changes the animating property of children.
      */
     public class LastAnimationListener implements Animator.AnimatorListener {
 
@@ -127,5 +127,6 @@ public abstract class MenuAnimationHandler {
     }
 
     public abstract boolean isAnimating();
+
     protected abstract void setAnimating(boolean animating);
 }

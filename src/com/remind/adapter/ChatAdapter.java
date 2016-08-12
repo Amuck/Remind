@@ -10,8 +10,6 @@ import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.media.MediaPlayer;
-import android.media.MediaPlayer.OnCompletionListener;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -83,7 +81,6 @@ public class ChatAdapter extends BaseAdapter {
     private int historyCount = 0;
 
     private ContentClickListener contentClickListener = null;
-    private MediaPlayer mMediaPlayer = new MediaPlayer();
 
     private Handler handler = new Handler() {
         public void handleMessage(android.os.Message msg) {
@@ -286,13 +283,13 @@ public class ChatAdapter extends BaseAdapter {
 
     }
 
-    private class ViewHolder {
+    public class ViewHolder {
         // LinearLayout chatPanel;
         LinearLayout chatRemindPanel;
         TextView state;
         TextView title;
         TextView date;
-        TextView content;
+        public TextView content;
         TextView remindState;
         TextView time;
         RoleDetailImageView personImg;
@@ -429,16 +426,16 @@ public class ChatAdapter extends BaseAdapter {
             }
         } else if (MessageEntity.TYPE_VOICE.equals(type)) {
             // 如果是语音的话
-            viewHolder.content.setText("");
-            viewHolder.content.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.chatto_voice_playing, 0);
+            if (MessageEntity.TYPE_RECIEVE.equals(chatMessage.getIsComing())) {
+                viewHolder.content.setText(chatMessage.getContent() + "            ");
+                viewHolder.content.setCompoundDrawablesWithIntrinsicBounds(R.drawable.chatto_voice_playing_l, 0, 0, 0);
+            } else {
+                viewHolder.content.setText("            " + chatMessage.getContent());
+                viewHolder.content.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.chatto_voice_playing, 0);
+            }
             viewHolder.remindState.setVisibility(View.GONE);
             viewHolder.chatRemindPanel.setVisibility(View.GONE);
             viewHolder.content.setVisibility(View.VISIBLE);
-            // viewHolder.contentImg.setImageBitmap(null);
-            // viewHolder.title.setVisibility(View.GONE);
-            // viewHolder.contentImg.setVisibility(View.GONE);
-            // viewHolder.ok.setVisibility(View.GONE);
-            // viewHolder.cancel.setVisibility(View.GONE);
         }
     }
 
@@ -511,14 +508,15 @@ public class ChatAdapter extends BaseAdapter {
 
             @Override
             public void onClick(View v) {
-                if (MessageEntity.TYPE_VOICE.equals(chatMessage.getMsgType())) {
-                    // 如果是语音则播放
-                    playMusic(chatMessage.getMsgPath());
-                } else {
-                    if (null != contentClickListener) {
-                        contentClickListener.onContentClick(position, chatMessage);
-                    }
+                // if
+                // (MessageEntity.TYPE_VOICE.equals(chatMessage.getMsgType())) {
+                // // 如果是语音则播放
+                // playMusic(chatMessage.getMsgPath());
+                // } else {
+                if (null != contentClickListener) {
+                    contentClickListener.onContentClick(position, chatMessage);
                 }
+                // }
             }
         });
 
@@ -577,24 +575,4 @@ public class ChatAdapter extends BaseAdapter {
         this.contentClickListener = contentClickListener;
     }
 
-    private void playMusic(String name) {
-        try {
-            if (mMediaPlayer.isPlaying()) {
-                mMediaPlayer.stop();
-            }
-            mMediaPlayer.reset();
-            mMediaPlayer.setDataSource(name);
-            mMediaPlayer.prepare();
-            mMediaPlayer.start();
-            mMediaPlayer.setOnCompletionListener(new OnCompletionListener() {
-                public void onCompletion(MediaPlayer mp) {
-
-                }
-            });
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-    }
 }

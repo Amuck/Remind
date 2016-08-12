@@ -82,12 +82,12 @@ public class MessageIndexAdapter extends BaseAdapter {
             cursor.close();
             imgPath = peopelEntity.getImgPath();
         }
-        
+
         int id = Utils.getResoureIdbyName(context, imgPath);
         if (0 != id) {
             imgPath = id + "";
         }
-        
+
         viewHolder.personImg.setTag(imgPath);
         viewHolder.personImg.setImageResource(R.drawable.white);
 

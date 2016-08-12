@@ -2,6 +2,7 @@ package com.remind.util;
 
 /**
  * <b>function:</b>
+ * 
  * @author lxl
  * @createDate 14-12-2 下午3:45
  * @file WThread
@@ -63,6 +64,5 @@ public class ByteUtil {
         }
         return result;
     }
-
 
 }

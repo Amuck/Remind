@@ -5,6 +5,7 @@ import org.json.JSONObject;
 
 import android.app.Application;
 import android.app.Service;
+import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -175,6 +176,8 @@ public class RemindApplication extends Application {
      */
     public static boolean IS_CHAT_VIEW_SHOW = false;
 
+    private static Context context;
+
     public Handler mHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
@@ -201,12 +204,19 @@ public class RemindApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
+
+        context = getApplicationContext();
+
         mLocationClient = new LocationClient(this.getApplicationContext());
         mMyLocationListener = new MyLocationListener();
         mLocationClient.registerLocationListener(mMyLocationListener);
         mVibrator = (Vibrator) getApplicationContext().getSystemService(Service.VIBRATOR_SERVICE);
 
         mQueue = Volley.newRequestQueue(this.getApplicationContext());
+    }
+
+    public static Context getContextObject() {
+        return context;
     }
 
     /**
@@ -541,11 +551,12 @@ public class RemindApplication extends Application {
      * @param weather
      */
     public void getWeatherImg(String weather) {
-        if (weather.equals("晴") || weather.equals("以晴为主") || weather.equals("晴间多云") || weather.equals("Clear") || weather.equals("Sunny")
-                || weather.equals("Mostly Sunny") || weather.equals("Partly Sunny") || weather.equals("Fine")) {
+        if (weather.equals("晴") || weather.equals("以晴为主") || weather.equals("晴间多云") || weather.equals("Clear")
+                || weather.equals("Sunny") || weather.equals("Mostly Sunny") || weather.equals("Partly Sunny")
+                || weather.equals("Fine")) {
             mWeatherIconFlg = WEATHER_FINE;
-        } else if (weather.equals("多云") || weather.equals("局部多云") || weather.equals("Mostly Cloudy") || weather.equals("Partly Cloudy")
-                || weather.equals("Cloudy")) {
+        } else if (weather.equals("多云") || weather.equals("局部多云") || weather.equals("Mostly Cloudy")
+                || weather.equals("Partly Cloudy") || weather.equals("Cloudy")) {
             mWeatherIconFlg = WEATHER_CLOUD;
         } else if (weather.equals("雾霾") || weather.equals("烟雾") || weather.equals("Smoke") || weather.equals("Haze")) {
             mWeatherIconFlg = WEATHER_HAZE;
@@ -569,8 +580,8 @@ public class RemindApplication extends Application {
             mWeatherIconFlg = WEATHER_LEIZHENYU;
         } else if (weather.equals("阵雨") || weather.equals("Storm")) {
             mWeatherIconFlg = WEATHER_ZHENYU;
-        } else if (weather.equals("小雨") || weather.equals("可能有雨") || weather.equals("可能有暴风雨") || weather.equals("Chance of Rain")
-                || weather.equals("Chance of Storm") || weather.equals("Light rain")) {
+        } else if (weather.equals("小雨") || weather.equals("可能有雨") || weather.equals("可能有暴风雨")
+                || weather.equals("Chance of Rain") || weather.equals("Chance of Storm") || weather.equals("Light rain")) {
             mWeatherIconFlg = WEATHER_XIAOYU;
         } else if (weather.equals("中雨") || weather.equals("雨") || weather.equals("小到中雨") || weather.equals("小雨转中雨")
                 || weather.equals("Rain") || weather.equals("Moderate rain")) {
@@ -579,9 +590,11 @@ public class RemindApplication extends Application {
             mWeatherIconFlg = WEATHER_DAYU;
         } else if (weather.equals("暴雨") || weather.equals("大到暴雨") || weather.equals("大雨转暴雨") || weather.equals("Rainstorm")) {
             mWeatherIconFlg = WEATHER_BAOYU;
-        } else if (weather.equals("大暴雨") || weather.equals("暴雨到大暴雨") || weather.equals("暴雨转大暴雨") || weather.equals("Rainstorm")) {
+        } else if (weather.equals("大暴雨") || weather.equals("暴雨到大暴雨") || weather.equals("暴雨转大暴雨")
+                || weather.equals("Rainstorm")) {
             mWeatherIconFlg = WEATHER_DABAOYU;
-        } else if (weather.equals("特大暴雨") || weather.equals("大暴雨到特大暴雨") || weather.equals("大暴雨转特大暴雨") || weather.equals("Rainstorm")) {
+        } else if (weather.equals("特大暴雨") || weather.equals("大暴雨到特大暴雨") || weather.equals("大暴雨转特大暴雨")
+                || weather.equals("Rainstorm")) {
             mWeatherIconFlg = WEATHER_TEDABAO;
         } else if (weather.equals("雾") || weather.equals("Fog")) {
             mWeatherIconFlg = WEATHER_FOG;
@@ -612,8 +625,8 @@ public class RemindApplication extends Application {
         // 打开长连接
         // bindService(mServiceIntent, conn, BIND_AUTO_CREATE);
         // 注册socket
-        String content = HttpClient.getJsonForPost(HttpClient.getSocketRegist(HttpClient.TYPE_NOTIFICATION, HttpClient.REGIST_MID, "", "",
-                AppConstant.FROM_ID));
+        String content = HttpClient.getJsonForPost(HttpClient.getSocketRegist(HttpClient.TYPE_NOTIFICATION,
+                HttpClient.REGIST_MID, "", "", AppConstant.FROM_ID));
 
         boolean isSend = false;
         try {

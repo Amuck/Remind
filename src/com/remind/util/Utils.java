@@ -196,8 +196,8 @@ public class Utils {
      *            经过的年
      * @return
      */
-    public static String getTargeDate(String startDate, int passMinuteCounts, int passHourCounts, int passDayCounts, int passMonthCounts,
-            int passYearCounts) {
+    public static String getTargeDate(String startDate, int passMinuteCounts, int passHourCounts, int passDayCounts,
+            int passMonthCounts, int passYearCounts) {
         Calendar cal = Calendar.getInstance();
         String time = null;
         SimpleDateFormat temp = new SimpleDateFormat("yyyy-MM-dd HH:mm");

@@ -13,6 +13,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.database.Cursor;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
@@ -20,6 +21,8 @@ import android.os.Looper;
 import android.os.Message;
 import android.os.RemoteException;
 import android.support.v4.app.FragmentTabHost;
+import android.telephony.PhoneStateListener;
+import android.telephony.TelephonyManager;
 import android.text.TextUtils;
 import android.view.Gravity;
 import android.view.KeyEvent;
@@ -78,6 +81,7 @@ import com.remind.up.listener.CompleteListener;
 import com.remind.up.listener.ProgressListener;
 import com.remind.util.AppUtil;
 import com.remind.util.DataBaseParser;
+import com.remind.util.MediaPlayerManager;
 
 /**
  * @author ChenLong
@@ -274,6 +278,7 @@ public class ChatActivity extends BaseActivity implements OnClickListener, OnScr
         mIntentFilter.addAction(MessageReceiver.MESSAGE_BACK_ACTION);
         mIntentFilter.addAction(MessageReceiver.GET_MESSAGE_ACTION);
         mIntentFilter.addAction(MessageReceiver.NOTICE_STATE_ACTION);
+        mIntentFilter.addAction("android.intent.action.NEW_OUTGOING_CALL");
 
         Intent intent = getIntent();
         num = intent.getStringExtra("num");
@@ -328,6 +333,7 @@ public class ChatActivity extends BaseActivity implements OnClickListener, OnScr
 
         initTab();
         initRecord();
+        initRingtone();
 
         contactName.setText(peopelEntity.getName());
         sendMsgBtn.setOnClickListener(this);
@@ -363,6 +369,16 @@ public class ChatActivity extends BaseActivity implements OnClickListener, OnScr
         });
 
         setupChatList();
+    }
+
+    /**
+     * 初始化播放录音
+     */
+    private void initRingtone() {
+        // 创建一个电话服务
+        TelephonyManager manager = (TelephonyManager) getSystemService(TELEPHONY_SERVICE);
+        // 监听电话状态，接电话时停止播放
+        manager.listen(new MyPhoneStateListener(), PhoneStateListener.LISTEN_CALL_STATE);
     }
 
     private View getView(int i) {
@@ -524,7 +540,17 @@ public class ChatActivity extends BaseActivity implements OnClickListener, OnScr
 
             @Override
             public void onContentClick(int position, MessageEntity chatMessage) {
-                AppUtil.showToast(ChatActivity.this, chatMessage.getContent());
+                if (MessageEntity.TYPE_TEXT.equals(chatMessage.getMsgType())) {
+                    // 文字信息
+                    AppUtil.showToast(ChatActivity.this, chatMessage.getContent());
+                } else if (MessageEntity.TYPE_VOICE.equals(chatMessage.getMsgType())) {
+                    // 语音消息, 播放语音
+                    MediaPlayerManager.playSound(chatMessage.getMsgPath(), new MediaPlayer.OnCompletionListener() {
+
+                        public void onCompletion(MediaPlayer mp) {
+                        }
+                    });
+                }
             }
         });
 
@@ -630,7 +656,7 @@ public class ChatActivity extends BaseActivity implements OnClickListener, OnScr
      * @param path
      *            语音路径
      */
-    public void sendVoiceMsg(String voiceTime, String fileName, String path) {
+    public void sendVoiceMsg(final String voiceTime, String fileName, String path) {
         String msg = "[语音聊天]";
         String time = AppUtil.getNowTime();
         // 需要更新的数据为：时间，发送状态，发送消息的类型，非文字信息的消息id与路径，发送的内容
@@ -689,7 +715,7 @@ public class ChatActivity extends BaseActivity implements OnClickListener, OnScr
                         JSONObject jsonObject = new JSONObject(result);
                         String path = jsonObject.getString("path");
                         String param = HttpClient.getJsonForPost(HttpClient.sendMsg1(mid + "", peopelEntity.getFriendId(),
-                                "", noticeId, MessageEntity.TYPE_VOICE, path));
+                                voiceTime, noticeId, MessageEntity.TYPE_VOICE, path));
                         // Send Content by socket
                         isSend = RemindApplication.iBackService.sendMessage(param);
                     } catch (RemoteException e) {
@@ -1127,8 +1153,22 @@ public class ChatActivity extends BaseActivity implements OnClickListener, OnScr
                 // message.setData(data);
                 // mHandler.sendMessage(message);
                 chatAdapter.notifyDataSetChanged();
+            } else if (action.equals("android.intent.action.NEW_OUTGOING_CALL")) {
+                MediaPlayerManager.pause();
             }
         };
+    }
+
+    /**
+     * 监听电话状态
+     * 
+     * @author ChenLong
+     * 
+     */
+    private final class MyPhoneStateListener extends PhoneStateListener {
+        public void onCallStateChanged(int state, String incomingNumber) {
+            MediaPlayerManager.pause();
+        }
     }
 
     @Override
@@ -1143,6 +1183,24 @@ public class ChatActivity extends BaseActivity implements OnClickListener, OnScr
         RemindApplication.IS_CHAT_VIEW_SHOW = false;
         unregisterReceiver(mReciver);
         super.onStop();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        MediaPlayerManager.resume();
+    }
+
+    @Override
+    protected void onDestroy() {
+        MediaPlayerManager.release();
+        super.onDestroy();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        MediaPlayerManager.pause();
     }
 
     /**

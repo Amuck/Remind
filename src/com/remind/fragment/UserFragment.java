@@ -10,24 +10,23 @@ import com.help.remind.R;
 
 /**
  * @author ChenLong
- *
- * 设置界面
+ * 
+ *         设置界面
  */
-public class UserFragment extends Fragment{
+public class UserFragment extends Fragment {
 
-	private View inflate;
+    private View inflate;
 
-	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container,
-			Bundle savedInstanceState) {
-		if (null != inflate) {
-			ViewGroup parent = (ViewGroup) inflate.getParent();
-			if (null != parent) {
-				parent.removeView(inflate);
-			}
-		} else {
-			inflate = inflater.inflate(R.layout.layout_setting, null);
-		}
-		return inflate;
-	}
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        if (null != inflate) {
+            ViewGroup parent = (ViewGroup) inflate.getParent();
+            if (null != parent) {
+                parent.removeView(inflate);
+            }
+        } else {
+            inflate = inflater.inflate(R.layout.layout_setting, null);
+        }
+        return inflate;
+    }
 }

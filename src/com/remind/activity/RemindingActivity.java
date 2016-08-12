@@ -11,7 +11,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.database.Cursor;
 import android.media.MediaPlayer;
-import android.media.MediaPlayer.OnCompletionListener;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Bundle;
@@ -36,6 +35,7 @@ import com.remind.global.AppConstant;
 import com.remind.http.HttpClient;
 import com.remind.util.AppUtil;
 import com.remind.util.DataBaseParser;
+import com.remind.util.MediaPlayerManager;
 
 /**
  * @author ChenLong
@@ -112,9 +112,6 @@ public class RemindingActivity extends BaseActivity implements OnClickListener {
     private RemindEntity remindEntity = null;
     private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
 
-    // 播放铃声
-    private MediaPlayer player;
-
     private BroadcastReceiver myReceiver;
     /**
      * 振动器
@@ -189,8 +186,6 @@ public class RemindingActivity extends BaseActivity implements OnClickListener {
      * 初始化铃声播放
      */
     private void initRingtone() {
-        // 创建一个音乐播放器
-        player = new MediaPlayer();
 
         myReceiver = new PhoneListener();
         // 意图过滤器
@@ -202,11 +197,13 @@ public class RemindingActivity extends BaseActivity implements OnClickListener {
         TelephonyManager manager = (TelephonyManager) getSystemService(TELEPHONY_SERVICE);
         // 监听电话状态，接电话时停止播放
         manager.listen(new MyPhoneStateListener(), PhoneStateListener.LISTEN_CALL_STATE);
-        // 播放器监听器
-        player.setOnCompletionListener(new MyPlayerListener());
-        initPlayer(getSystemDefultRingtoneUri().toString());
         // 播放
-        play();
+        MediaPlayerManager.playSound(getSystemDefultRingtoneUri().toString(), new MediaPlayer.OnCompletionListener() {
+
+            public void onCompletion(MediaPlayer mp) {
+                vb.cancel();
+            }
+        });
     }
 
     // 获取系统默认铃声的Uri
@@ -222,7 +219,8 @@ public class RemindingActivity extends BaseActivity implements OnClickListener {
      */
     private final class PhoneListener extends BroadcastReceiver {
         public void onReceive(Context context, Intent intent) {
-            pause();
+            vb.cancel();
+            MediaPlayerManager.pause();
         }
     }
 
@@ -234,67 +232,8 @@ public class RemindingActivity extends BaseActivity implements OnClickListener {
      */
     private final class MyPhoneStateListener extends PhoneStateListener {
         public void onCallStateChanged(int state, String incomingNumber) {
-            pause();
-        }
-    }
-
-    /**
-     * 播放器监听器
-     * 
-     * @author ChenLong
-     * 
-     */
-    private final class MyPlayerListener implements OnCompletionListener {
-        // 歌曲播放完后改变按钮状态
-        public void onCompletion(MediaPlayer mp) {
-        }
-    }
-
-    private void initPlayer(String path) {
-        try {
-            // 重播
-            player.reset();
-            // 获取歌曲路径
-            player.setDataSource(path);
-            // 缓冲
-            player.prepare();
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    /**
-     * 开始播放
-     * 
-     * @param path
-     */
-    private void play() {
-        try {
-            // 开始播放
-            player.start();
-
-            player.setLooping(false);
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    /**
-     * 暂停播放
-     */
-    private void pause() {
-        if (player != null) {
-            if (player.isPlaying()) {
-                // AppUtil.showAcgToast(AddAcgActivity.this, "暂停");
-                player.pause();
-                vb.cancel();
-            } else {
-                // AppUtil.showAcgToast(AddAcgActivity.this, "播放");
-                player.start();
-                startVB();
-            }
+            vb.cancel();
+            MediaPlayerManager.pause();
         }
     }
 
@@ -303,21 +242,9 @@ public class RemindingActivity extends BaseActivity implements OnClickListener {
         if (null != myReceiver) {
             unregisterReceiver(myReceiver);
         }
-        if (null != player) {
-            player.release();
-        }
+        MediaPlayerManager.release();
         vb.cancel();
         super.onDestroy();
-    }
-
-    /**
-     * 停止播放
-     */
-    public void stop() {
-        if (player.isPlaying()) {
-            player.stop();
-        }
-        vb.cancel();
     }
 
     private void changePanelState() {
@@ -457,13 +384,16 @@ public class RemindingActivity extends BaseActivity implements OnClickListener {
             getWakeLock();
         }
         mWakelock.acquire();
-        pause();
+        startVB();
+        MediaPlayerManager.resume();
     }
 
     @Override
     protected void onPause() {
         mWakelock.release();
         super.onPause();
+        MediaPlayerManager.pause();
+        vb.cancel();
     }
 
     @Override

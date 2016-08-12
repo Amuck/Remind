@@ -18,112 +18,116 @@ import android.os.Handler;
 
 import com.remind.global.AppConstant;
 
-
 /**
  * 裁剪处理.
  */
-public class CropImage{
-	
+public class CropImage {
+
     /** The file local. */
     public File FILE_LOCAL = null;
     // Whether we are wait the user to pick a face.
-	/** The m waiting to pick. */
-    public boolean mWaitingToPick; 
-	// Whether the "save" button is already clicked.
+    /** The m waiting to pick. */
+    public boolean mWaitingToPick;
+    // Whether the "save" button is already clicked.
     /** The m saving. */
-	public boolean mSaving; 
-    
+    public boolean mSaving;
+
     /** The m crop. */
     public HighlightView mCrop;
-    
-	/** The m context. */
-	private Context mContext;
-	
-	/** The m handler. */
-	private Handler mHandler;
-	
-	/** The m image view. */
-	private CropImageView mImageView;
-	
-	/** The m bitmap. */
-	private Bitmap mBitmap;
-	
-	/**
-	 * Instantiates a new crop image.
-	 *
-	 * @param context the context
-	 * @param imageView the image view
-	 * @param handler the handler
-	 */
-	public CropImage(Context context, CropImageView imageView,Handler handler){
-		mContext = context;
-		mImageView = imageView;
-		mImageView.setCropImage(this);
-		mHandler = handler;
-		//初始化图片保存路径
-		File path = Environment.getExternalStorageDirectory();
-		FILE_LOCAL = new File(path.getAbsolutePath() +AppConstant.FILE_PATH + AppConstant.EDITED_IMG_PATH);
-		if(!FILE_LOCAL.exists()){
-			FILE_LOCAL.mkdirs();
-		}
-	}
-	
-	/**
-	 * 图片裁剪.
-	 *
-	 * @param bm the bm
-	 */
-	public void crop(Bitmap bm){
-		mBitmap = bm;
-		startFaceDetection();
-	}
-	
-	/**
-	 * Start rotate.
-	 *
-	 * @param d the d
-	 */
-	public void startRotate(float d) {
-        if (((Activity)mContext).isFinishing()) {
+
+    /** The m context. */
+    private Context mContext;
+
+    /** The m handler. */
+    private Handler mHandler;
+
+    /** The m image view. */
+    private CropImageView mImageView;
+
+    /** The m bitmap. */
+    private Bitmap mBitmap;
+
+    /**
+     * Instantiates a new crop image.
+     * 
+     * @param context
+     *            the context
+     * @param imageView
+     *            the image view
+     * @param handler
+     *            the handler
+     */
+    public CropImage(Context context, CropImageView imageView, Handler handler) {
+        mContext = context;
+        mImageView = imageView;
+        mImageView.setCropImage(this);
+        mHandler = handler;
+        // 初始化图片保存路径
+        File path = Environment.getExternalStorageDirectory();
+        FILE_LOCAL = new File(path.getAbsolutePath() + AppConstant.FILE_PATH + AppConstant.EDITED_IMG_PATH);
+        if (!FILE_LOCAL.exists()) {
+            FILE_LOCAL.mkdirs();
+        }
+    }
+
+    /**
+     * 图片裁剪.
+     * 
+     * @param bm
+     *            the bm
+     */
+    public void crop(Bitmap bm) {
+        mBitmap = bm;
+        startFaceDetection();
+    }
+
+    /**
+     * Start rotate.
+     * 
+     * @param d
+     *            the d
+     */
+    public void startRotate(float d) {
+        if (((Activity) mContext).isFinishing()) {
             return;
         }
         final float degrees = d;
         final CountDownLatch latch = new CountDownLatch(1);
-        Runnable mRunnable =  new Runnable() {
+        Runnable mRunnable = new Runnable() {
             public void run() {
                 mHandler.post(new Runnable() {
                     public void run() {
-                        try{
-	                        Matrix m = new Matrix();
-	                		m.setRotate(degrees);
-	                		Bitmap tb = Bitmap.createBitmap(mBitmap, 0, 0, mBitmap.getWidth(), mBitmap.getHeight(),m,false);
-	                		mBitmap = tb;
-	                		mImageView.resetView(tb);
-	                		if (mImageView.mHighlightViews.size() > 0) {
-	                            mCrop = mImageView.mHighlightViews.get(0);
-	                            mCrop.setFocus(true);
-	                        }
-                        }catch (Exception e) {
-						}
+                        try {
+                            Matrix m = new Matrix();
+                            m.setRotate(degrees);
+                            Bitmap tb = Bitmap.createBitmap(mBitmap, 0, 0, mBitmap.getWidth(), mBitmap.getHeight(), m, false);
+                            mBitmap = tb;
+                            mImageView.resetView(tb);
+                            if (mImageView.mHighlightViews.size() > 0) {
+                                mCrop = mImageView.mHighlightViews.get(0);
+                                mCrop.setFocus(true);
+                            }
+                        } catch (Exception e) {
+                        }
                         latch.countDown();
                     }
                 });
                 try {
                     latch.await();
                 } catch (Exception e) {
-                	throw new RuntimeException(e);
+                    throw new RuntimeException(e);
                 }
-                //mRunFaceDetection.run();
+                // mRunFaceDetection.run();
             }
         };
         new Thread(new BackgroundJob("", mRunnable, mHandler)).start();
     }
-	
-	/**
-	 * Start face detection.
-	 */
-	private void startFaceDetection() {
-        if (((Activity)mContext).isFinishing()) {
+
+    /**
+     * Start face detection.
+     */
+    private void startFaceDetection() {
+        if (((Activity) mContext).isFinishing()) {
             return;
         }
         Runnable mRunnable = new Runnable() {
@@ -154,41 +158,43 @@ public class CropImage{
         new Thread(new BackgroundJob("", mRunnable, mHandler)).start();
     }
 
-	/**
-	 * 裁剪并保存.
-	 *
-	 * @return the bitmap
-	 */
-	public Bitmap cropAndSave(){
-		final Bitmap bmp = onSaveClicked(mBitmap);
-		mImageView.mHighlightViews.clear();
-		return bmp;
-	}
-	
-	/**
-	 * 裁剪并保存.
-	 *
-	 * @param bm the bm
-	 * @return the bitmap
-	 */
-	public Bitmap cropAndSave(Bitmap bm){
-		final Bitmap bmp = onSaveClicked(bm);
-		mImageView.mHighlightViews.clear();
-		return bmp;
-	}
-	
-	/**
-	 * 取消裁剪.
-	 */
-	public void cropCancel(){
-		mImageView.mHighlightViews.clear();
-		mImageView.invalidate();
-	}
-	
+    /**
+     * 裁剪并保存.
+     * 
+     * @return the bitmap
+     */
+    public Bitmap cropAndSave() {
+        final Bitmap bmp = onSaveClicked(mBitmap);
+        mImageView.mHighlightViews.clear();
+        return bmp;
+    }
+
+    /**
+     * 裁剪并保存.
+     * 
+     * @param bm
+     *            the bm
+     * @return the bitmap
+     */
+    public Bitmap cropAndSave(Bitmap bm) {
+        final Bitmap bmp = onSaveClicked(bm);
+        mImageView.mHighlightViews.clear();
+        return bmp;
+    }
+
+    /**
+     * 取消裁剪.
+     */
+    public void cropCancel() {
+        mImageView.mHighlightViews.clear();
+        mImageView.invalidate();
+    }
+
     /**
      * On save clicked.
-     *
-     * @param bm the bm
+     * 
+     * @param bm
+     *            the bm
      * @return the bitmap
      */
     private Bitmap onSaveClicked(Bitmap bm) {
@@ -202,8 +208,8 @@ public class CropImage{
         mSaving = true;
 
         Rect r = mCrop.getCropRect();
-        int width = 360;   
-        int height = 360;  
+        int width = 360;
+        int height = 360;
         Bitmap croppedImage = Bitmap.createBitmap(width, height, Bitmap.Config.RGB_565);
         Canvas canvas = new Canvas(croppedImage);
         Rect dstRect = new Rect(0, 0, width, height);
@@ -213,26 +219,27 @@ public class CropImage{
 
     /**
      * Save to local.
-     *
-     * @param bitmap the bitmap
+     * 
+     * @param bitmap
+     *            the bitmap
      * @return the string
      */
-    public String saveToLocal(Bitmap bitmap){
-    	//需要裁剪后保存为新图片
+    public String saveToLocal(Bitmap bitmap) {
+        // 需要裁剪后保存为新图片
         String mFileName = System.currentTimeMillis() + ".jpg";
-    	String path = FILE_LOCAL+File.separator+mFileName;
-    	try{
-			FileOutputStream fos = new FileOutputStream(path);
-			bitmap.compress(CompressFormat.JPEG, 75, fos);
-			fos.flush();
-			fos.close();
-		} catch (Exception e){
-			e.printStackTrace();
-			return null;
-		}
-		return path;
+        String path = FILE_LOCAL + File.separator + mFileName;
+        try {
+            FileOutputStream fos = new FileOutputStream(path);
+            bitmap.compress(CompressFormat.JPEG, 75, fos);
+            fos.flush();
+            fos.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+        return path;
     }
-    
+
     /** The m run face detection. */
     Runnable mRunFaceDetection = new Runnable() {
         float mScale = 1F;
@@ -271,7 +278,7 @@ public class CropImage{
             // 256 pixels wide is enough.
             // CR: F => f (or change all f to F).
             if (mBitmap.getWidth() > 256) {
-                mScale = 256.0F / mBitmap.getWidth(); 
+                mScale = 256.0F / mBitmap.getWidth();
             }
             Matrix matrix = new Matrix();
             matrix.setScale(mScale, mScale);
@@ -309,64 +316,67 @@ public class CropImage{
             });
         }
     };
-	
-	/**
-	 * The Class BackgroundJob.
-	 */
-	public class BackgroundJob implements Runnable{
-    	
-	    /** The message. */
-//	    private String message;
-    	
-	    /** The m job. */
-	    private Runnable mJob;
-    	
-	    /** The m handler. */
-	    private Handler mHandler;
 
-    	/**
-	     * Instantiates a new background job.
-	     *
-	     * @param m the m
-	     * @param job the job
-	     * @param handler the handler
-	     */
-	    public BackgroundJob(String m, Runnable job, Handler handler){
-//    		message = m;
-    		mJob = job;
-    		mHandler = handler;
-    	}
-    	
-	    /**
-    	 *
-    	 * @see java.lang.Runnable#run()
-    	 * @author: zhaoqp
-    	 * @date：2013-6-17 上午9:04:47
-    	 * @version v1.0
-    	 */
-	    public void run(){
-    		final CountDownLatch latch = new CountDownLatch(1);
-    		mHandler.post(new Runnable() {
+    /**
+     * The Class BackgroundJob.
+     */
+    public class BackgroundJob implements Runnable {
+
+        /** The message. */
+        // private String message;
+
+        /** The m job. */
+        private Runnable mJob;
+
+        /** The m handler. */
+        private Handler mHandler;
+
+        /**
+         * Instantiates a new background job.
+         * 
+         * @param m
+         *            the m
+         * @param job
+         *            the job
+         * @param handler
+         *            the handler
+         */
+        public BackgroundJob(String m, Runnable job, Handler handler) {
+            // message = m;
+            mJob = job;
+            mHandler = handler;
+        }
+
+        /**
+         * 
+         * @see java.lang.Runnable#run()
+         * @author: zhaoqp
+         * @date：2013-6-17 上午9:04:47
+         * @version v1.0
+         */
+        public void run() {
+            final CountDownLatch latch = new CountDownLatch(1);
+            mHandler.post(new Runnable() {
                 public void run() {
-                    try{
-                    	mHandler.sendMessage(mHandler.obtainMessage(1));
-                    }catch (Exception e) {
-					}
+                    try {
+                        mHandler.sendMessage(mHandler.obtainMessage(1));
+                    } catch (Exception e) {
+                    }
                     latch.countDown();
                 }
             });
-    		 try {
-                 latch.await();
-             } catch (Exception e) {
-                 throw new RuntimeException(e);
-             }
-    		try {
-    			mJob.run();
-    		}catch (Exception e) {
-    			e.printStackTrace();
-            }finally{
-    			mHandler.sendMessage(mHandler.obtainMessage(2));
-    		}
-    	}
+            try {
+                latch.await();
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+            try {
+                mJob.run();
+            } catch (Exception e) {
+                e.printStackTrace();
+            } finally {
+                mHandler.sendMessage(mHandler.obtainMessage(2));
+            }
+        }
     }
 }

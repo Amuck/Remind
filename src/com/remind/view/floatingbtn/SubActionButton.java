@@ -1,11 +1,5 @@
-/*
- *   Copyright 2014 Oguz Bilgener
- */
 package com.remind.view.floatingbtn;
 
-import com.help.remind.R;
-
-import android.app.Activity;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
@@ -13,8 +7,11 @@ import android.view.Gravity;
 import android.view.View;
 import android.widget.FrameLayout;
 
+import com.help.remind.R;
+
 /**
- * A simple button implementation with a similar look an feel to{@link FloatingActionButton}.
+ * A simple button implementation with a similar look an feel to
+ * {@link FloatingActionButton}.
  */
 public class SubActionButton extends FrameLayout {
 
@@ -23,44 +20,43 @@ public class SubActionButton extends FrameLayout {
     public static final int THEME_LIGHTER = 2;
     public static final int THEME_DARKER = 3;
 
-    public SubActionButton(Context context, FrameLayout.LayoutParams layoutParams, int theme, Drawable backgroundDrawable, View contentView, FrameLayout.LayoutParams contentParams) {
+    public SubActionButton(Context context, FrameLayout.LayoutParams layoutParams, int theme, Drawable backgroundDrawable,
+            View contentView, FrameLayout.LayoutParams contentParams) {
         super(context);
         setLayoutParams(layoutParams);
-        // If no custom backgroundDrawable is specified, use the background drawable of the theme.
-        if(backgroundDrawable == null) {
-            if(theme == THEME_LIGHT) {
+        // If no custom backgroundDrawable is specified, use the background
+        // drawable of the theme.
+        if (backgroundDrawable == null) {
+            if (theme == THEME_LIGHT) {
                 backgroundDrawable = context.getResources().getDrawable(R.drawable.button_sub_action_selector);
-            }
-            else if(theme == THEME_DARK) {
+            } else if (theme == THEME_DARK) {
                 backgroundDrawable = context.getResources().getDrawable(R.drawable.button_sub_action_dark_selector);
-            }
-            else if(theme == THEME_LIGHTER) {
+            } else if (theme == THEME_LIGHTER) {
                 backgroundDrawable = context.getResources().getDrawable(R.drawable.button_action_selector);
-            }
-            else if(theme == THEME_DARKER) {
+            } else if (theme == THEME_DARKER) {
                 backgroundDrawable = context.getResources().getDrawable(R.drawable.button_action_dark_selector);
-            }
-            else {
+            } else {
                 throw new RuntimeException("Unknown SubActionButton theme: " + theme);
             }
-        }
-        else {
+        } else {
             backgroundDrawable = backgroundDrawable.mutate().getConstantState().newDrawable();
         }
         setBackgroundResource(backgroundDrawable);
-        if(contentView != null) {
+        if (contentView != null) {
             setContentView(contentView, contentParams);
         }
         setClickable(true);
     }
 
     /**
-     * Sets a content view with custom LayoutParams that will be displayed inside this SubActionButton.
+     * Sets a content view with custom LayoutParams that will be displayed
+     * inside this SubActionButton.
+     * 
      * @param contentView
      * @param params
      */
     public void setContentView(View contentView, FrameLayout.LayoutParams params) {
-        if(params == null) {
+        if (params == null) {
             params = new FrameLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, Gravity.CENTER);
             final int margin = getResources().getDimensionPixelSize(R.dimen.sub_action_button_content_margin);
             params.setMargins(margin, margin, margin, margin);
@@ -72,17 +68,18 @@ public class SubActionButton extends FrameLayout {
 
     /**
      * Sets a content view with default LayoutParams
+     * 
      * @param contentView
      */
     public void setContentView(View contentView) {
         setContentView(contentView, null);
     }
 
+    @SuppressWarnings("deprecation")
     private void setBackgroundResource(Drawable drawable) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
             setBackground(drawable);
-        }
-        else {
+        } else {
             setBackgroundDrawable(drawable);
         }
     }
@@ -136,12 +133,7 @@ public class SubActionButton extends FrameLayout {
         }
 
         public SubActionButton build() {
-            return new SubActionButton(context,
-                    layoutParams,
-                    theme,
-                    backgroundDrawable,
-                    contentView,
-                    contentParams);
+            return new SubActionButton(context, layoutParams, theme, backgroundDrawable, contentView, contentParams);
         }
     }
 }

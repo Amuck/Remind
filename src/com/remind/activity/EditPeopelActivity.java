@@ -1,7 +1,6 @@
 package com.remind.activity;
 
 import java.io.File;
-import java.util.ArrayList;
 
 import android.app.AlertDialog;
 import android.content.ActivityNotFoundException;
@@ -56,7 +55,7 @@ public class EditPeopelActivity extends BaseActivity implements OnClickListener 
      * 选择系统自带头像
      */
     private static final int ROLE_DATA = 3024;
-    
+
     private String TAG = "EditPeopelActivity";
     /**
      * 是否是编辑状态
@@ -133,7 +132,7 @@ public class EditPeopelActivity extends BaseActivity implements OnClickListener 
      * 用户是否登陆
      */
     private boolean isUserLogin = false;
-    
+
     /**
      * 选择头像提示框
      */
@@ -274,21 +273,19 @@ public class EditPeopelActivity extends BaseActivity implements OnClickListener 
             exitBtn.setVisibility(View.VISIBLE);
         }
     }
-    
+
     private void showChooseImgDlg() {
         if (null == alertDialog) {
-            alertDialog = new AlertDialog.Builder(this)
-                    .setTitle("请选择头像来源")
+            alertDialog = new AlertDialog.Builder(this).setTitle("请选择头像来源")
                     .setPositiveButton("选择头像", new DialogInterface.OnClickListener() {
-                        
+
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                             Intent intent = new Intent(EditPeopelActivity.this, ChooseRoleActivity.class);
                             startActivityForResult(intent, ROLE_DATA);
                         }
-                    })
-                    .setNegativeButton("上传头像", new DialogInterface.OnClickListener() {
-                        
+                    }).setNegativeButton("上传头像", new DialogInterface.OnClickListener() {
+
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                             try {
@@ -299,8 +296,7 @@ public class EditPeopelActivity extends BaseActivity implements OnClickListener 
                                 AppUtil.showToast(EditPeopelActivity.this, "没有找到照片");
                             }
                         }
-                    })
-                    .create();
+                    }).create();
         }
         alertDialog.show();
     }
@@ -324,18 +320,17 @@ public class EditPeopelActivity extends BaseActivity implements OnClickListener 
                 peopelEntity.setNickName(nickNameEdit.getText().toString());
                 peopelEntity.setImgPath(imgPath);
                 peopelDao.updatePeopel(peopelEntity);
-                
+
                 // 修改索引数据库
                 Cursor cursor = messageIndexDao.queryByNum(peopelEntity.getNum());
                 if (cursor.getCount() > 0) {
-                    MessageIndexEntity messageIndexEntitiy =
-                             DataBaseParser.getMessageIndex(cursor).get(0);
+                    MessageIndexEntity messageIndexEntitiy = DataBaseParser.getMessageIndex(cursor).get(0);
                     messageIndexEntitiy.setName(peopelEntity.getNickName());
                     messageIndexEntitiy.setImgPath(peopelEntity.getImgPath());
                     messageIndexDao.update(messageIndexEntitiy);
                 }
                 cursor.close();
-                
+
                 setResult(RESULT_OK);
             } else {
                 setResult(RESULT_CANCELED);
@@ -411,7 +406,8 @@ public class EditPeopelActivity extends BaseActivity implements OnClickListener 
      * @return
      */
     private void isChanged() {
-        if (null != nickNameEdit.getText().toString() && !nickNameEdit.getText().toString().equals(peopelEntity.getNickName())) {
+        if (null != nickNameEdit.getText().toString()
+                && !nickNameEdit.getText().toString().equals(peopelEntity.getNickName())) {
             isChanged = true;
         }
         if (null == nickNameEdit.getText().toString() && null != peopelEntity.getNickName()) {
@@ -477,7 +473,7 @@ public class EditPeopelActivity extends BaseActivity implements OnClickListener 
             imgView.setImageDrawable(AppUtil.bitmapToDrawable(bm));
             break;
         case ROLE_DATA:
-            // 选择系统自带头像 
+            // 选择系统自带头像
             imgPath = mIntent.getStringExtra("PATH");
             if (!TextUtils.isEmpty(imgPath)) {
                 setupImg();

@@ -1,5 +1,6 @@
 package com.remind.fragment;
 
+import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -10,24 +11,24 @@ import com.help.remind.R;
 
 /**
  * @author ChenLong
- *
- * 设置界面
+ * 
+ *         设置界面
  */
-public class DiscoeryFragment extends Fragment{
+public class DiscoeryFragment extends Fragment {
 
-	private View inflate;
+    private View inflate;
 
-	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container,
-			Bundle savedInstanceState) {
-		if (null != inflate) {
-			ViewGroup parent = (ViewGroup) inflate.getParent();
-			if (null != parent) {
-				parent.removeView(inflate);
-			}
-		} else {
-			inflate = inflater.inflate(R.layout.layout_setting, null);
-		}
-		return inflate;
-	}
+    @SuppressLint("InflateParams")
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        if (null != inflate) {
+            ViewGroup parent = (ViewGroup) inflate.getParent();
+            if (null != parent) {
+                parent.removeView(inflate);
+            }
+        } else {
+            inflate = inflater.inflate(R.layout.layout_setting, null);
+        }
+        return inflate;
+    }
 }

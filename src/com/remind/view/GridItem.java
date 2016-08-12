@@ -26,7 +26,6 @@ public class GridItem extends RelativeLayout implements Checkable {
 
     public GridItem(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
-        // TODO Auto-generated constructor stub
         mContext = context;
         LayoutInflater.from(mContext).inflate(R.layout.grid_item, this);
         mImgView = (ImageView) findViewById(R.id.img_view);
@@ -35,21 +34,19 @@ public class GridItem extends RelativeLayout implements Checkable {
 
     @Override
     public void setChecked(boolean checked) {
-        // TODO Auto-generated method stub
         mChecked = checked;
-//        setBackgroundDrawable(checked ? getResources().getDrawable(R.drawable.voice_rcd_btn_disable) : null);
+        // setBackgroundDrawable(checked ?
+        // getResources().getDrawable(R.drawable.voice_rcd_btn_disable) : null);
         mSecletView.setVisibility(checked ? View.VISIBLE : View.GONE);
     }
 
     @Override
     public boolean isChecked() {
-        // TODO Auto-generated method stub
         return mChecked;
     }
 
     @Override
     public void toggle() {
-        // TODO Auto-generated method stub
         setChecked(!mChecked);
     }
 

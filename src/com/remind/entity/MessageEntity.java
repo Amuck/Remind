@@ -2,340 +2,379 @@ package com.remind.entity;
 
 import java.io.Serializable;
 
-public class MessageEntity implements Cloneable, Serializable{
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 8484912071208962329L;
-	/**
-	 * 正常状态
-	 */
-	public final static String NORMAL = "0";
-	/**
-	 * 已删除状态
-	 */
-	public final static String DELETED = "1";
-	/**
-	 * 发送成功
-	 */
-	public final static String SEND_SUCCESS = "0";
-	/**
-	 * 正在发送
-	 */
-	public final static String SENDING = "1";
-	/**
-	 * 发送失败
-	 */
-	public final static String SEND_FAIL = "2";
-	/**
-	 * 消息类型，文字消息
-	 */
-	public final static String TYPE_TEXT = "0";
-	/**
-	 * 消息类型，提醒
-	 */
-	public final static String TYPE_REMIND = "1";
-	/**
-	 * 消息类型，语音
-	 */
-	public final static String TYPE_VOICE = "2";
-	/**
-	 * 用户发送的消息
-	 */
-	public final static String TYPE_SEND = "0";
-	/**
-	 * 用户接受的消息
-	 */
-	public final static String TYPE_RECIEVE = "1";
-	/**
-	 * 用户反馈成功
-	 */
-	public final static String FEED_SUCCESS = "feed_success";
-	/**
-	 * 用户反馈失败
-	 */
-	public final static String FEED_FAIL = "feed_fail";
-	/**
-	 * 用户反馈最初
-	 */
-	public final static String FEED_DEFAULT = "feed_default";
-	
-	/**
-	 * id
-	 */
-	private String id;
-	
-	/**
-	 * 消息索引
-	 */
-	private String messageIndex;
-	/**
-	 * 接受人的名称
-	 */
-	private String recieveName;
-	/**
-	 * 接收人的号码
-	 */
-	private String recieveNum;
-	/**
-	 * 登陆的用户
-	 */
-	private String loginUser;
-	/**
-	 * 发送人的名称
-	 */
-	private String sendName;
-	/**
-	 * 发送人的号码
-	 */
-	private String sendNum;
-	/**
-	 * 发送方，用户发送：{@link #TYPE_SEND}，用户接收：{@link #TYPE_RECIEVE}
-	 */
-	private String isComing;
-	/**
-	 * 发送时间
-	 */
-	private String time;
-	/**
-	 * 消息内容/语音时长
-	 */
-	private String content;
-	/**
-	 * 发送状态, {@link #SEND_SUCCESS}：发送成功；{@link #SENDING}：正在发送;{@link #SEND_FAIL}：发送失败
-	 */
-	private String sendState;
-	/**
-	 * 是否删除, {@link #NORMAL}：未删除；{@link #DELETED}：已删除
-	 */
-	private String isDelete;
-	
-	/**
-	 * 消息类型，文字：{@link #TYPE_TEXT}, 提醒：{@link #TYPE_REMIND},语音：{@link #TYPE_VOICE},默认为文字
-	 */
-	private String msgType = MessageEntity.TYPE_TEXT;
-	
-	/**
-	 * 其他类型消息的id
-	 */
-	private String otherTypeId;
-	
-	/**
-	 * 事件驱动的id，为所属remind的id
-	 */
-	private String remindId;
-	/**
-	 * 其他消息类型，储存路径
-	 */
-	private String msgPath;
-	/**
-	 * 收到的消息是否反馈成功，成功：{@link #FEED_SUCCESS}；失败：{@link #FEED_FAIL}；初始：{@link #FEED_DEFAULT}
-	 */
-	private String feed = MessageEntity.FEED_DEFAULT;
-	/**
-	 * 预留字段
-	 */
-	private String z1;
-	/**
-	 * 预留字段
-	 */
-	private String z2;
-	/**
-	 * 预留字段
-	 */
-	private String z3;
+public class MessageEntity implements Cloneable, Serializable {
+    private static final long serialVersionUID = 8484912071208962329L;
+    /**
+     * 正常状态
+     */
+    public final static String NORMAL = "0";
+    /**
+     * 已删除状态
+     */
+    public final static String DELETED = "1";
+    /**
+     * 发送成功
+     */
+    public final static String SEND_SUCCESS = "0";
+    /**
+     * 正在发送
+     */
+    public final static String SENDING = "1";
+    /**
+     * 发送失败
+     */
+    public final static String SEND_FAIL = "2";
+    /**
+     * 消息类型，文字消息
+     */
+    public final static String TYPE_TEXT = "0";
+    /**
+     * 消息类型，提醒
+     */
+    public final static String TYPE_REMIND = "1";
+    /**
+     * 消息类型，语音
+     */
+    public final static String TYPE_VOICE = "2";
+    /**
+     * 用户发送的消息
+     */
+    public final static String TYPE_SEND = "0";
+    /**
+     * 用户接受的消息
+     */
+    public final static String TYPE_RECIEVE = "1";
+    /**
+     * 用户反馈成功
+     */
+    public final static String FEED_SUCCESS = "feed_success";
+    /**
+     * 用户反馈失败
+     */
+    public final static String FEED_FAIL = "feed_fail";
+    /**
+     * 用户反馈最初
+     */
+    public final static String FEED_DEFAULT = "feed_default";
 
-	public MessageEntity() {
-	}
+    /**
+     * id
+     */
+    private String id;
 
-	/**
-	 * @param id
-	 * @param recieveName	接受人的名称
-	 * @param recieveNum	接收人的号码
-	 * @param sendName		发送人的名称
-	 * @param sendNum		发送人的号码
-	 * @param time			发送时间
-	 * @param sendState		发送状态, {@link #SEND_SUCCESS}：发送成功；{@link #SENDING}：正在发送;{@link #SEND_FAIL}：发送失败
-	 * @param isDelete		是否删除, {@link #NORMAL}：未删除；{@link #DELETED}：已删除
-	 * @param msgType		消息类型，文字：{@link #TYPE_TEXT}, 提醒：{@link #TYPE_REMIND},默认为文字
-	 * @param otherTypeId	其他类型消息的id
-	 * @param msgPath		其他消息类型，储存路径
-	 * @param messageIndex	消息索引
-	 * @param isComing		发送方，用户发送：TYPE_SEND，用户接收：TYPE_RECIEVE
-	 * @param content		消息内容
-	 * @param feed			收到的消息是否反馈成功
-	 * @param loginUser		登陆的用户
-	 * @param remindId		所属remind的id
-	 */
-	public MessageEntity(String id, String recieveName, String recieveNum,
-			String sendName, String sendNum, String time, String sendState,
-			String isDelete, String msgType, String otherTypeId,
-			String msgPath, String messageIndex, String isComing, String content, 
-			String feed, String loginUser, String remindId) {
-		super();
-		this.id = id;
-		this.recieveName = recieveName;
-		this.recieveNum = recieveNum;
-		this.sendName = sendName;
-		this.sendNum = sendNum;
-		this.time = time;
-		this.sendState = sendState;
-		this.isDelete = isDelete;
-		this.msgType = msgType;
-		this.otherTypeId = otherTypeId;
-		this.msgPath = msgPath;
-		this.messageIndex = messageIndex;
-		this.isComing = isComing;
-		this.content = content;
-		this.feed = feed;
-		this.loginUser = loginUser;
-		this.remindId = remindId;
-	}
+    /**
+     * 消息索引
+     */
+    private String messageIndex;
+    /**
+     * 接受人的名称
+     */
+    private String recieveName;
+    /**
+     * 接收人的号码
+     */
+    private String recieveNum;
+    /**
+     * 登陆的用户
+     */
+    private String loginUser;
+    /**
+     * 发送人的名称
+     */
+    private String sendName;
+    /**
+     * 发送人的号码
+     */
+    private String sendNum;
+    /**
+     * 发送方，用户发送：{@link #TYPE_SEND}，用户接收：{@link #TYPE_RECIEVE}
+     */
+    private String isComing;
+    /**
+     * 发送时间
+     */
+    private String time;
+    /**
+     * 消息内容/语音时长
+     */
+    private String content;
+    /**
+     * 发送状态, {@link #SEND_SUCCESS}：发送成功；{@link #SENDING}：正在发送;{@link #SEND_FAIL}
+     * ：发送失败
+     */
+    private String sendState;
+    /**
+     * 是否删除, {@link #NORMAL}：未删除；{@link #DELETED}：已删除
+     */
+    private String isDelete;
 
-	public String getId() {
-		return id;
-	}
+    /**
+     * 消息类型，文字：{@link #TYPE_TEXT}, 提醒：{@link #TYPE_REMIND},语音：
+     * {@link #TYPE_VOICE},默认为文字
+     */
+    private String msgType = MessageEntity.TYPE_TEXT;
 
-	public void setId(String id) {
-		this.id = id;
-	}
+    /**
+     * 其他类型消息的id
+     */
+    private String otherTypeId;
 
-	public String getLoginUser() {
-		return loginUser;
-	}
+    /**
+     * 事件驱动的id，为所属remind的id
+     */
+    private String remindId;
+    /**
+     * 其他消息类型，储存路径
+     */
+    private String msgPath;
+    /**
+     * 收到的消息是否反馈成功，成功：{@link #FEED_SUCCESS}；失败：{@link #FEED_FAIL}；初始：
+     * {@link #FEED_DEFAULT}
+     */
+    private String feed = MessageEntity.FEED_DEFAULT;
+    /**
+     * 预留字段
+     */
+    private String z1;
+    /**
+     * 预留字段
+     */
+    private String z2;
+    /**
+     * 预留字段
+     */
+    private String z3;
 
-	public void setLoginUser(String loginUser) {
-		this.loginUser = loginUser;
-	}
+    public MessageEntity() {
+    }
 
-	public String getMessageIndex() {
-		return messageIndex;
-	}
+    /**
+     * @param id
+     * @param recieveName
+     *            接受人的名称
+     * @param recieveNum
+     *            接收人的号码
+     * @param sendName
+     *            发送人的名称
+     * @param sendNum
+     *            发送人的号码
+     * @param time
+     *            发送时间
+     * @param sendState
+     *            发送状态, {@link #SEND_SUCCESS}：发送成功；{@link #SENDING}：正在发送;
+     *            {@link #SEND_FAIL}：发送失败
+     * @param isDelete
+     *            是否删除, {@link #NORMAL}：未删除；{@link #DELETED}：已删除
+     * @param msgType
+     *            消息类型，文字：{@link #TYPE_TEXT}, 提醒：{@link #TYPE_REMIND},默认为文字
+     * @param otherTypeId
+     *            其他类型消息的id
+     * @param msgPath
+     *            其他消息类型，储存路径
+     * @param messageIndex
+     *            消息索引
+     * @param isComing
+     *            发送方，用户发送：TYPE_SEND，用户接收：TYPE_RECIEVE
+     * @param content
+     *            消息内容
+     * @param feed
+     *            收到的消息是否反馈成功
+     * @param loginUser
+     *            登陆的用户
+     * @param remindId
+     *            所属remind的id
+     */
+    public MessageEntity(String id, String recieveName, String recieveNum, String sendName, String sendNum, String time,
+            String sendState, String isDelete, String msgType, String otherTypeId, String msgPath, String messageIndex,
+            String isComing, String content, String feed, String loginUser, String remindId) {
+        super();
+        this.id = id;
+        this.recieveName = recieveName;
+        this.recieveNum = recieveNum;
+        this.sendName = sendName;
+        this.sendNum = sendNum;
+        this.time = time;
+        this.sendState = sendState;
+        this.isDelete = isDelete;
+        this.msgType = msgType;
+        this.otherTypeId = otherTypeId;
+        this.msgPath = msgPath;
+        this.messageIndex = messageIndex;
+        this.isComing = isComing;
+        this.content = content;
+        this.feed = feed;
+        this.loginUser = loginUser;
+        this.remindId = remindId;
+    }
 
-	public void setMessageIndex(String messageIndex) {
-		this.messageIndex = messageIndex;
-	}
+    public String getId() {
+        return id;
+    }
 
-	public String getRecieveName() {
-		return recieveName;
-	}
+    public void setId(String id) {
+        this.id = id;
+    }
 
-	public void setRecieveName(String recieveName) {
-		this.recieveName = recieveName;
-	}
+    public String getLoginUser() {
+        return loginUser;
+    }
 
-	public String getRecieveNum() {
-		return recieveNum;
-	}
+    public void setLoginUser(String loginUser) {
+        this.loginUser = loginUser;
+    }
 
-	public void setRecieveNum(String recieveNum) {
-		this.recieveNum = recieveNum;
-	}
+    public String getMessageIndex() {
+        return messageIndex;
+    }
 
-	public String getSendName() {
-		return sendName;
-	}
+    public void setMessageIndex(String messageIndex) {
+        this.messageIndex = messageIndex;
+    }
 
-	public void setSendName(String sendName) {
-		this.sendName = sendName;
-	}
+    public String getRecieveName() {
+        return recieveName;
+    }
 
-	public String getSendNum() {
-		return sendNum;
-	}
+    public void setRecieveName(String recieveName) {
+        this.recieveName = recieveName;
+    }
 
-	public void setSendNum(String sendNum) {
-		this.sendNum = sendNum;
-	}
+    public String getRecieveNum() {
+        return recieveNum;
+    }
 
-	public String getIsComing() {
-		return isComing;
-	}
+    public void setRecieveNum(String recieveNum) {
+        this.recieveNum = recieveNum;
+    }
 
-	public void setIsComing(String isComing) {
-		this.isComing = isComing;
-	}
+    public String getSendName() {
+        return sendName;
+    }
 
-	public String getTime() {
-		return time;
-	}
+    public void setSendName(String sendName) {
+        this.sendName = sendName;
+    }
 
-	public void setTime(String time) {
-		this.time = time;
-	}
+    public String getSendNum() {
+        return sendNum;
+    }
 
-	public String getContent() {
-		return content;
-	}
+    public void setSendNum(String sendNum) {
+        this.sendNum = sendNum;
+    }
 
-	public void setContent(String content) {
-		this.content = content;
-	}
+    public String getIsComing() {
+        return isComing;
+    }
 
-	public String getSendState() {
-		return sendState;
-	}
+    public void setIsComing(String isComing) {
+        this.isComing = isComing;
+    }
 
-	public void setSendState(String sendState) {
-		this.sendState = sendState;
-	}
+    public String getTime() {
+        return time;
+    }
 
-	public String getIsDelete() {
-		return isDelete;
-	}
+    public void setTime(String time) {
+        this.time = time;
+    }
 
-	public void setIsDelete(String isDelete) {
-		this.isDelete = isDelete;
-	}
+    public String getContent() {
+        return content;
+    }
 
-	public String getMsgType() {
-		return msgType;
-	}
+    public void setContent(String content) {
+        this.content = content;
+    }
 
-	public void setMsgType(String msgType) {
-		this.msgType = msgType;
-	}
+    public String getSendState() {
+        return sendState;
+    }
 
-	public String getOtherTypeId() {
-		return otherTypeId;
-	}
+    public void setSendState(String sendState) {
+        this.sendState = sendState;
+    }
 
-	public void setOtherTypeId(String otherTypeId) {
-		this.otherTypeId = otherTypeId;
-	}
+    public String getIsDelete() {
+        return isDelete;
+    }
 
-	public String getMsgPath() {
-		return msgPath;
-	}
+    public void setIsDelete(String isDelete) {
+        this.isDelete = isDelete;
+    }
 
-	public void setMsgPath(String msgPath) {
-		this.msgPath = msgPath;
-	}
+    public String getMsgType() {
+        return msgType;
+    }
 
-	public String getFeed() {
-		return feed;
-	}
+    public void setMsgType(String msgType) {
+        this.msgType = msgType;
+    }
 
-	public void setFeed(String feed) {
-		this.feed = feed;
-	}
+    public String getOtherTypeId() {
+        return otherTypeId;
+    }
 
-	public String getRemindId() {
-		return remindId;
-	}
+    public void setOtherTypeId(String otherTypeId) {
+        this.otherTypeId = otherTypeId;
+    }
 
-	public void setRemindId(String remindId) {
-		this.remindId = remindId;
-	}
+    public String getMsgPath() {
+        return msgPath;
+    }
 
-	@Override
-	public MessageEntity clone() {
-		MessageEntity messageEntity = null;
-		try {
-			messageEntity = (MessageEntity) super.clone();
-		} catch (CloneNotSupportedException e) {
-		}
+    public void setMsgPath(String msgPath) {
+        this.msgPath = msgPath;
+    }
 
-		return messageEntity;
-	}
+    public String getFeed() {
+        return feed;
+    }
+
+    public void setFeed(String feed) {
+        this.feed = feed;
+    }
+
+    public String getRemindId() {
+        return remindId;
+    }
+
+    public void setRemindId(String remindId) {
+        this.remindId = remindId;
+    }
+
+    public String getZ1() {
+        return z1;
+    }
+
+    public void setZ1(String z1) {
+        this.z1 = z1;
+    }
+
+    public String getZ2() {
+        return z2;
+    }
+
+    public void setZ2(String z2) {
+        this.z2 = z2;
+    }
+
+    public String getZ3() {
+        return z3;
+    }
+
+    public void setZ3(String z3) {
+        this.z3 = z3;
+    }
+
+    @Override
+    public MessageEntity clone() {
+        MessageEntity messageEntity = null;
+        try {
+            messageEntity = (MessageEntity) super.clone();
+        } catch (CloneNotSupportedException e) {
+        }
+
+        return messageEntity;
+    }
 }

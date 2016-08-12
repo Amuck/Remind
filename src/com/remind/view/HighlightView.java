@@ -1,6 +1,5 @@
 package com.remind.view;
 
-
 import android.graphics.Canvas;
 import android.graphics.Matrix;
 import android.graphics.Paint;
@@ -14,7 +13,6 @@ import android.view.View;
 
 import com.remind.util.AppUtil;
 
-
 /**
  * The Class HighlightView.
  */
@@ -23,32 +21,33 @@ public class HighlightView {
     /** The Constant TAG. */
     @SuppressWarnings("unused")
     private static final String TAG = "HighlightView";
-    
+
     /** The m context. */
     View mContext; // The View displaying the image.
 
     /** The Constant GROW_NONE. */
     public static final int GROW_NONE = (1 << 0);
-    
+
     /** The Constant GROW_LEFT_EDGE. */
     public static final int GROW_LEFT_EDGE = (1 << 1);
-    
+
     /** The Constant GROW_RIGHT_EDGE. */
     public static final int GROW_RIGHT_EDGE = (1 << 2);
-    
+
     /** The Constant GROW_TOP_EDGE. */
     public static final int GROW_TOP_EDGE = (1 << 3);
-    
+
     /** The Constant GROW_BOTTOM_EDGE. */
     public static final int GROW_BOTTOM_EDGE = (1 << 4);
-    
+
     /** The Constant MOVE. */
     public static final int MOVE = (1 << 5);
 
     /**
      * Instantiates a new highlight view.
-     *
-     * @param ctx the ctx
+     * 
+     * @param ctx
+     *            the ctx
      */
     public HighlightView(View ctx) {
         mContext = ctx;
@@ -64,13 +63,13 @@ public class HighlightView {
 
     /** The m is focused. */
     public boolean mIsFocused;
-    
+
     /** The m hidden. */
     boolean mHidden;
 
     /**
      * Checks for focus.
-     *
+     * 
      * @return true, if successful
      */
     public boolean hasFocus() {
@@ -79,8 +78,9 @@ public class HighlightView {
 
     /**
      * Sets the focus.
-     *
-     * @param f the new focus
+     * 
+     * @param f
+     *            the new focus
      */
     public void setFocus(boolean f) {
         mIsFocused = f;
@@ -88,8 +88,9 @@ public class HighlightView {
 
     /**
      * Sets the hidden.
-     *
-     * @param hidden the new hidden
+     * 
+     * @param hidden
+     *            the new hidden
      */
     public void setHidden(boolean hidden) {
         mHidden = hidden;
@@ -97,8 +98,9 @@ public class HighlightView {
 
     /**
      * Draw.
-     *
-     * @param canvas the canvas
+     * 
+     * @param canvas
+     *            the canvas
      */
     public void draw(Canvas canvas) {
         if (mHidden) {
@@ -121,18 +123,19 @@ public class HighlightView {
                 path.addRect(new RectF(mDrawRect), Path.Direction.CW);
                 mOutlinePaint.setColor(0xFFFF8A00);
             }
-            Region region = new Region(); 
+            Region region = new Region();
             region.set(viewDrawingRect);
             region.op(mDrawRect, Region.Op.DIFFERENCE);
             RegionIterator iter = new RegionIterator(region);
             Rect r = new Rect();
             while (iter.next(r)) {
-            	canvas.drawRect(r, hasFocus() ? mFocusPaint : mNoFocusPaint);
+                canvas.drawRect(r, hasFocus() ? mFocusPaint : mNoFocusPaint);
             }
-            //android 4.0 Support bad.java.lang.UnsupportedOperationException
-			//canvas.clipPath(path, Region.Op.DIFFERENCE);
-			//canvas.drawRect(viewDrawingRect, hasFocus() ? mFocusPaint : mNoFocusPaint);
-           
+            // android 4.0 Support bad.java.lang.UnsupportedOperationException
+            // canvas.clipPath(path, Region.Op.DIFFERENCE);
+            // canvas.drawRect(viewDrawingRect, hasFocus() ? mFocusPaint :
+            // mNoFocusPaint);
+
             canvas.restore();
             canvas.drawPath(path, mOutlinePaint);
 
@@ -148,63 +151,78 @@ public class HighlightView {
                             + mResizeDrawableDiagonal.getIntrinsicHeight());
                     mResizeDrawableDiagonal.draw(canvas);
                 } else {
-//                    int left = mDrawRect.left + 1;
-//                    int right = mDrawRect.right + 1;
-//                    int top = mDrawRect.top + 4;
-//                    int bottom = mDrawRect.bottom + 3;
-//
-//                    int widthWidth = mResizeDrawableWidth.getIntrinsicWidth() / 2;
-//                    int widthHeight = mResizeDrawableWidth.getIntrinsicHeight() / 2;
-//                    int heightHeight = mResizeDrawableHeight.getIntrinsicHeight() / 2;
-//                    int heightWidth = mResizeDrawableHeight.getIntrinsicWidth() / 2;
-//
-//                    int xMiddle = mDrawRect.left + ((mDrawRect.right - mDrawRect.left) / 2);
-//                    int yMiddle = mDrawRect.top + ((mDrawRect.bottom - mDrawRect.top) / 2);
-//
-//                    mResizeDrawableWidth.setBounds(left - widthWidth, yMiddle - widthHeight, left + widthWidth, yMiddle
-//                            + widthHeight);
-//                    mResizeDrawableWidth.draw(canvas);
-//
-//                    mResizeDrawableWidth.setBounds(right - widthWidth, yMiddle - widthHeight, right + widthWidth, yMiddle
-//                            + widthHeight);
-//                    mResizeDrawableWidth.draw(canvas);
-//
-//                    mResizeDrawableHeight.setBounds(xMiddle - heightWidth, top - heightHeight, xMiddle + heightWidth, top
-//                            + heightHeight);
-//                    mResizeDrawableHeight.draw(canvas);
-//
-//                    mResizeDrawableHeight.setBounds(xMiddle - heightWidth, bottom - heightHeight, xMiddle + heightWidth, bottom
-//                            + heightHeight);
-//                    mResizeDrawableHeight.draw(canvas);
+                    // int left = mDrawRect.left + 1;
+                    // int right = mDrawRect.right + 1;
+                    // int top = mDrawRect.top + 4;
+                    // int bottom = mDrawRect.bottom + 3;
+                    //
+                    // int widthWidth = mResizeDrawableWidth.getIntrinsicWidth()
+                    // / 2;
+                    // int widthHeight =
+                    // mResizeDrawableWidth.getIntrinsicHeight() / 2;
+                    // int heightHeight =
+                    // mResizeDrawableHeight.getIntrinsicHeight() / 2;
+                    // int heightWidth =
+                    // mResizeDrawableHeight.getIntrinsicWidth() / 2;
+                    //
+                    // int xMiddle = mDrawRect.left + ((mDrawRect.right -
+                    // mDrawRect.left) / 2);
+                    // int yMiddle = mDrawRect.top + ((mDrawRect.bottom -
+                    // mDrawRect.top) / 2);
+                    //
+                    // mResizeDrawableWidth.setBounds(left - widthWidth, yMiddle
+                    // - widthHeight, left + widthWidth, yMiddle
+                    // + widthHeight);
+                    // mResizeDrawableWidth.draw(canvas);
+                    //
+                    // mResizeDrawableWidth.setBounds(right - widthWidth,
+                    // yMiddle - widthHeight, right + widthWidth, yMiddle
+                    // + widthHeight);
+                    // mResizeDrawableWidth.draw(canvas);
+                    //
+                    // mResizeDrawableHeight.setBounds(xMiddle - heightWidth,
+                    // top - heightHeight, xMiddle + heightWidth, top
+                    // + heightHeight);
+                    // mResizeDrawableHeight.draw(canvas);
+                    //
+                    // mResizeDrawableHeight.setBounds(xMiddle - heightWidth,
+                    // bottom - heightHeight, xMiddle + heightWidth, bottom
+                    // + heightHeight);
+                    // mResizeDrawableHeight.draw(canvas);
                 }
             }
             if (mCircle) {
-            	
-            }else{
-	            int left = mDrawRect.left + 1;
-	            int right = mDrawRect.right + 1;
-	            int top = mDrawRect.top + 4;
-	            int bottom = mDrawRect.bottom + 3;
-	
-	            int widthWidth = mResizeDrawableDiagonal.getIntrinsicWidth() / 2;
-	            int widthHeight = mResizeDrawableDiagonal.getIntrinsicHeight() / 2;
 
-	            mResizeDrawableDiagonal2.setBounds(left - widthWidth, top - widthHeight, left + widthWidth, top+ widthHeight);
-	            mResizeDrawableDiagonal2.draw(canvas);
-	            mResizeDrawableDiagonal.setBounds(right - widthWidth, top - widthHeight, right + widthWidth, top+ widthHeight);
-	            mResizeDrawableDiagonal.draw(canvas);
-	            mResizeDrawableDiagonal.setBounds(left - widthWidth, bottom - widthHeight, left + widthWidth, bottom+ widthHeight);
-	            mResizeDrawableDiagonal.draw(canvas);
-	            mResizeDrawableDiagonal2.setBounds(right - widthWidth, bottom - widthHeight, right + widthWidth, bottom+ widthHeight);
-	            mResizeDrawableDiagonal2.draw(canvas);
+            } else {
+                int left = mDrawRect.left + 1;
+                int right = mDrawRect.right + 1;
+                int top = mDrawRect.top + 4;
+                int bottom = mDrawRect.bottom + 3;
+
+                int widthWidth = mResizeDrawableDiagonal.getIntrinsicWidth() / 2;
+                int widthHeight = mResizeDrawableDiagonal.getIntrinsicHeight() / 2;
+
+                mResizeDrawableDiagonal2.setBounds(left - widthWidth, top - widthHeight, left + widthWidth, top
+                        + widthHeight);
+                mResizeDrawableDiagonal2.draw(canvas);
+                mResizeDrawableDiagonal.setBounds(right - widthWidth, top - widthHeight, right + widthWidth, top
+                        + widthHeight);
+                mResizeDrawableDiagonal.draw(canvas);
+                mResizeDrawableDiagonal.setBounds(left - widthWidth, bottom - widthHeight, left + widthWidth, bottom
+                        + widthHeight);
+                mResizeDrawableDiagonal.draw(canvas);
+                mResizeDrawableDiagonal2.setBounds(right - widthWidth, bottom - widthHeight, right + widthWidth, bottom
+                        + widthHeight);
+                mResizeDrawableDiagonal2.draw(canvas);
             }
         }
     }
 
     /**
      * Sets the mode.
-     *
-     * @param mode the new mode
+     * 
+     * @param mode
+     *            the new mode
      */
     public void setMode(ModifyMode mode) {
         if (mode != mMode) {
@@ -216,9 +234,11 @@ public class HighlightView {
     // Determines which edges are hit by touching at (x, y).
     /**
      * Gets the hit.
-     *
-     * @param x the x
-     * @param y the y
+     * 
+     * @param x
+     *            the x
+     * @param y
+     *            the y
      * @return the hit
      */
     public int getHit(float x, float y) {
@@ -246,8 +266,7 @@ public class HighlightView {
                         retval = GROW_RIGHT_EDGE;
                     }
                 }
-            } else 
-            	if (distanceFromCenter < radius) {
+            } else if (distanceFromCenter < radius) {
                 retval = MOVE;
             } else {
                 retval = GROW_NONE;
@@ -284,10 +303,13 @@ public class HighlightView {
     // The "edge" parameter specifies which edges the user is dragging.
     /**
      * Handle motion.
-     *
-     * @param edge the edge
-     * @param dx the dx
-     * @param dy the dy
+     * 
+     * @param edge
+     *            the edge
+     * @param dx
+     *            the dx
+     * @param dy
+     *            the dy
      */
     public void handleMotion(int edge, float dx, float dy) {
         Rect r = computeLayout();
@@ -315,9 +337,11 @@ public class HighlightView {
     // Grows the cropping rectange by (dx, dy) in image space.
     /**
      * Move by.
-     *
-     * @param dx the dx
-     * @param dy the dy
+     * 
+     * @param dx
+     *            the dx
+     * @param dy
+     *            the dy
      */
     void moveBy(float dx, float dy) {
         Rect invalRect = new Rect(mDrawRect);
@@ -332,16 +356,18 @@ public class HighlightView {
         mDrawRect = computeLayout();
         invalRect.union(mDrawRect);
         invalRect.inset(-10, -10);
-//        mContext.invalidate(invalRect);
+        // mContext.invalidate(invalRect);
         mContext.invalidate();
     }
 
     // Grows the cropping rectange by (dx, dy) in image space.
     /**
      * Grow by.
-     *
-     * @param dx the dx
-     * @param dy the dy
+     * 
+     * @param dx
+     *            the dx
+     * @param dy
+     *            the dy
      */
     void growBy(float dx, float dy) {
         if (mMaintainAspectRatio) {
@@ -377,13 +403,13 @@ public class HighlightView {
         // Don't let the cropping rectangle shrink too fast.
         final float widthCap = 25F;
         if (r.width() < widthCap) {
-        	return;
-//            r.inset(-(widthCap - r.width()) / 2F, 0F);
+            return;
+            // r.inset(-(widthCap - r.width()) / 2F, 0F);
         }
         float heightCap = mMaintainAspectRatio ? (widthCap / mInitialAspectRatio) : widthCap;
         if (r.height() < heightCap) {
-        	return;
-//            r.inset(0F, -(heightCap - r.height()) / 2F);
+            return;
+            // r.inset(0F, -(heightCap - r.height()) / 2F);
         }
 
         // Put the cropping rectangle inside the image rectangle.
@@ -406,7 +432,7 @@ public class HighlightView {
     // Returns the cropping rectangle in image space.
     /**
      * Gets the crop rect.
-     *
+     * 
      * @return the crop rect
      */
     public Rect getCropRect() {
@@ -416,11 +442,11 @@ public class HighlightView {
     // Maps the cropping rectangle from image space to screen space.
     /**
      * Compute layout.
-     *
+     * 
      * @return the rect
      */
     private Rect computeLayout() {
-		RectF r = new RectF(mCropRect.left, mCropRect.top, mCropRect.right, mCropRect.bottom);
+        RectF r = new RectF(mCropRect.left, mCropRect.top, mCropRect.right, mCropRect.bottom);
         mMatrix.mapRect(r);
         return new Rect(Math.round(r.left), Math.round(r.top), Math.round(r.right), Math.round(r.bottom));
     }
@@ -434,12 +460,17 @@ public class HighlightView {
 
     /**
      * Setup.
-     *
-     * @param m the m
-     * @param imageRect the image rect
-     * @param cropRect the crop rect
-     * @param circle the circle
-     * @param maintainAspectRatio the maintain aspect ratio
+     * 
+     * @param m
+     *            the m
+     * @param imageRect
+     *            the image rect
+     * @param cropRect
+     *            the crop rect
+     * @param circle
+     *            the circle
+     * @param maintainAspectRatio
+     *            the maintain aspect ratio
      */
     public void setup(Matrix m, Rect imageRect, RectF cropRect, boolean circle, boolean maintainAspectRatio) {
         if (circle) {
@@ -469,13 +500,13 @@ public class HighlightView {
      * The Enum ModifyMode.
      */
     public enum ModifyMode {
-        
+
         /** The None. */
-        None, 
- /** The Move. */
- Move, 
- /** The Grow. */
- Grow
+        None,
+        /** The Move. */
+        Move,
+        /** The Grow. */
+        Grow
     }
 
     /** The m mode. */
@@ -483,39 +514,39 @@ public class HighlightView {
 
     /** The m draw rect. */
     public Rect mDrawRect; // in screen space
-    
+
     /** The m image rect. */
     public RectF mImageRect; // in image space
-    
+
     /** The m crop rect. */
     public RectF mCropRect; // in image space
-    
+
     /** The m matrix. */
     public Matrix mMatrix;
 
     /** The m maintain aspect ratio. */
     private boolean mMaintainAspectRatio = false;
-    
+
     /** The m initial aspect ratio. */
     private float mInitialAspectRatio;
-    
+
     /** The m circle. */
     private boolean mCircle = false;
 
-//    private Drawable mResizeDrawableWidth;
-//    private Drawable mResizeDrawableHeight;
+    // private Drawable mResizeDrawableWidth;
+    // private Drawable mResizeDrawableHeight;
     /** The m resize drawable diagonal. */
-private Drawable mResizeDrawableDiagonal;
-    
+    private Drawable mResizeDrawableDiagonal;
+
     /** The m resize drawable diagonal2. */
     private Drawable mResizeDrawableDiagonal2;
 
     /** The m focus paint. */
     private final Paint mFocusPaint = new Paint();
-    
+
     /** The m no focus paint. */
     private final Paint mNoFocusPaint = new Paint();
-    
+
     /** The m outline paint. */
     private final Paint mOutlinePaint = new Paint();
 }
