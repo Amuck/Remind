@@ -81,6 +81,13 @@
             android:configChanges="orientation|keyboardHidden|screenSize" >
         </activity>
         <activity
+            android:name="com.remind.activity.BlankActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:theme="@android:style/Theme.NoDisplay"
+            android:noHistory="true"
+            android:excludeFromRecents="true" >
+        </activity>
+        <activity
             android:name="com.remind.activity.MainActivity1"
             android:configChanges="orientation|keyboardHidden|screenSize" >
         </activity>

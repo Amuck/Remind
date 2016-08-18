@@ -83,7 +83,7 @@ public class Download {
             @Override
             public void run() {
                 if (!TextUtils.isEmpty(filePath) && filePath.contains(".")) {
-                    String voiceName = AppUtil.getFileNameFromPath(filePath);
+                    String voiceName = AppUtil.getFileNameFromPath(filePath, "/");
                     File file = new File(AppConstant.MNT + AppConstant.FILE_PATH + AppConstant.EDITED_AUDIO_PATH + "/"
                             + voiceName);
 

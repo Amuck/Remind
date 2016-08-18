@@ -35,6 +35,7 @@ public class HttpClient {
     public static String login = "/user/login";
     public static String friend = "/user/friend";
     public static String agree_friend = "/user/agree_friend";
+    public static String update_user_info = "/user/update";
     public static String agree_notice = "/notice/agree";
     public static String alarm_statues = "/notice/status";
 

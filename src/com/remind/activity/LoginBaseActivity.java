@@ -1,5 +1,7 @@
 package com.remind.activity;
 
+import java.io.File;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -30,8 +32,13 @@ import com.remind.http.HttpClient;
 import com.remind.receiver.MessageReceiver;
 import com.remind.sevice.BackService;
 import com.remind.sevice.IBackService;
+import com.remind.util.AppUtil;
 import com.remind.util.NetWorkUtil;
 
+/**
+ * @author ChenLong
+ *
+ */
 public abstract class LoginBaseActivity extends BaseActivity {
     public final static int HTTP_OVER = 0;
     public final static int LOGIN_SUCCESS = 1;
@@ -218,6 +225,29 @@ public abstract class LoginBaseActivity extends BaseActivity {
         if (NetWorkUtil.isAvailable(this)) {
             new Thread(new Runnable() {
 
+                /**
+                 * 判断头像图片是否存在
+                 * @return
+                 */
+                private boolean isImgExit(String imgPath) {
+                    boolean result = false;
+                    // 本地保存文件名
+                    String fileName = AppUtil.getFileNameFromPath(imgPath, "_");
+                    if (fileName.length() < 10) {
+                        // 软件自带头像
+                        result = true;
+                    } else {
+                        File file = new File(AppConstant.MNT + AppConstant.FILE_PATH + AppConstant.EDITED_IMG_PATH + "/" + fileName);
+                        if (file.exists()) {
+                            // 头像图片存在
+                            result = true;
+                        } else {
+                            result = false;
+                        }
+                    }
+                    return result;
+                }
+                
                 @Override
                 public void run() {
                     String s = HttpClient.post(HttpClient.url + HttpClient.login, params);

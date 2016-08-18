@@ -7,6 +7,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 
+import com.remind.activity.BlankActivity;
+import com.remind.application.RemindApplication;
 import com.remind.dao.impl.RemindDaoImpl;
 import com.remind.entity.RemindEntity;
 import com.remind.global.AppConstant;
@@ -21,6 +23,11 @@ import com.remind.util.DataBaseParser;
  */
 public class BootReceiver extends BroadcastReceiver {
 
+    /**
+     * 是否已经登录
+     */
+    private boolean isLogin = false;
+
     public BootReceiver() {
     }
 
@@ -28,6 +35,7 @@ public class BootReceiver extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
         String action = intent.getAction();
 
+        isLogin = MySharedPreferencesLoginType.isOnline(context);
         String boot = Intent.ACTION_BOOT_COMPLETED;
         String mount = Intent.ACTION_MEDIA_MOUNTED;
         String unmount = Intent.ACTION_MEDIA_UNMOUNTED;
@@ -40,11 +48,25 @@ public class BootReceiver extends BroadcastReceiver {
             ArrayList<RemindEntity> remindEntities = DataBaseParser.getRemindDetail(cursor);
             cursor.close();
 
-            // AppUtil.simpleNotify(context, "123", 0, "123", "123",
-            // remindEntities.size() + "", true);
             for (int i = 0; i < remindEntities.size(); i++) {
                 RemindEntity temp = remindEntities.get(i);
                 AppUtil.setAlarm(context, temp.getRemindTime(), Integer.valueOf(temp.getId()));
+            }
+
+            // 如果信息丢失怎重启服务
+            if (isLogin) {
+                if (RemindApplication.iBackService == null) {
+                    Intent intent2 = new Intent(context, BlankActivity.class);
+                    intent2.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    context.startActivity(intent2);
+//                    Intent mServiceIntent = new Intent(context, BackService.class);
+//                    context.startActivity(new Intent(context, BlankActivity.class));
+//                    context.startService(mServiceIntent);
+//                    RemindApplication.startLongLink();
+                }
+//              if (RemindApplication.iBackService == null) {
+//              context.startActivity(new Intent(context, BlankActivity.class));
+//          }
             }
         }
 

@@ -76,7 +76,7 @@ public class WelcomeActivity extends LoginBaseActivity {
 
     @Override
     public void loginFail() {
-        Toast.makeText(WelcomeActivity.this, "获取用户信息失败，请重新登陆", Toast.LENGTH_SHORT).show();
+//        Toast.makeText(WelcomeActivity.this, "获取用户信息失败，请重新登陆", Toast.LENGTH_SHORT).show();
         mIntent.setClass(WelcomeActivity.this, HomeActivity.class);
         startActivity(mIntent);
         finish();

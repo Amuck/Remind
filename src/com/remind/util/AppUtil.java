@@ -765,9 +765,9 @@ public class AppUtil {
      * @param path
      * @return
      */
-    public static String getFileNameFromPath(String path) {
-        if (path.contains("/")) {
-            String[] temp = path.split("\\/");
+    public static String getFileNameFromPath(String path, String mark) {
+        if (path.contains(mark)) {
+            String[] temp = path.split("\\" + mark);
             return temp[temp.length - 1];
         } else {
             return path;
