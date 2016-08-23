@@ -6,7 +6,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.util.Log;
+//import android.util.Log;
 
 import com.remind.dao.RemindDao;
 import com.remind.dao.dbhelper.DBHelper;
@@ -15,7 +15,7 @@ import com.remind.entity.RemindEntity;
 import com.remind.global.AppConstant;
 
 public class RemindDaoImpl implements RemindDao {
-    private static final String TAG = "RemindDaoImpl";
+//    private static final String TAG = "RemindDaoImpl";
     private DBHelper mDBHelper;
 
     public RemindDaoImpl(Context context) {
@@ -114,7 +114,7 @@ public class RemindDaoImpl implements RemindDao {
         String sql = "update " + RemindMsg.TABLENAME + " set " + RemindMsg.IS_DELETE + "='" + "1" + "'" + " where "
                 + RemindMsg.ID + "='" + id + "'";
         SQLiteDatabase db = mDBHelper.getWritableDatabase();
-        Log.d(TAG, sql);
+//        Log.d(TAG, sql);
         db.execSQL(sql);
     }
 
@@ -122,7 +122,7 @@ public class RemindDaoImpl implements RemindDao {
     public void deleteById(String id) {
         String sql = "delete from " + RemindMsg.TABLENAME + " where " + RemindMsg.ID + "='" + id + "'";
         SQLiteDatabase db = mDBHelper.getWritableDatabase();
-        Log.d(TAG, sql);
+//        Log.d(TAG, sql);
         db.execSQL(sql);
     }
 
@@ -167,7 +167,7 @@ public class RemindDaoImpl implements RemindDao {
         sb.append(" where " + RemindMsg.ID + " = '" + entity.getId() + "'");
         String sql = sb.toString();
 
-        Log.d(TAG, sql);
+//        Log.d(TAG, sql);
         db.execSQL(sql);
     }
 
@@ -606,7 +606,7 @@ public class RemindDaoImpl implements RemindDao {
         sb.append(" where " + RemindMsg.NOTICE_ID + " = '" + noticeId + "'");
         String sql = sb.toString();
 
-        Log.d(TAG, sql);
+//        Log.d(TAG, sql);
         db.execSQL(sql);
     }
 
@@ -619,7 +619,7 @@ public class RemindDaoImpl implements RemindDao {
         sb.append(" where " + RemindMsg.ID + " = '" + id + "'");
         String sql = sb.toString();
 
-        Log.d(TAG, sql);
+//        Log.d(TAG, sql);
         db.execSQL(sql);
     }
 

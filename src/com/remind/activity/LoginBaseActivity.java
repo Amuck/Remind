@@ -1,6 +1,7 @@
 package com.remind.activity;
 
 import java.io.File;
+import java.io.IOException;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -32,6 +33,7 @@ import com.remind.http.HttpClient;
 import com.remind.receiver.MessageReceiver;
 import com.remind.sevice.BackService;
 import com.remind.sevice.IBackService;
+import com.remind.up.Download;
 import com.remind.util.AppUtil;
 import com.remind.util.NetWorkUtil;
 
@@ -70,6 +72,8 @@ public abstract class LoginBaseActivity extends BaseActivity {
 
     protected LoginReciver mReciver;
     protected IntentFilter mIntentFilter;
+    
+    protected Download download;
     /**
      * 是否需要解除绑定
      */
@@ -166,6 +170,7 @@ public abstract class LoginBaseActivity extends BaseActivity {
         mReciver = new LoginReciver();
         mIntentFilter = new IntentFilter();
         mIntentFilter.addAction(MessageReceiver.LOGIN_STATE_ACTION);
+        download = Download.getInstance();
     }
 
     class LoginReciver extends BroadcastReceiver {
@@ -226,26 +231,36 @@ public abstract class LoginBaseActivity extends BaseActivity {
             new Thread(new Runnable() {
 
                 /**
-                 * 判断头像图片是否存在
+                 * 判断头像图片是否存在, 不存在则下载
                  * @return
                  */
-                private boolean isImgExit(String imgPath) {
-                    boolean result = false;
+                private String getImgIfNotExist(String imgPath) {
                     // 本地保存文件名
                     String fileName = AppUtil.getFileNameFromPath(imgPath, "_");
                     if (fileName.length() < 10) {
                         // 软件自带头像
-                        result = true;
+                        return imgPath;
                     } else {
                         File file = new File(AppConstant.MNT + AppConstant.FILE_PATH + AppConstant.EDITED_IMG_PATH + "/" + fileName);
                         if (file.exists()) {
-                            // 头像图片存在
-                            result = true;
+                            // 头像图片存在, 需要将地址改为本地保存地址
+                            return AppConstant.MNT + AppConstant.FILE_PATH + AppConstant.EDITED_IMG_PATH + "/" + fileName;
                         } else {
-                            result = false;
+                            boolean result = false;
+                            try {
+                                // 不存在则下载头像
+                                result = download.downLoadRoleImg(imgPath, fileName);
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                            // 将地址改为本地保存地址
+                            if (result) {
+                                return AppConstant.MNT + AppConstant.FILE_PATH + AppConstant.EDITED_IMG_PATH + "/" + fileName;
+                            } else {
+                                return imgPath;
+                            }
                         }
                     }
-                    return result;
                 }
                 
                 @Override
@@ -263,6 +278,8 @@ public abstract class LoginBaseActivity extends BaseActivity {
                         String nick = own_infojsonObject.getString("nick");
                         // 头像路径
                         String avatar = own_infojsonObject.getString("avatar");
+                        // 下载不存在的头像
+                        avatar = getImgIfNotExist(avatar);
 
                         // 插入数据库
                         String num = mobile;
@@ -291,20 +308,24 @@ public abstract class LoginBaseActivity extends BaseActivity {
                             for (int i = 0; i < friendArray.length(); i++) {
                                 JSONObject friendObject = friendArray.getJSONObject(i);
                                 String friend_id = friendObject.getString("friend_id");
+                                String friend_alias = friendObject.getString("friend_alias");
+                                String frined_avatar = friendObject.getString("frined_avatar");
+                                String frined_nick = friendObject.getString("frined_nick");
+                                String frined_mobile = friendObject.getString("frined_mobile");
+                                // 状态删除0 正常1 申请中2
+                                int state = friendObject.getInt("state");
+                                // 下载不存在的头像
+                                frined_avatar = getImgIfNotExist(frined_avatar);
+                                
+                                PeopelEntity entity = new PeopelEntity(friend_alias, frined_nick, frined_mobile, "", "",
+                                        frined_avatar, state == 0 ? PeopelEntity.DELETED : PeopelEntity.NORMAL,
+                                                state == 1 ? PeopelEntity.FRIEND : PeopelEntity.VALIDATE, friend_id, num);
 
                                 int count = peopelDao.getCount(friend_id);
                                 if (count <= 0) {
-                                    String friend_alias = friendObject.getString("friend_alias");
-                                    String frined_avatar = friendObject.getString("frined_avatar");
-                                    String frined_nick = friendObject.getString("frined_nick");
-                                    String frined_mobile = friendObject.getString("frined_mobile");
-                                    // 状态删除0 正常1 申请中2
-                                    int state = friendObject.getInt("state");
-
-                                    PeopelEntity entity = new PeopelEntity(friend_alias, frined_nick, frined_mobile, "", "",
-                                            frined_avatar, state == 0 ? PeopelEntity.DELETED : PeopelEntity.NORMAL,
-                                            state == 1 ? PeopelEntity.FRIEND : PeopelEntity.VALIDATE, friend_id, num);
                                     peopelDao.insertPeopel(entity);
+                                } else {
+                                    peopelDao.updatePeopel(entity);
                                 }
                             }
                         }

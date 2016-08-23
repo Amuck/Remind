@@ -4,7 +4,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.util.Log;
+//import android.util.Log;
 
 import com.remind.dao.MessageIndexDao;
 import com.remind.dao.dbhelper.DBHelper;
@@ -13,7 +13,7 @@ import com.remind.entity.MessageIndexEntity;
 import com.remind.global.AppConstant;
 
 public class MessageIndexDaoImpl implements MessageIndexDao {
-    private static final String TAG = "MessageIndexDaoImpl";
+//    private static final String TAG = "MessageIndexDaoImpl";
     private DBHelper mDBHelper;
 
     public MessageIndexDaoImpl(Context context) {
@@ -48,7 +48,7 @@ public class MessageIndexDaoImpl implements MessageIndexDao {
         String sql = "update " + MessageIndexMsg.TABLENAME + " set " + MessageIndexMsg.ISDELETE + "='" + "1" + "'"
                 + " where " + MessageIndexMsg.ID + "='" + id + "'";
         SQLiteDatabase db = mDBHelper.getWritableDatabase();
-        Log.d(TAG, sql);
+//        Log.d(TAG, sql);
         db.execSQL(sql);
     }
 
@@ -85,7 +85,7 @@ public class MessageIndexDaoImpl implements MessageIndexDao {
         sb.append(" where " + MessageIndexMsg.ID + " = '" + entity.getId() + "'");
         String sql = sb.toString();
 
-        Log.d(TAG, sql);
+//        Log.d(TAG, sql);
         db.execSQL(sql);
     }
 

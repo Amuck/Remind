@@ -7,7 +7,6 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.text.TextUtils;
-import android.util.Log;
 
 import com.remind.dao.MessageDao;
 import com.remind.dao.dbhelper.DBHelper;
@@ -15,9 +14,10 @@ import com.remind.dao.msg.MessageMsg;
 import com.remind.entity.MessageEntity;
 import com.remind.global.AppConstant;
 import com.remind.util.DataBaseParser;
+//import android.util.Log;
 
 public class MessageDaoImpl implements MessageDao {
-    private static final String TAG = "MessageDaoImpl";
+//    private static final String TAG = "MessageDaoImpl";
     private DBHelper mDBHelper;
 
     public MessageDaoImpl(Context context) {
@@ -60,7 +60,7 @@ public class MessageDaoImpl implements MessageDao {
         String sql = "update " + MessageMsg.TABLENAME + " set " + MessageMsg.ISDELETE + "='" + "1" + "'" + " where "
                 + MessageMsg.ID + "='" + id + "'";
         SQLiteDatabase db = mDBHelper.getWritableDatabase();
-        Log.d(TAG, sql);
+//        Log.d(TAG, sql);
         db.execSQL(sql);
     }
 
@@ -74,7 +74,7 @@ public class MessageDaoImpl implements MessageDao {
 
         String sql = sb.toString();
 
-        Log.d(TAG, sql);
+//        Log.d(TAG, sql);
         db.execSQL(sql);
     }
 
@@ -87,7 +87,7 @@ public class MessageDaoImpl implements MessageDao {
         sb.append(" where " + MessageMsg.ID + " = '" + msgId + "'");
         String sql = sb.toString();
 
-        Log.d(TAG, sql);
+//        Log.d(TAG, sql);
         db.execSQL(sql);
     }
 
@@ -122,7 +122,7 @@ public class MessageDaoImpl implements MessageDao {
         sb.append(" where " + MessageMsg.ID + " = '" + entity.getId() + "'");
         String sql = sb.toString();
 
-        Log.d(TAG, sql);
+//        Log.d(TAG, sql);
         db.execSQL(sql);
     }
 

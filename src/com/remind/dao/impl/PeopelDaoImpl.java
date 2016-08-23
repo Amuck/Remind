@@ -6,7 +6,6 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.util.Log;
 
 import com.remind.dao.PeopelDao;
 import com.remind.dao.dbhelper.DBHelper;
@@ -15,7 +14,7 @@ import com.remind.entity.PeopelEntity;
 import com.remind.global.AppConstant;
 
 public class PeopelDaoImpl implements PeopelDao {
-    private static final String TAG = "PeopelDaoImpl";
+//    private static final String TAG = "PeopelDaoImpl";
     private DBHelper mDBHelper;
 
     public PeopelDaoImpl(Context context) {
@@ -74,7 +73,7 @@ public class PeopelDaoImpl implements PeopelDao {
         String sql = "update " + PeopelMsg.TABLENAME + " set " + PeopelMsg.ISDELETE + "='" + "1" + "'" + " where "
                 + PeopelMsg.NUM + "='" + num + "'" + " and " + PeopelMsg.LOGIN_USER + " = '" + AppConstant.USER_NUM + "' ";
         SQLiteDatabase db = mDBHelper.getWritableDatabase();
-        Log.d(TAG, sql);
+//        Log.d(TAG, sql);
         db.execSQL(sql);
     }
 
@@ -83,7 +82,7 @@ public class PeopelDaoImpl implements PeopelDao {
         String sql = "delete  from " + PeopelMsg.TABLENAME + " where " + PeopelMsg.NUM + "='" + num + "'" + " and "
                 + PeopelMsg.LOGIN_USER + " = '" + AppConstant.USER_NUM + "' ";
         SQLiteDatabase db = mDBHelper.getWritableDatabase();
-        Log.d(TAG, sql);
+//        Log.d(TAG, sql);
         db.execSQL(sql);
     }
 
@@ -109,7 +108,7 @@ public class PeopelDaoImpl implements PeopelDao {
         sb.append(" and " + PeopelMsg.LOGIN_USER + " = '" + AppConstant.USER_NUM + "' ");
         String sql = sb.toString();
 
-        Log.d(TAG, sql);
+//        Log.d(TAG, sql);
         db.execSQL(sql);
     }
 
@@ -136,7 +135,7 @@ public class PeopelDaoImpl implements PeopelDao {
         sb.append(" and " + PeopelMsg.LOGIN_USER + " = '" + AppConstant.USER_NUM + "' ");
         String sql = sb.toString();
 
-        Log.d(TAG, sql);
+//        Log.d(TAG, sql);
         db.execSQL(sql);
     }
 

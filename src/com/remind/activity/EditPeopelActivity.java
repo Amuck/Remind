@@ -36,7 +36,6 @@ import com.remind.dao.MessageIndexDao;
 import com.remind.dao.PeopelDao;
 import com.remind.dao.impl.MessageIndexDaoImpl;
 import com.remind.dao.impl.PeopelDaoImpl;
-import com.remind.entity.MessageEntity;
 import com.remind.entity.MessageIndexEntity;
 import com.remind.entity.PeopelEntity;
 import com.remind.global.AppConstant;
@@ -569,8 +568,7 @@ public class EditPeopelActivity extends BaseActivity implements OnClickListener 
                 handler.sendMessage(msg);
             }
         };
-        String fileName = AppConstant.USER_NUM + "_" + AppUtil.getFileNameFromPath(imgPath, "/");
-        Upload.upload(this, fileName, completeListener, progressListener, imgPath);
+        Upload.uploadRole(this, AppUtil.getFileNameFromPath(imgPath, "/"), completeListener, progressListener, imgPath);
     }
     
     /**
@@ -652,6 +650,7 @@ public class EditPeopelActivity extends BaseActivity implements OnClickListener 
 
             setResult(RESULT_OK);
             changeToCheck();
+            hideProgess();
         } else {
             // 失败
             hideProgess();

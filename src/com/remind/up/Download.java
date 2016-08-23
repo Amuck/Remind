@@ -1,6 +1,7 @@
 package com.remind.up;
 
 import java.io.File;
+import java.io.IOException;
 
 import android.database.Cursor;
 import android.os.Bundle;
@@ -77,7 +78,7 @@ public class Download {
      * @param filePath
      * @return
      */
-    public void downLoadAmr(final String filePath, final long id) {
+    public void downLoadAmr(final String filePath, final long id){
         new Thread(new Runnable() {
 
             @Override
@@ -87,7 +88,12 @@ public class Download {
                     File file = new File(AppConstant.MNT + AppConstant.FILE_PATH + AppConstant.EDITED_AUDIO_PATH + "/"
                             + voiceName);
 
-                    boolean result = upyun.readFile(filePath, file);
+                    boolean result = false;
+                    try {
+                        result = upyun.readFile(filePath, file);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
 
                     Message message = mHandler.obtainMessage();
                     message.what = DOWNLOAD_OVER;
@@ -102,5 +108,17 @@ public class Download {
             }
         }).start();
 
+    }
+    
+    /**
+     * 下载头像
+     * @param filePath          云盘存储路径
+     * @param fileName          本地保存文件名
+     */
+    public boolean downLoadRoleImg(String filePath, String fileName) throws IOException{
+        File file = new File(AppConstant.MNT + AppConstant.FILE_PATH + AppConstant.EDITED_IMG_PATH + "/"
+                + fileName);
+        boolean result = upyun.readFile(filePath, file);
+        return result;
     }
 }
