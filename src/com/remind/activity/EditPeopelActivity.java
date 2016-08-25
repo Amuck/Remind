@@ -89,6 +89,7 @@ public class EditPeopelActivity extends BaseActivity implements OnClickListener 
      * 编辑昵称
      */
     private EditText nickNameEdit;
+    private TextView nickEditTxt;
     /**
      * 头像
      */
@@ -213,6 +214,7 @@ public class EditPeopelActivity extends BaseActivity implements OnClickListener 
         name = (TextView) findViewById(R.id.peopel_name_edit);
         num = (TextView) findViewById(R.id.peopel_num_edit);
         nickNameEdit = (EditText) findViewById(R.id.peopel_nick_edit);
+        nickEditTxt = (TextView) findViewById(R.id.peopel_nick_edit_txt);
         imgView = (RoleDetailImageView) findViewById(R.id.peopel_img_preview);
         editImgBtn = (Button) findViewById(R.id.peopel_img_search);
         editBtn = (ImageButton) findViewById(R.id.title_edit);
@@ -242,6 +244,7 @@ public class EditPeopelActivity extends BaseActivity implements OnClickListener 
         name.setText(peopelEntity.getName());
         num.setText(peopelEntity.getNum());
         nickNameEdit.setText(peopelEntity.getNickName());
+        nickEditTxt.setText(peopelEntity.getNickName());
     }
 
     /**
@@ -289,11 +292,13 @@ public class EditPeopelActivity extends BaseActivity implements OnClickListener 
             }
         } });
 
+        nickNameEdit.setVisibility(View.VISIBLE);
         editImgBtn.setVisibility(View.VISIBLE);
         okBtn.setVisibility(View.VISIBLE);
         cancelBtn.setVisibility(View.VISIBLE);
         editBtn.setVisibility(View.GONE);
         sendMsg.setVisibility(View.GONE);
+        nickEditTxt.setVisibility(View.GONE);
     }
 
     /**
@@ -308,10 +313,13 @@ public class EditPeopelActivity extends BaseActivity implements OnClickListener 
             }
         } });
 
+        nickNameEdit.setVisibility(View.GONE);
         editImgBtn.setVisibility(View.GONE);
         okBtn.setVisibility(View.GONE);
         cancelBtn.setVisibility(View.GONE);
         editBtn.setVisibility(View.VISIBLE);
+        nickEditTxt.setText(nickNameEdit.getEditableText().toString());
+        nickEditTxt.setVisibility(View.VISIBLE);
         if (!isUserLogin) {
             sendMsg.setVisibility(View.VISIBLE);
         } else {
