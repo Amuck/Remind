@@ -298,7 +298,7 @@ public class MessageReceiver extends BroadcastReceiver {
             }
 
             entity.setName(nick);
-            entity.setNickName(nick);
+//            entity.setNickName(nick);
             entity.setImgPath(avatar);
             entity.setFriendId(friend_id);
             peopelDao.updatePeopel(entity);

@@ -33,6 +33,7 @@ import android.widget.Toast;
 import com.help.remind.R;
 import com.remind.activity.AddRemindActivity;
 import com.remind.activity.ChatActivity;
+import com.remind.adapter.MessageIndexAdapter;
 import com.remind.dao.MessageIndexDao;
 import com.remind.dao.impl.MessageIndexDaoImpl;
 import com.remind.entity.MessageIndexEntity;

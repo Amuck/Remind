@@ -50,6 +50,11 @@ public interface PeopelDao {
      * @return
      */
     public Cursor queryPeopel();
+    /**
+     * 查询所有联系人信息除了登陆用户
+     * @return
+     */
+    public Cursor queryPeopelExceptOwner();
 
     /**
      * 根据号码添加联系人

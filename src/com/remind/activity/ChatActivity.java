@@ -335,7 +335,7 @@ public class ChatActivity extends BaseActivity implements OnClickListener, OnScr
         initRecord();
         initRingtone();
 
-        contactName.setText(peopelEntity.getName());
+        contactName.setText(AppUtil.getName(peopelEntity));
         sendMsgBtn.setOnClickListener(this);
         sendRemindBtn.setOnClickListener(this);
         contactInfo.setOnClickListener(this);

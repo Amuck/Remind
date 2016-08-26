@@ -221,51 +221,6 @@ public class RemindDetailActivity extends BaseActivity implements OnClickListene
             break;
         case R.id.title_ok:
             // 确认
-            // if (null == currentPeopel) {
-            // AppUtil.showToast(this, "请选择联系人");
-            // break;
-            // }
-            // if (null == selectDateTxt.getText()) {
-            // AppUtil.showToast(this, "请选择日期");
-            // break;
-            // }
-            // if (null == selectTimeTxt.getText()) {
-            // AppUtil.showToast(this, "请选择时间");
-            // break;
-            // }
-            // if (null == contentEidt.getText()) {
-            // AppUtil.showToast(this, "请填写提醒内容");
-            // break;
-            // }
-            // if (null == titleEidt.getText()) {
-            // AppUtil.showToast(this, "请填写提醒标题");
-            // break;
-            // }
-            //
-            // RemindEntity remindEntity = new RemindEntity("",
-            // getPhoneNumber(),
-            // currentPeopel.getNum(), currentPeopel.getName(),
-            // currentPeopel.getNickName(), AppUtil.getNowTime(),
-            // AppUtil.getNowTime(), contentEidt.getText().toString(),
-            // selectDateTxt.getText().toString() + " "
-            // + selectTimeTxt.getText().toString(), selectDateTxt
-            // .getText().toString()
-            // + " "
-            // + selectTimeTxt.getText().toString(), titleEidt
-            // .getText().toString());
-            //
-            // if (isForSelf) {
-            // // 如果为自己，设置为已接受的提醒
-            // remindEntity.setRemindState(RemindEntity.ACCEPT);
-            // // TODO 测试为自己添加任务
-            // AppUtil.setAlarm(this, remindEntity.getRemindTime());
-            // } else {
-            // // 如果为别人，设置为我发起的提醒
-            // remindEntity.setRemindState(RemindEntity.LAUNCH);
-            // }
-            // remindDao.insertRemind(remindEntity);
-            //
-            // setResult(RESULT_OK);
             finish();
             break;
         case R.id.title_cancel:
@@ -349,7 +304,7 @@ public class RemindDetailActivity extends BaseActivity implements OnClickListene
      */
     private List<PeopelEntity> getPeopel() {
         List<PeopelEntity> results = new ArrayList<PeopelEntity>();
-        Cursor cursor = peopelDao.queryPeopel();
+        Cursor cursor = peopelDao.queryPeopelExceptOwner();
         results = DataBaseParser.getPeoPelDetail(cursor);
         cursor.close();
         return results;

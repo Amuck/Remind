@@ -4,16 +4,24 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-//import android.util.Log;
 
 import com.remind.dao.MessageIndexDao;
 import com.remind.dao.dbhelper.DBHelper;
 import com.remind.dao.msg.MessageIndexMsg;
+import com.remind.dao.msg.PeopelMsg;
 import com.remind.entity.MessageIndexEntity;
 import com.remind.global.AppConstant;
+//import android.util.Log;
+import com.remind.util.AppUtil;
 
+/**
+ * 消息索引数据库， 当用户数据库进行编辑/删除时需要同步
+ * 
+ * @author ChenLong
+ * 
+ */
 public class MessageIndexDaoImpl implements MessageIndexDao {
-//    private static final String TAG = "MessageIndexDaoImpl";
+    // private static final String TAG = "MessageIndexDaoImpl";
     private DBHelper mDBHelper;
 
     public MessageIndexDaoImpl(Context context) {
@@ -44,11 +52,12 @@ public class MessageIndexDaoImpl implements MessageIndexDao {
     }
 
     @Override
-    public synchronized void delete(String id) {
+    public synchronized void deleteByNum(String num) {
         String sql = "update " + MessageIndexMsg.TABLENAME + " set " + MessageIndexMsg.ISDELETE + "='" + "1" + "'"
-                + " where " + MessageIndexMsg.ID + "='" + id + "'";
+                + " where " + MessageIndexMsg.NUM + "='" + num + "'" + " and " + MessageIndexMsg.LOGIN_USER + " = '"
+                + AppConstant.USER_NUM + "' ";
         SQLiteDatabase db = mDBHelper.getWritableDatabase();
-//        Log.d(TAG, sql);
+        // Log.d(TAG, sql);
         db.execSQL(sql);
     }
 
@@ -72,20 +81,43 @@ public class MessageIndexDaoImpl implements MessageIndexDao {
         SQLiteDatabase db = mDBHelper.getWritableDatabase();
         StringBuffer sb = new StringBuffer();
         sb.append("update " + MessageIndexMsg.TABLENAME + " set ");
-        sb.append(MessageIndexMsg.NUM + "	= '" + entity.getNum() + "',");
-        sb.append(MessageIndexMsg.TIME + "	= '" + entity.getTime() + "',");
 
-        sb.append(MessageIndexMsg.NAME + "	= '" + entity.getName() + "',");
-        sb.append(MessageIndexMsg.IMG_PATH + "	= '" + entity.getImgPath() + "',");
+        if (!AppUtil.isEmpty(entity.getNum())) {
+            sb.append(MessageIndexMsg.NUM + "	= '" + entity.getNum() + "',");
+        }
 
-        sb.append(MessageIndexMsg.MESSAGE + "	= '" + entity.getMessage() + "',");
-        sb.append(MessageIndexMsg.UNREAND_COUNT + "	= '" + entity.getUnReadCount() + "',");
-        sb.append(MessageIndexMsg.ISDELETE + "	= '" + entity.getIsDelete() + "',");
-        sb.append(MessageIndexMsg.SEND_STATE + "	= '" + entity.getSendState() + "' ");
-        sb.append(" where " + MessageIndexMsg.ID + " = '" + entity.getId() + "'");
+        if (!AppUtil.isEmpty(entity.getTime())) {
+            sb.append(MessageIndexMsg.TIME + "	= '" + entity.getTime() + "',");
+        }
+
+        if (!AppUtil.isEmpty(entity.getName())) {
+            sb.append(MessageIndexMsg.NAME + "	= '" + entity.getName() + "',");
+        }
+        
+        if (!AppUtil.isEmpty(entity.getImgPath())) {
+            sb.append(MessageIndexMsg.IMG_PATH + "	= '" + entity.getImgPath() + "',");
+        }
+        
+        if (!AppUtil.isEmpty(entity.getMessage())) {
+            sb.append(MessageIndexMsg.MESSAGE + "	= '" + entity.getMessage() + "',");
+        }
+        
+        if (entity.getUnReadCount() > 0) {
+            sb.append(MessageIndexMsg.UNREAND_COUNT + "	= '" + entity.getUnReadCount() + "',");
+        }
+        
+        if (!AppUtil.isEmpty(entity.getIsDelete())) {
+            sb.append(MessageIndexMsg.ISDELETE + "	= '" + entity.getIsDelete() + "',");
+        }
+        
+        if (!AppUtil.isEmpty(entity.getSendState())) {
+            sb.append(MessageIndexMsg.SEND_STATE + "	= '" + entity.getSendState() + "' ");
+        }
+        sb.append(" where " + MessageIndexMsg.NUM + " = '" + entity.getNum() + "'");
+        sb.append(" and " + PeopelMsg.LOGIN_USER + " = '" + AppConstant.USER_NUM + "' ");
         String sql = sb.toString();
 
-//        Log.d(TAG, sql);
+        // Log.d(TAG, sql);
         db.execSQL(sql);
     }
 
@@ -106,6 +138,24 @@ public class MessageIndexDaoImpl implements MessageIndexDao {
                 + MessageIndexMsg.NUM + " = " + num + " and " + MessageIndexMsg.LOGIN_USER + " = '" + AppConstant.USER_NUM
                 + "' ";
         Cursor c = db.rawQuery(sql, null);
+        int length = 0;
+        if (c.getCount() > 0) {
+            c.moveToFirst();
+            length = c.getInt(0);
+        }
+        c.close();
+        return length;
+    }
+
+    @Override
+    public int getCountByNum(String num) {
+        SQLiteDatabase db = mDBHelper.getWritableDatabase();
+        StringBuffer buffer = new StringBuffer();
+        String sql = "select count(*) from " + MessageIndexMsg.TABLENAME + " where " + MessageIndexMsg.ISDELETE
+                + " = 0 and " + MessageIndexMsg.NUM + " = '" + num + "' and " + MessageIndexMsg.LOGIN_USER + " = '"
+                + AppConstant.USER_NUM + "' ";
+        buffer.append(sql);
+        Cursor c = db.rawQuery(buffer.toString(), null);
         int length = 0;
         if (c.getCount() > 0) {
             c.moveToFirst();

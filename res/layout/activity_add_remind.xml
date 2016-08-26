@@ -42,7 +42,7 @@
                 android:background="@drawable/add_people_board"
                 android:gravity="center"
                 android:textColor="@color/white"
-                android:textSize="10sp" />
+                android:textSize="12sp" />
         </LinearLayout>
 
         <LinearLayout
@@ -78,7 +78,7 @@
                 android:gravity="center"
                 android:textColor="@color/white"
                 android:hint="@string/select_title_txt"
-                android:textSize="10sp" />
+                android:textSize="12sp" />
         </LinearLayout>
 
         <LinearLayout
@@ -114,7 +114,7 @@
                 android:gravity="center"
                 android:text="@string/select_type_txt"
                 android:textColor="@color/white"
-                android:textSize="10sp" />
+                android:textSize="12sp" />
         </LinearLayout>
 
         <LinearLayout
@@ -149,7 +149,7 @@
                 android:background="@drawable/right_board"
                 android:gravity="center"
                 android:textColor="@color/white"
-                android:textSize="10sp" />
+                android:textSize="12sp" />
         </LinearLayout>
 
         <LinearLayout
@@ -185,7 +185,7 @@
                 android:gravity="center"
                 android:text="07:30"
                 android:textColor="@color/white"
-                android:textSize="10sp" />
+                android:textSize="12sp" />
         </LinearLayout>
 
         <LinearLayout
@@ -235,7 +235,7 @@
                 android:text="@string/select_more"
                 android:textColor="@color/white"
                 android:gravity="center"
-                android:textSize="10sp" />
+                android:textSize="12sp" />
         </LinearLayout>
     </LinearLayout>
 

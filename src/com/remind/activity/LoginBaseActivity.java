@@ -20,12 +20,15 @@ import android.os.IBinder;
 import com.help.remind.R;
 import com.remind.application.RemindApplication;
 import com.remind.dao.MessageDao;
+import com.remind.dao.MessageIndexDao;
 import com.remind.dao.PeopelDao;
 import com.remind.dao.RemindDao;
 import com.remind.dao.impl.MessageDaoImpl;
+import com.remind.dao.impl.MessageIndexDaoImpl;
 import com.remind.dao.impl.PeopelDaoImpl;
 import com.remind.dao.impl.RemindDaoImpl;
 import com.remind.entity.MessageEntity;
+import com.remind.entity.MessageIndexEntity;
 import com.remind.entity.PeopelEntity;
 import com.remind.entity.RemindEntity;
 import com.remind.global.AppConstant;
@@ -69,7 +72,8 @@ public abstract class LoginBaseActivity extends BaseActivity {
     protected PeopelDao peopelDao;
     protected RemindDao remindDao;
     protected MessageDao messageDao;
-
+    protected MessageIndexDao messageIndexDao;
+    
     protected LoginReciver mReciver;
     protected IntentFilter mIntentFilter;
     
@@ -166,6 +170,7 @@ public abstract class LoginBaseActivity extends BaseActivity {
         peopelDao = new PeopelDaoImpl(this);
         remindDao = new RemindDaoImpl(this);
         messageDao = new MessageDaoImpl(this);
+        messageIndexDao = new MessageIndexDaoImpl(this);
         mServiceIntent = new Intent(this, BackService.class);
         mReciver = new LoginReciver();
         mIntentFilter = new IntentFilter();
@@ -293,13 +298,22 @@ public abstract class LoginBaseActivity extends BaseActivity {
                         peopelEntity.setStatus(PeopelEntity.FRIEND);
                         peopelEntity.setFriendId(from_id);
 
-                        Cursor cursor = peopelDao.queryPeopel();
-                        if (cursor != null && cursor.getCount() > 0) {
+//                        Cursor cursor = peopelDao.queryPeopel();
+                        int count = peopelDao.getCount(from_id);
+                        if (count > 0) {
                             peopelDao.updateOwner(peopelEntity);
+                            // 更新索引数据库
+                            count = messageIndexDao.getCountByNum(num);
+                            if (count > 0) {
+                                MessageIndexEntity indexEntity = new MessageIndexEntity();
+                                indexEntity.setName(nick);
+                                indexEntity.setImgPath(avatar);
+                                messageIndexDao.update(indexEntity);
+                            }
                         } else {
                             peopelDao.insertPeopel(peopelEntity);
                         }
-                        cursor.close();
+//                        cursor.close();
 
                         // 获取好友信息
                         String friends = jsonObject.getString("friends");
@@ -310,22 +324,29 @@ public abstract class LoginBaseActivity extends BaseActivity {
                                 String friend_id = friendObject.getString("friend_id");
                                 String friend_alias = friendObject.getString("friend_alias");
                                 String frined_avatar = friendObject.getString("frined_avatar");
-                                String frined_nick = friendObject.getString("frined_nick");
+//                                String frined_nick = friendObject.getString("frined_nick");
                                 String frined_mobile = friendObject.getString("frined_mobile");
                                 // 状态删除0 正常1 申请中2
                                 int state = friendObject.getInt("state");
                                 // 下载不存在的头像
                                 frined_avatar = getImgIfNotExist(frined_avatar);
                                 
-                                PeopelEntity entity = new PeopelEntity(friend_alias, frined_nick, frined_mobile, "", "",
+                                PeopelEntity entity = new PeopelEntity(friend_alias, null, frined_mobile, "", "",
                                         frined_avatar, state == 0 ? PeopelEntity.DELETED : PeopelEntity.NORMAL,
                                                 state == 1 ? PeopelEntity.FRIEND : PeopelEntity.VALIDATE, friend_id, num);
 
-                                int count = peopelDao.getCount(friend_id);
+                                count = peopelDao.getCount(friend_id);
                                 if (count <= 0) {
                                     peopelDao.insertPeopel(entity);
                                 } else {
                                     peopelDao.updatePeopel(entity);
+                                    count = messageIndexDao.getCountByNum(entity.getNum());
+                                    if (count > 0) {
+                                        MessageIndexEntity indexEntity = new MessageIndexEntity();
+//                                        indexEntity.setName(entity.getNickName());
+                                        indexEntity.setImgPath(frined_avatar);
+                                        messageIndexDao.update(indexEntity);
+                                    }
                                 }
                             }
                         }
@@ -364,7 +385,7 @@ public abstract class LoginBaseActivity extends BaseActivity {
 
                                     RemindEntity remindEntity = new RemindEntity();
                                     remindEntity.setOwnerNum(num);
-                                    remindEntity.setTargetNum(num);
+//                                    remindEntity.setTargetNum(num);
                                     remindEntity.setNoticeId(notice_id);
                                     remindEntity.setOwnerId(user_id);
                                     remindEntity.setTargetName(userNick);
@@ -390,6 +411,14 @@ public abstract class LoginBaseActivity extends BaseActivity {
                                             remindEntity.getContent(), MessageEntity.FEED_DEFAULT, AppConstant.USER_NUM,
                                             notice_id);
                                     messageDao.insert(messageEntity);
+                                    // 更新索引库
+                                    count = messageIndexDao.getCountByNum(userNum);
+                                    if (count > 0) {
+                                        MessageIndexEntity entity = new MessageIndexEntity();
+                                        entity.setMessage("[提醒]" + messageEntity.getContent());
+                                        entity.setTime(messageEntity.getTime());
+                                        messageIndexDao.update(entity);
+                                    }
                                 }
                                 cursor2.close();
                             }
@@ -439,7 +468,7 @@ public abstract class LoginBaseActivity extends BaseActivity {
 
                                     RemindEntity remindEntity = new RemindEntity();
                                     remindEntity.setOwnerNum(num);
-                                    remindEntity.setTargetNum(num);
+//                                    remindEntity.setTargetNum(num);
                                     remindEntity.setNoticeId(notice_id);
                                     remindEntity.setOwnerId(user_id);
                                     remindEntity.setTargetName(userNick);
@@ -465,6 +494,14 @@ public abstract class LoginBaseActivity extends BaseActivity {
                                             remindEntity.getContent(), MessageEntity.FEED_DEFAULT, AppConstant.USER_NUM,
                                             notice_id);
                                     messageDao.insert(messageEntity);
+                                    // 更新索引库
+                                    count = messageIndexDao.getCountByNum(num);
+                                    if (count > 0) {
+                                        MessageIndexEntity entity = new MessageIndexEntity();
+                                        entity.setMessage("[提醒]" + messageEntity.getContent());
+                                        entity.setTime(messageEntity.getTime());
+                                        messageIndexDao.update(entity);
+                                    }
                                 }
 
                                 cursor3.close();

@@ -36,12 +36,15 @@ import com.help.remind.R;
 import com.remind.adapter.SelectPeopelAdapter;
 import com.remind.adapter.SelectPeopelAdapter.PeopelSelected;
 import com.remind.dao.MessageDao;
+import com.remind.dao.MessageIndexDao;
 import com.remind.dao.PeopelDao;
 import com.remind.dao.RemindDao;
 import com.remind.dao.impl.MessageDaoImpl;
+import com.remind.dao.impl.MessageIndexDaoImpl;
 import com.remind.dao.impl.PeopelDaoImpl;
 import com.remind.dao.impl.RemindDaoImpl;
 import com.remind.entity.MessageEntity;
+import com.remind.entity.MessageIndexEntity;
 import com.remind.entity.PeopelEntity;
 import com.remind.entity.RemindEntity;
 import com.remind.global.AppConstant;
@@ -138,6 +141,7 @@ public class AddRemindActivity extends BaseActivity implements OnClickListener {
     private PeopelDao peopelDao;
     private RemindDao remindDao;
     private MessageDao messageDao;
+    private MessageIndexDao messageIndexDao;
     /**
      * 当前选择联系人信息，即接收本条消息的用户
      */
@@ -240,6 +244,12 @@ public class AddRemindActivity extends BaseActivity implements OnClickListener {
                 messageEntity.setOtherTypeId(String.valueOf(remindId));
                 messageEntity.setSendState(MessageEntity.SEND_SUCCESS);
                 messageDao.insert(messageEntity);
+                // 更新索引库
+                MessageIndexEntity entity = new MessageIndexEntity();
+                entity.setMessage("[提醒]" + messageEntity.getContent());
+                entity.setTime(messageEntity.getTime());
+                messageIndexDao.update(entity);
+                
                 Intent intent = new Intent(AddRemindActivity.this, ChatActivity.class);
                 remindEntity.setId(id);
                 intent.putExtra("remind", remindEntity);
@@ -276,6 +286,7 @@ public class AddRemindActivity extends BaseActivity implements OnClickListener {
         peopelDao = new PeopelDaoImpl(this);
         remindDao = new RemindDaoImpl(this);
         messageDao = new MessageDaoImpl(this);
+        messageIndexDao = new MessageIndexDaoImpl(this);
 
         setUpView();
     }
@@ -661,7 +672,7 @@ public class AddRemindActivity extends BaseActivity implements OnClickListener {
      */
     private List<PeopelEntity> getPeopel() {
         List<PeopelEntity> results = new ArrayList<PeopelEntity>();
-        Cursor cursor = peopelDao.queryPeopel();
+        Cursor cursor = peopelDao.queryPeopelExceptOwner();
         results = DataBaseParser.getPeoPelDetail(cursor);
         cursor.close();
         return results;

@@ -18,7 +18,7 @@ public interface MessageIndexDao {
      * 
      * @param id
      */
-    public void delete(String id);
+    public void deleteByNum(String num);
 
     /**
      * 查询所有
@@ -48,4 +48,10 @@ public interface MessageIndexDao {
      * @return
      */
     public int queryIdByNum(String num);
+    /**
+     * 获取数量
+     * @param num
+     * @return
+     */
+    public int getCountByNum(String num);
 }

@@ -37,7 +37,9 @@ import com.remind.activity.AddPeopleActivity;
 import com.remind.activity.ContactsActivity;
 import com.remind.activity.EditPeopelActivity;
 import com.remind.adapter.PeopelAdapter;
+import com.remind.dao.MessageIndexDao;
 import com.remind.dao.PeopelDao;
+import com.remind.dao.impl.MessageIndexDaoImpl;
 import com.remind.dao.impl.PeopelDaoImpl;
 import com.remind.entity.PeopelEntity;
 import com.remind.http.HttpClient;
@@ -96,6 +98,7 @@ public class PeopelFragment extends Fragment implements OnClickListener {
      */
     private PeopelDao peopelDao;
 
+    private MessageIndexDao messageIndexDao;
     /**
      * 删除添加信息的对话框
      */
@@ -125,6 +128,7 @@ public class PeopelFragment extends Fragment implements OnClickListener {
                 } else {
                     // 成功
                     peopelDao.realDeleteByNum(currentPeople.getNum());
+                    deleteFromMessageIndexDB(currentPeople.getNum());
                     datas.remove(currentPeople);
                     peopelAdapter.notifyDataSetChanged();
                 }
@@ -173,6 +177,7 @@ public class PeopelFragment extends Fragment implements OnClickListener {
         peopelList = (ListView) view.findViewById(R.id.peopel_list);
 
         peopelDao = new PeopelDaoImpl(getActivity());
+        messageIndexDao = new MessageIndexDaoImpl(getActivity());
 
         initAddBtn();
         initPeopelList();
@@ -228,6 +233,7 @@ public class PeopelFragment extends Fragment implements OnClickListener {
                 // 打开联系人详细
                 Intent intent = new Intent(getActivity(), EditPeopelActivity.class);
                 intent.putExtra("peopel", datas.get(position));
+                intent.putExtra("user", false);
                 startActivityForResult(intent, EDIT_PEOPEL);
             }
         });
@@ -288,7 +294,7 @@ public class PeopelFragment extends Fragment implements OnClickListener {
      * 获取数据库中的信息
      */
     private void getData() {
-        Cursor cursor = peopelDao.queryPeopel();
+        Cursor cursor = peopelDao.queryPeopelExceptOwner();
         datas.clear();
         datas.addAll(DataBaseParser.getPeoPelDetail(cursor));
         cursor.close();
@@ -389,6 +395,7 @@ public class PeopelFragment extends Fragment implements OnClickListener {
         case R.id.delete:
             // 删除
             peopelDao.deleteFromDbByNum(currentPeople.getNum());
+            deleteFromMessageIndexDB(currentPeople.getNum());
             datas.remove(currentPeople);
             peopelAdapter.notifyDataSetChanged();
             alertDialog.dismiss();
@@ -407,6 +414,17 @@ public class PeopelFragment extends Fragment implements OnClickListener {
 
         default:
             break;
+        }
+    }
+    
+    /**
+     * 从索引表中删除
+     * @param num
+     */
+    private void deleteFromMessageIndexDB(String num) {
+        int count = messageIndexDao.getCountByNum(num);
+        if (count > 0) {
+            messageIndexDao.deleteByNum(num);
         }
     }
 

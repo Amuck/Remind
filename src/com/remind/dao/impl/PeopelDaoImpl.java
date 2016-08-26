@@ -6,6 +6,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.text.TextUtils;
 
 import com.remind.dao.PeopelDao;
 import com.remind.dao.dbhelper.DBHelper;
@@ -97,7 +98,9 @@ public class PeopelDaoImpl implements PeopelDao {
         sb.append("update " + PeopelMsg.TABLENAME + " set ");
         sb.append(PeopelMsg.NAME + "	= '" + entity.getName() + "',");
         sb.append(PeopelMsg.ADDTIME + "	= '" + entity.getAddTime() + "',");
-        sb.append(PeopelMsg.NICKNAME + "	= '" + entity.getNickName() + "',");
+        if (!TextUtils.isEmpty(entity.getNickName())) {
+            sb.append(PeopelMsg.NICKNAME + "	= '" + entity.getNickName() + "',");
+        }
         sb.append(PeopelMsg.IMGPATH + "	= '" + entity.getImgPath() + "',");
         sb.append(PeopelMsg.LOGIN_USER + "	= '" + entity.getLoginUser() + "',");
         sb.append(PeopelMsg.FRIEND_ID + "	= '" + entity.getFriendId() + "',");
@@ -226,5 +229,16 @@ public class PeopelDaoImpl implements PeopelDao {
         }
         c.close();
         return length;
+    }
+
+    @Override
+    public Cursor queryPeopelExceptOwner() {
+        SQLiteDatabase db = mDBHelper.getWritableDatabase();
+        String sql = "select * from " + PeopelMsg.TABLENAME + " where " + PeopelMsg.ISDELETE + " = 0 " + " and "
+                + PeopelMsg.LOGIN_USER + " = '" + AppConstant.USER_NUM + "' " + " and "
+                        + PeopelMsg.NUM + " <> '" + AppConstant.USER_NUM + "' ";
+        Cursor mCursor = null;
+        mCursor = db.rawQuery(sql, null);
+        return mCursor;
     }
 }

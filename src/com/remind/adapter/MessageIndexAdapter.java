@@ -1,4 +1,4 @@
-package com.remind.fragment;
+package com.remind.adapter;
 
 import java.util.ArrayList;
 import java.util.List;

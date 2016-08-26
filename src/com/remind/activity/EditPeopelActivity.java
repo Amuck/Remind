@@ -58,6 +58,15 @@ import com.remind.view.RoleDetailImageView;
 public class EditPeopelActivity extends BaseActivity implements OnClickListener {
     public final static int HTTP_OVER = 0;
     public final static int IMG_UPLOAD_OVER = 1;
+    /**
+     * 登陆用户信息编辑
+     */
+    public static final String TYPE_OWNER = "owner";
+    /**
+     * 好友信息编辑
+     */
+    public static final String TYPE_OTHER = "other";
+    
     /* 用来标识请求照相功能的activity */
     private static final int CAMERA_WITH_DATA = 3023;
     /* 用来标识请求gallery的activity */
@@ -147,7 +156,7 @@ public class EditPeopelActivity extends BaseActivity implements OnClickListener 
     private Button sendMsg;
 
     /**
-     * 用户是否登陆
+     * 是否通过查看用户信息进入；false为好友界面进入
      */
     private boolean isUserLogin = false;
 
@@ -292,13 +301,21 @@ public class EditPeopelActivity extends BaseActivity implements OnClickListener 
             }
         } });
 
+        if (isUserLogin) {
+            editImgBtn.setVisibility(View.VISIBLE);
+        }
         nickNameEdit.setVisibility(View.VISIBLE);
-        editImgBtn.setVisibility(View.VISIBLE);
         okBtn.setVisibility(View.VISIBLE);
         cancelBtn.setVisibility(View.VISIBLE);
         editBtn.setVisibility(View.GONE);
         sendMsg.setVisibility(View.GONE);
         nickEditTxt.setVisibility(View.GONE);
+        if (!isUserLogin) {
+            sendMsg.setVisibility(View.GONE);
+        } else {
+            sendMsg.setVisibility(View.GONE);
+            exitBtn.setVisibility(View.GONE);
+        }
     }
 
     /**
@@ -371,11 +388,19 @@ public class EditPeopelActivity extends BaseActivity implements OnClickListener 
             isChanged();
 
             if (isChanged) {
-                if (isNeedUploadRole) {
-                    // 需要上传头像
-                    startUploadImg();
+                if (isUserLogin) {
+                    // 修改用户信息需要上传
+                    if (isNeedUploadRole) {
+                        // 需要上传头像
+                        startUploadImg();
+                    } else {
+                        startUploadInfo(imgPath);
+                    }
                 } else {
-                    startUploadInfo(imgPath);
+                    // 修改好友信息不需要上传
+                    updateDB();
+                    setResult(RESULT_OK);
+                    changeToCheck();
                 }
             } else {
                 setResult(RESULT_CANCELED);
@@ -642,19 +667,7 @@ public class EditPeopelActivity extends BaseActivity implements OnClickListener 
             Toast.makeText(this, "修改失败，请重试.", Toast.LENGTH_SHORT).show();
         } else if ("200".equals(s)) {
             // 成功
-            peopelEntity.setNickName(nickNameEdit.getText().toString());
-            peopelEntity.setImgPath(imgPath);
-            peopelDao.updatePeopel(peopelEntity);
-
-            // 修改索引数据库
-            Cursor cursor = messageIndexDao.queryByNum(peopelEntity.getNum());
-            if (cursor.getCount() > 0) {
-                MessageIndexEntity messageIndexEntitiy = DataBaseParser.getMessageIndex(cursor).get(0);
-                messageIndexEntitiy.setName(peopelEntity.getNickName());
-                messageIndexEntitiy.setImgPath(peopelEntity.getImgPath());
-                messageIndexDao.update(messageIndexEntitiy);
-            }
-            cursor.close();
+            updateDB();
 
             setResult(RESULT_OK);
             changeToCheck();
@@ -664,5 +677,27 @@ public class EditPeopelActivity extends BaseActivity implements OnClickListener 
             hideProgess();
             Toast.makeText(this, "修改失败，请重试.", Toast.LENGTH_SHORT).show();
         }
+    }
+    
+    /**
+     * 修改数据库
+     */
+    private void updateDB() {
+        if (isUserLogin) {
+            peopelEntity.setName(nickNameEdit.getText().toString());
+        }
+        peopelEntity.setNickName(nickNameEdit.getText().toString());
+        peopelEntity.setImgPath(imgPath);
+        peopelDao.updatePeopel(peopelEntity);
+
+        // 修改索引数据库
+        Cursor cursor = messageIndexDao.queryByNum(peopelEntity.getNum());
+        if (cursor.getCount() > 0) {
+            MessageIndexEntity messageIndexEntitiy = DataBaseParser.getMessageIndex(cursor).get(0);
+            messageIndexEntitiy.setName(peopelEntity.getNickName());
+            messageIndexEntitiy.setImgPath(peopelEntity.getImgPath());
+            messageIndexDao.update(messageIndexEntitiy);
+        }
+        cursor.close();
     }
 }
