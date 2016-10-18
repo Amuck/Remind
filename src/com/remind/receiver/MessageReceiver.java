@@ -77,11 +77,14 @@ public class MessageReceiver extends BroadcastReceiver {
         if (action.equals(BackService.HEART_BEAT_ACTION)) {
             // Toast.makeText(context, "Get a heart heat", Toast.LENGTH_SHORT)
             // .show();
-        } else {
-            messageDaoImpl = new MessageDaoImpl(context);
-            remindDaoImpl = new RemindDaoImpl(context);
-            peopelDao = new PeopelDaoImpl(context);
-            messageIndexDao = new MessageIndexDaoImpl(context);
+        } else if (action.equals(BackService.MESSAGE_ACTION)) {
+            if (null == messageDaoImpl) {
+                messageDaoImpl = new MessageDaoImpl(context);
+                remindDaoImpl = new RemindDaoImpl(context);
+                peopelDao = new PeopelDaoImpl(context);
+                messageIndexDao = new MessageIndexDaoImpl(context);
+            }
+            
             String message = intent.getStringExtra("message");
 
             try {

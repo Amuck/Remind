@@ -131,13 +131,16 @@
         <receiver
             android:name="com.remind.receiver.RemindReceiver"
             android:enabled="true"
-            android:process=":remote" >
+            android:process=":msg" >
             <intent-filter>
                 <action android:name="android.alarm.remind.action" />
             </intent-filter>
         </receiver>
         <receiver
-            android:name="com.remind.receiver.MessageReceiver">
+            android:name="com.remind.receiver.MessageReceiver"
+            android:enabled="true"
+            android:process=":msg"
+            android:exported="false">
             <intent-filter>
                 <action android:name="com.remind.message_ACTION" />
                 <action android:name="com.remind.heart_beat_ACTION" />
@@ -155,16 +158,17 @@
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
-            <intent-filter>
+<!--             <intent-filter>
                 <action android:name="android.intent.action.MEDIA_MOUNTED" />
                 <action android:name="android.intent.action.MEDIA_UNMOUNTED" />
                 <action android:name="android.intent.action.MEDIA_EJECT" />
                 <data android:scheme="file" >
                 </data>
-            </intent-filter>
+            </intent-filter> -->
         </receiver>
         
-        <receiver android:name="com.remind.receiver.WakeReceiver" >
+        <receiver android:name="com.remind.receiver.WakeReceiver"
+            android:exported="false" >
             <intent-filter>
                 <action android:name="com.wake.gray" />
             </intent-filter>
@@ -172,7 +176,8 @@
         <service
             android:name="com.baidu.location.f"
             android:enabled="true"
-            android:process=":remote" >
+            android:process=":remote"
+             android:exported="false" >
             <intent-filter>
                 <action android:name="com.baidu.location.service_v2.2" >
                 </action>

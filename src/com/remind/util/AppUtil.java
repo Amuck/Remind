@@ -24,6 +24,7 @@ import android.graphics.PixelFormat;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.media.RingtoneManager;
+import android.os.Build;
 import android.os.Environment;
 import android.support.v7.app.NotificationCompat;
 import android.telephony.TelephonyManager;
@@ -448,8 +449,12 @@ public class AppUtil {
         AlarmManager alarm = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
         PendingIntent sender = PendingIntent.getBroadcast(context, requestCode, intent, PendingIntent.FLAG_CANCEL_CURRENT);
 
-        // define the PendingIntent
-        alarm.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), sender);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            alarm.setExact(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), sender);
+        } else {
+            // define the PendingIntent
+            alarm.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), sender);
+        }
     }
 
     /**
